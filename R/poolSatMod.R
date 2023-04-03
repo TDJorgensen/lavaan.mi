@@ -1,6 +1,6 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 December 2022
-### pool imputed polychorics before fitting model in "single" step:
+### Last updated: 3 April 2023
+### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
 
@@ -406,6 +406,7 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
   out$lavOptions <- list(sample.cov.rescale = FALSE,
                          fixed.x            = FALSE, #TODO: model-specific NACOV based on ov.x
                          conditional.x      = FALSE,
+                         ov.order           = "data",
                          estimator          = ifelse(categorical, "DWLS","ML"),
                          se                 = "robust.sem",
                          test               = "Browne.residual.adf")
