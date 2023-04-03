@@ -402,11 +402,13 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
     }
   }
 
+  ## necessary?  lavaan sets this already when NACOV= or WLS.V= are provided
+  out$ov.order <- "data"
+
   ## set recommended arguments (estimator, se, test)
   out$lavOptions <- list(sample.cov.rescale = FALSE,
                          fixed.x            = FALSE, #TODO: model-specific NACOV based on ov.x
                          conditional.x      = FALSE,
-                         ov.order           = "data",
                          estimator          = ifelse(categorical, "DWLS","ML"),
                          se                 = "robust.sem",
                          test               = "Browne.residual.adf")
