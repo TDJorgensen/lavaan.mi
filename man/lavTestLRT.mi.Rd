@@ -157,8 +157,8 @@ Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
   \url{http://www.statmodel.com/}
 
   Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
-  imputation likelihood ratio tests. \emph{Statistica Sinica, 32}, 1--26.
-  \doi{10.5705/ss.202019.0314}
+  imputation likelihood ratio tests. \emph{Statistica Sinica, 32},
+  1489--1514. \doi{10.5705/ss.202019.0314}
 
   Enders, C. K. (2010). \emph{Applied missing data analysis}.
   New York, NY: Guilford.
