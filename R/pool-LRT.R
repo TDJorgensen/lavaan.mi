@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 20 December 2022
+### Last updated: 2 May 2023
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -65,6 +65,15 @@
 ##'   }
 ##'   Find additional details in Enders (2010, chapter 8).
 ##'
+##' @param standard.test \code{character} indicating which standard test
+##'   statistic to pool with the \code{test="D2"} method. The default is
+##'   \code{"standard"} but can also be one of Browne's residual-based
+##'   statistics, listed on \code{\link[lavaan]{lavTest}}.
+##' @param scaled.test \code{character} indicating which robust/scaled test
+##'   statistic to pool with the \code{test="D2"} method when
+##'   \code{pool.robust=TRUE}. The default is the first robust test listed in
+##'   `lavInspect(object, "options")$test`, but could be any listed on
+##'   \code{\link[lavaan]{lavTest}}.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
@@ -221,17 +230,33 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
       mods <- NULL
       modnames <- NULL
     }
+
+    ## any tests named for D2.LRT()?
+    if ("standard.test" %in% names(dots)) {
+      standard.test <- dots$standard.test
+    } else standard.test <- NULL
+    if ("scaled.test" %in% names(dots)) {
+      scaled.test <- dots$scaled.test
+    } else scaled.test <- NULL
+
+    ## otherwise, only save lavTestLRT() arguments
     LRT.names <- intersect( names(dots) , names(formals(lavTestLRT)) )
     dots <- if (length(LRT.names)) dots[LRT.names] else NULL
 
-  } else mods <- NULL
+  } else {
+    mods          <- NULL
+    standard.test <- NULL
+    scaled.test   <- NULL
+  }
 
   ## compare 1 or multiple pairs?
   if (length(mods) < 2L) {
     argList <- c(list(object = object), dots,
                  list(test = test, omit.imps = omit.imps,
                       asymptotic = asymptotic, pool.robust = pool.robust))
-    if (length(mods) == 1L) argList$h1 <- mods[[1]]
+    if (length(mods) == 1L)      argList$h1            <- mods[[1]]
+    if (!is.null(standard.test)) argList$standard.test <- standard.test
+    if (!is.null(  scaled.test)) argList$scaled.test   <- scaled.test
     results <- do.call(pairwiseLRT, argList)
 
     ## store in an anova-class table?
@@ -285,6 +310,8 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
     argList <- c(modList, argsLRT = list(dots),
                  list(test = test, omit.imps = omit.imps,
                       asymptotic = asymptotic, pool.robust = pool.robust))
+    if (!is.null(standard.test)) argList$standard.test <- standard.test
+    if (!is.null(  scaled.test)) argList$scaled.test   <- scaled.test
     results <- do.call(multipleLRT, argList)
 
     if (asANOVA) {
@@ -325,6 +352,7 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
                    return.mean.chisq = FALSE, # TRUE to ease D4
+                   standard.test = "standard", scaled.test = "default",
                    pool.robust = FALSE, LRTargs = list()) {
   warn <- lavListInspect(object, "options")$warn
 
@@ -378,31 +406,55 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
 
 
   test.names <- lavListInspect(object, "options")$test
-  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+  if (standard.test[1] %in% c("standard", "browne.residual.nt",
+                              "browne.residual.nt.model",
+                              "browne.residual.adf",
+                              "browne.residual.adf.model")) {
+    standard.test <- standard.test[1]
+  } else {
+    standard.test <- intersect(test.names, c("standard", "browne.residual.nt",
+                                             "browne.residual.nt.model",
+                                             "browne.residual.adf",
+                                             "browne.residual.adf.model"))[1]
+  }
+
+  # any non-standard test stats?
   if (length(test.names) > 1L) {
     ## remove standard and any bootstrapped tests
-    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
-    if (length(rm.idx) > 0L) {
-      test.names <- test.names[-rm.idx]
-    }
-    ## only acknowledge the first scaled test statistic
+    rm.idx <- which(test.names %in% c("none","default","standard",
+                                      "browne.residual.nt",
+                                      "browne.residual.nt.model",
+                                      "browne.residual.adf",
+                                      "browne.residual.adf.model"))
+    if (length(rm.idx) > 0L) test.names <- test.names[-rm.idx]
+    ## only acknowledge one scaled test statistic
     if (length(test.names) > 1L) {
-      test.names <- test.names[1]
+      if (scaled.test[1] %in% c("satorra.bentler",
+                                "yuan.bentler", "yuan.bentler.mplus",
+                                "mean.var.adjusted", "scaled.shifted")) {
+        scaled.test <- scaled.test[1]
+      } else {
+        scaled.test <- intersect(test.names,
+                                 c("satorra.bentler",
+                                   "yuan.bentler", "yuan.bentler.mplus",
+                                   "mean.var.adjusted", "scaled.shifted"))[1]
+      }
+
     }
   }
 
   ## pool Wald tests
   if (is.null(h1)) {
-    test <- if (pool.robust) test.names[1] else "standard"
-    DF <- mean(sapply(object@testList[useImps], function(x) x[[test]][["df"]]  ))
-    w  <-      sapply(object@testList[useImps], function(x) x[[test]][["stat"]])
+    test <- if (pool.robust) scaled.test else standard.test
+    DF <- mean(sapply(object@testList[useImps], function(x) x[[test]]$df  ))
+    w  <-      sapply(object@testList[useImps], function(x) x[[test]]$stat)
   } else {
     ## this will not get run if !pool.robust because logic catches that first
-    DF0 <- mean(sapply(object@testList[useImps], function(x) x$standard[["df"]]))
-    DF1 <- mean(sapply(    h1@testList[useImps], function(x) x$standard[["df"]]))
+    DF0 <- mean(sapply(object@testList[useImps], function(x) x[[standard.test]]$df))
+    DF1 <- mean(sapply(    h1@testList[useImps], function(x) x[[standard.test]]$df))
     DF <- DF0 - DF1
-    w0 <- sapply(object@testList[useImps], function(x) x$standard[["stat"]])
-    w1 <- sapply(    h1@testList[useImps], function(x) x$standard[["stat"]])
+    w0 <- sapply(object@testList[useImps], function(x) x[[standard.test]]$stat)
+    w1 <- sapply(    h1@testList[useImps], function(x) x[[standard.test]]$stat)
     w <- w0 - w1
     ## check DF
     if (DF < 0) {
@@ -714,8 +766,9 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
 ## (formerly lavTestLRT.mi)
 ##' @importFrom lavaan lavListInspect lavTestLRT
 pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
-                        omit.imps = c("no.conv","no.se"),
-                        asymptotic = FALSE, pool.robust = FALSE, ...) {
+                        omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
+                        standard.test = "standard", scaled.test = "default",
+                        pool.robust = FALSE, ...) {
   ## check class
   if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
 
@@ -811,26 +864,46 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
 
   ## check for robust
   test.names <- lavListInspect(object, "options")$test
-  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
-  if (length(test.names) > 1L) {
-    ## remove standard and any bootstrapped tests
-    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
-    if (length(rm.idx) > 0L) {
-      test.names <- test.names[-rm.idx]
-    }
-    ## only acknowledge the first scaled test statistic
-    #FIXME: loop over all tests? (e.g., "browne.residual.adf")
-    if (length(test.names) > 1L) {
-      test.names <- test.names[1]
-    }
+  if (standard.test[1] %in% c("standard", "browne.residual.nt",
+                              "browne.residual.nt.model",
+                              "browne.residual.adf",
+                              "browne.residual.adf.model")) {
+    standard.test <- standard.test[1]
+  } else {
+    standard.test <- intersect(test.names, c("standard", "browne.residual.nt",
+                                             "browne.residual.nt.model",
+                                             "browne.residual.adf",
+                                             "browne.residual.adf.model"))[1]
   }
 
-  robust <- any(test.names %in% c("satorra.bentler","yuan.bentler",
-                                  "yuan.bentler.mplus","scaled.shifted",
-                                  "mean.var.adjusted","satterthwaite"))
+  # any non-standard test stats?
+  if (length(test.names) > 1L) {
+    ## remove standard and any bootstrapped tests
+    rm.idx <- which(test.names %in% c("none","default","standard",
+                                      "browne.residual.nt",
+                                      "browne.residual.nt.model",
+                                      "browne.residual.adf",
+                                      "browne.residual.adf.model"))
+    if (length(rm.idx) > 0L) test.names <- test.names[-rm.idx]
+    ## only acknowledge one scaled test statistic
+    if (length(test.names) > 1L) {
+      if (scaled.test[1] %in% c("satorra.bentler",
+                                "yuan.bentler", "yuan.bentler.mplus",
+                                "mean.var.adjusted", "scaled.shifted")) {
+        scaled.test <- scaled.test[1]
+      } else {
+        scaled.test <- intersect(test.names,
+                                 c("satorra.bentler",
+                                   "yuan.bentler", "yuan.bentler.mplus",
+                                   "mean.var.adjusted", "scaled.shifted"))[1]
+      }
+
+    }
+  }
+  robust <- length(scaled.test) > 0L
   if (!robust) pool.robust <- FALSE
 
-  scaleshift <- any(test.names == "scaled.shifted")
+  scaleshift <- scaled.test == "scaled.shifted"
   if (scaleshift && !is.null(h1)) {
     if (test %in% c("D3","D4") | !pool.robust)
       #TODO: find scale/shift in lavaan's anova-table attributes
@@ -860,13 +933,16 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
     ## pool both the naive and robust test statistics, return both to
     ## make output consistent across options
     out.naive <- D2.LRT(object, h1 = h1, useImps = useImps,
-                        asymptotic = asymptotic, pool.robust = FALSE)
+                        asymptotic = asymptotic, pool.robust = FALSE,
+                        standard.test = standard.test, scaled.test = scaled.test)
     out.robust <- D2.LRT(object, h1 = h1, useImps = useImps, LRTargs = dots,
-                         asymptotic = asymptotic, pool.robust = TRUE)
+                         asymptotic = asymptotic, pool.robust = TRUE,
+                         standard.test = standard.test, scaled.test = scaled.test)
     out <- c(out.naive, out.robust)
   } else if (test == "D2") {
     out <- D2.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
-                  pool.robust = pool.robust)
+                  pool.robust = pool.robust,
+                  standard.test = standard.test, scaled.test = scaled.test)
   } else if (test == "D3") {
     out <- D3.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
                   omit.imps = omit.imps)
@@ -917,8 +993,9 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
 ## Iterates over > 2 models to apply pairwiseLRT() sequentially
 ## (borrowed from semTools::compareFit, code for @nested)
 multipleLRT <- function(..., argsLRT = list(), test = c("D4","D3","D2"),
-                        omit.imps = c("no.conv","no.se"),
-                        asymptotic = FALSE, pool.robust = FALSE) {
+                        omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
+                        standard.test = "standard", scaled.test = "default",
+                        pool.robust = FALSE) {
   ## separate models from lists of models
   mods <- list(...)
 
@@ -954,12 +1031,14 @@ multipleLRT <- function(..., argsLRT = list(), test = c("D4","D3","D2"),
     fitB <- modsB[[i]]
 
     tempDiff <- do.call(pairwiseLRT,
-                        c(list(object      = fitA,
-                               h1          = fitB,
-                               test        = test,
-                               omit.imps   = omit.imps,
-                               asymptotic  = asymptotic,
-                               pool.robust = pool.robust),
+                        c(list(object        = fitA,
+                               h1            = fitB,
+                               test          = test,
+                               omit.imps     = omit.imps,
+                               asymptotic    = asymptotic,
+                               pool.robust   = pool.robust,
+                               standard.test = standard.test,
+                               scaled.test   = scaled.test),
                           argsLRT))
 
     if (names(tempDiff)[1] == "F") {
@@ -978,7 +1057,6 @@ multipleLRT <- function(..., argsLRT = list(), test = c("D4","D3","D2"),
   class(out) <- c("lavaan.data.frame", "data.frame")
   out
 }
-
 
 
 

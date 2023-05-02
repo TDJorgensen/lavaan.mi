@@ -10,6 +10,8 @@ The `semTools` package has a **Missing Data** suite, which for years included ut
 ## New Features:
 
 - The [newly proposed method](https://doi.org/10.5705/ss.202019.0314) for pooling LRT statistics is the new default (`test = "D4"`) for `lavTestLRT.mi()`, replacing the old default (`test = "D3"`, still available).  The D4 pooling method performs similarly to D3 (see Grund et al.'s [simulation study](https://doi.org/10.31234/osf.io/d459g)) but is less computationally intensive.
+- Because users can pass a vector of multiple (e.g., robust) test statistics to the `lavaan(test=)` argument, the user can choose which statistic can be pooled using `lavTestLRT.mi(..., test = "D2", pool.robust = TRUE)`.  This is controlled via the new `scaled.test=` argument.  As an alternative to the standard $\chi^2$ statistic, the user can also pool [Browne's (1984)](https://doi.org/10.1111/j.2044-8317.1984.tb00789.x) residual-based statistic using, e.g., `lavTestLRT.mi(..., test = "D2", standard.text = "browne.residual.nt")` with the default `pool.robust=FALSE`.
+
 
 ## Bug Fixes:
 
