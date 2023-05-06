@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 23 February 2023
+### Last updated: 6 May 2023
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -17,7 +17,6 @@
 ##' @name modindices.mi
 ##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
 ##' @importFrom lavaan lavInspect lavListInspect lavNames
-##' @importFrom methods getMethod
 ##' @importFrom stats cov pchisq qchisq
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}
@@ -259,9 +258,8 @@ modindices.mi <- function(object,
     if (standardized) {
       ## Need full parameter table for lavaan::standardizedSolution()
       ## Merge parameterEstimates() with modindices()
-      oldPE <- getMethod("summary","lavaan.mi")(object, se = FALSE,
-                                                output = "data.frame",
-                                                omit.imps = omit.imps)
+      oldPE <- summary_lavaan_mi(object, se = FALSE, omit.imps = omit.imps,
+                                 output = "data.frame")
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
       ## merge EPCs, using parameter labels (unavailable for estimates)
@@ -298,7 +296,7 @@ modindices.mi <- function(object,
       EPC.sign <- sign(PE$epc)
 
       ## pooled estimates for standardizedSolution()
-      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      pooledest <- coef_lavaan_mi(object, omit.imps = omit.imps)
       ## update @Model@GLIST for standardizedSolution(..., GLIST=)
       object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
 

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 6 May 2022
+### Last updated: 6 May 2023
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -23,7 +23,6 @@
 ##' @aliases lavTestWald.mi
 ##' @importFrom lavaan parTable lavListInspect
 ##' @importFrom stats pchisq pf
-##' @importFrom methods getMethod
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
 ##' @param constraints A \code{character} string (typically between single
@@ -232,7 +231,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   } else stop("no equality constraints found in constraints argument")
 
   # theta = free parameters only (equality-constrained allowed)
-  theta <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps) #object@optim$x
+  theta <- coef_lavaan_mi(object, omit.imps = omit.imps) #object@optim$x
 
   # build constraint function
   ceq.function <- lavaan::lav_partable_constraints_ceq(partable = partable,
@@ -250,8 +249,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   if (verbose) {cat("Restricted theta values:\n"); print(theta.r); cat("\n")}
 
   # get VCOV
-  VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
-                                        omit.imps = omit.imps)
+  VCOV <- vcov_lavaan_mi(object, scale.W = scale.W, omit.imps = omit.imps)
   # restricted vcov
   info.r  <- JAC %*% VCOV %*% t(JAC)
 
@@ -265,10 +263,8 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
     out <- c("chisq" = test.stat, df = DF,
              pvalue = pchisq(test.stat, df = DF, lower.tail = FALSE))
   } else {
-    W <- getMethod("vcov", "lavaan.mi")(object, type = "within",
-                                        omit.imps = omit.imps)
-    B <- getMethod("vcov", "lavaan.mi")(object, type = "between",
-                                        omit.imps = omit.imps)
+    W <- vcov_lavaan_mi(object, type = "within" , omit.imps = omit.imps)
+    B <- vcov_lavaan_mi(object, type = "between", omit.imps = omit.imps)
     #FIXME: only valid for linear constraints?
     ## restricted B & W components of VCOV
     W.r  <- JAC %*% W %*% t(JAC)

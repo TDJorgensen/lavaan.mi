@@ -147,7 +147,6 @@
 ##' }
 ##'
 ##' @importFrom lavaan lavInspect parTable
-##' @importFrom methods as getMethod
 ##' @export
 lavaan.mi <- function(model, data, ...) {
   CALL <- match.call()
@@ -296,8 +295,7 @@ lavaan.mi <- function(model, data, ...) {
     }
   } else fit@funList <- list()
 
-  NewStartVals <- try(getMethod("coef", "lavaan.mi")(fit, type = "user",
-                                                     labels = FALSE),
+  NewStartVals <- try(coef_lavaan_mi(fit, type = "user", labels = FALSE),
                            silent = TRUE)
   if (!inherits(NewStartVals, "try-error")) fit@ParTable$start <- NewStartVals
   #FIXME: else do what? warn?

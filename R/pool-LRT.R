@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 2 May 2023
+### Last updated: 6 May 2023
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -479,7 +479,6 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
 }
 
 ##' @importFrom lavaan parTable lavaan lavListInspect
-##' @importFrom methods getMethod
 getLLs <- function(object, useImps, saturated = FALSE, # default h1 model
                    omit.imps = c("no.conv","no.se")) {
   ## FIXME: lavaanList does not return info when fixed because no convergence!
@@ -522,8 +521,7 @@ getLLs <- function(object, useImps, saturated = FALSE, # default h1 model
     PT$free <- 0L
     PT$user <- 1L
     ## fix them to pooled estimates
-    fixedValues <- getMethod("coef","lavaan.mi")(object, type = "user",
-                                                 omit.imps = omit.imps)
+    fixedValues <- coef_lavaan_mi(object, type = "user", omit.imps = omit.imps)
     PT$ustart <- fixedValues
     PT$start <- NULL
     PT$est <- NULL

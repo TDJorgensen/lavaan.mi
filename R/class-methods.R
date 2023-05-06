@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 27 November 2022
+### Last updated: 6 May 2023
 ### Class and Methods for lavaan.mi object
 
 
@@ -290,8 +290,7 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   free <- PT$free > 0L | PT$op == ":="
   STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
-  PE$est <- getMethod("coef","lavaan.mi")(object, type = "all",
-                                          omit.imps = omit.imps)
+  PE$est <- coef_lavaan_mi(object, type = "all", omit.imps = omit.imps)
 
   if (lavoptions$se == "none") {
     warning('pooled variances and tests unavailable when se="none" is requested')
@@ -306,8 +305,7 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                      if (se & !asymptotic) " test and CI.",
                      "\n")
   if (se) {
-    VCOV <- getMethod("vcov","lavaan.mi")(object, scale.W = scale.W,
-                                          omit.imps = omit.imps)
+    VCOV <- vcov_lavaan_mi(object, scale.W = scale.W, omit.imps = omit.imps)
     PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
                                        lavpartable = object@ParTable)
     W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
@@ -347,7 +345,7 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
 
   if (length(standardized) || rsquare) {
     ## pooled estimates for standardizedSolution()
-    est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+    est <- coef_lavaan_mi(object, omit.imps = omit.imps)
     ## updates @Model@GLIST for standardizedSolution(..., GLIST=)
     object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
   }
@@ -680,7 +678,6 @@ function(object, ...) {
 
 
 ##' @importFrom lavaan lavListInspect lavNames
-##' @importFrom methods getMethod
 ## utility function called within fitMeasures.mi()
 getSRMR <- function(object, type = "cor.bentler", level = "within",
                     include.mean = TRUE, omit.imps = c("no.conv","no.se")) {
@@ -703,10 +700,9 @@ getSRMR <- function(object, type = "cor.bentler", level = "within",
   }
 
   ## grab residuals
-  R <- getMethod("resid", "lavaan.mi")(object, type = type,
-                                       omit.imps = omit.imps)
-  if (mplus) Rd <- getMethod("resid", "lavaan.mi")(object, type = "cor.bentler",
-                                                   omit.imps = omit.imps)
+  R <- resid_lavaan_mi(object, type = type, omit.imps = omit.imps)
+  if (mplus) Rd <- resid_lavaan_mi(object, omit.imps = omit.imps,
+                                   type = "cor.bentler")
   ## restructure, if necessary
   if (nG == 1L) {
     loopBlocks <- 1L
@@ -756,6 +752,12 @@ getSRMR <- function(object, type = "cor.bentler", level = "within",
 ##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
 fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
+                           fm.args = list(standard.test     = "default",
+                                          scaled.test       = "default",
+                                          rmsea.ci.level    = 0.90,
+                                          rmsea.close.h0    = 0.05,
+                                          rmsea.notclose.h0 = 0.08,
+                                          cat.check.pd      = TRUE),
                            output = "vector", omit.imps = c("no.conv","no.se"),
                            ...) {
 
@@ -1322,7 +1324,6 @@ setMethod("fitmeasures", "lavaan.mi", fitMeasures_mi)
 
 
 ##' @importFrom lavaan lavListInspect lavNames
-##' @importFrom methods getMethod
 ##' @importFrom stats fitted fitted.values
 fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
   useImps <- rep(TRUE, length(object@DataList))
@@ -1352,7 +1353,7 @@ fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
                          sep = if (nG > 1L && nlevels > 1L) "_" else "")
   }
 
-  est <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+  est <- coef_lavaan_mi(object, omit.imps = omit.imps)
   setpar <- lavaan::lav_model_set_parameters(object@Model, x = est)
   impMats <- lavaan::lav_model_implied(setpar)
   # if (lavListInspect(object, "categorical")) {
@@ -1438,7 +1439,6 @@ setMethod("fitted.values", "lavaan.mi", fitted_lavaan_mi)
 
 
 ##' @importFrom lavaan lavListInspect
-##' @importFrom methods getMethod
 ##' @importFrom stats cov2cor resid residuals
 resid_lavaan_mi <- function(object, type = c("raw","cor"),
                             omit.imps = c("no.conv","no.se")) {
@@ -1489,7 +1489,7 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
 
   ## H0-model-implied moments, already pooled
   ## (moments-list nested in block-list)
-  Implied <- getMethod("fitted", "lavaan.mi")(object, omit.imps = omit.imps)
+  Implied <- fitted_lavaan_mi(object, omit.imps = omit.imps)
   if (nBlocks == 1L) Implied <- list(Implied) # store single block in a block-list
 
   ## template to store observed moments & residuals

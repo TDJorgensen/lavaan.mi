@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 6 May 2022
+### Last updated: 6 May 2023
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -26,7 +26,6 @@
 ##' @aliases lavTestScore.mi
 ##' @importFrom lavaan lavListInspect parTable
 ##' @importFrom stats cov pchisq pf
-##' @importFrom methods getMethod
 ##'
 ##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
 ##' @param add Either a \code{character} string (typically between single
@@ -753,7 +752,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     EPC.all <- 1 * as.numeric(score %*%  Z1.plus1)
 
     # create epc table for the 'free' parameters
-    myCoefs <- getMethod("coef","lavaan.mi")(object, omit.imps = omit.imps)
+    myCoefs <- coef_lavaan_mi(object, omit.imps = omit.imps)
     myCols <- c("lhs","op","rhs","user")
     if (ngroups > 1L) myCols <- c(myCols, "block","group")
     if (nlevels > 1L) myCols <- c(myCols, "block","level")
@@ -794,7 +793,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       EPC.sign <- sign(LIST$epc)
 
       ## pooled estimates for standardizedSolution()
-      pooledest <- getMethod("coef", "lavaan.mi")(object, omit.imps = omit.imps)
+      pooledest <- coef_lavaan_mi(object, omit.imps = omit.imps)
       ## update @Model@GLIST for standardizedSolution(..., GLIST=)
       object@Model <- lavaan::lav_model_set_parameters(object@Model, x = pooledest)
 
