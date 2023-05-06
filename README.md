@@ -2,6 +2,12 @@
 
 This is an R package whose primary purpose is to extend the functionality of the R package `lavaan`. When incomplete data have been multiply imputed, the `lavaan.mi` package allows users to fit structural equation models as they would using the `lavaan` package. 
 
+The development version can be installed from GitHub using the [`remotes` package](https://cran.r-project.org/package=remotes):
+
+```
+remotes::install_github("TDJorgensen/lavaan.mi")
+```
+
 
 ## Connecting `lavaan.mi` to `lavaan`
 
