@@ -101,7 +101,7 @@
 ##' @param type The meaning of this argument varies depending on which method it
 ##'        it used for. Find detailed descriptions in the \bold{Value} section
 ##'        under \code{coef}, \code{vcov}, and \code{residuals}.
-##' @param fit.measures,baseline.model See \code{\link[lavaan]{fitMeasures}}.
+##' @param fit.measures,baseline.model,fm.args See \code{\link[lavaan]{fitMeasures}}.
 ##'        \code{summary(object, fit.measures = TRUE)} will print (but not
 ##'        return) a table of fit measures to the console.
 ##' @param ... Additional arguments passed to \code{\link{lavTestLRT.mi}}, or
@@ -149,10 +149,12 @@
 ##'   find details about additional arguments.}
 ##'
 ##' \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-##'   fit.measures = "all", baseline.model = NULL, output = "vector",
-##'   omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
-##'   \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
-##'   to \code{\link{lavTestLRT.mi}} via \code{...}.}
+##'   fit.measures = "all", baseline.model = NULL,
+##'   fm.args = list(standard.test = "default", scaled.test = "default",
+##'   rmsea.ci.level = 0.90, rmsea.close.h0 = 0.05, rmsea.notclose.h0 = 0.08,
+##'   cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"),
+##'   ...)}: See lavaan's  \code{\link[lavaan]{fitMeasures}} for details.
+##'   Pass additional arguments to \code{\link{lavTestLRT.mi}} via \code{...}.}
 ##' \item{fitmeasures}{alias for \code{fitMeasures}.}
 ##'
 ##' \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
@@ -163,7 +165,9 @@
 ##'   level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
 ##'   scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
 ##'   asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE,
-##'   ...)}:
+##'   fm.args = list(standard.test = "default", scaled.test = "default",
+##'                  rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
+##'                  rmsea.h0.notclosefit = 0.08), ...)}:
 ##'  see \code{\link[lavaan]{parameterEstimates}} for details.
 ##'  By default, \code{summary} returns pooled point and \emph{SE}
 ##'  estimates, along with \emph{t} test statistics and their associated
@@ -262,7 +266,13 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                               fmi = FALSE, scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
                               asymptotic = FALSE, header = TRUE,
-                              output = "text", fit.measures = FALSE, ...) {
+                              output = "text", fit.measures = FALSE,
+                              fm.args = list(standard.test        = "default",
+                                             scaled.test          = "default",
+                                             rmsea.ci.level       = 0.90,
+                                             rmsea.h0.closefit    = 0.05,
+                                             rmsea.h0.notclosefit = 0.08),
+                              ...) {
   useImps <- rep(TRUE, length(object@DataList))
   if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
   if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
@@ -429,8 +439,9 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
   }
   if (fit.measures) {
     indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
-    FITS <- suppressWarnings(fitMeasures(object, fit.measures = indices,
-                                         output = "text", ...))
+    FITS <- suppressWarnings(fitMeasures_mi(object, output = "text",
+                                            fit.measures = indices,
+                                            fm.args = fm.args, ...))
     try(print(FITS, add.h0 = TRUE), silent = TRUE)
   }
 
@@ -870,8 +881,10 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
     ## pooled test statistic(s)
     argList <- c(list(object = object), dots)
     argList$asymptotic <- TRUE # in case it wasn't set in list(...)
-    argList$omit.imps <- omit.imps
-    argList$asANOVA <- FALSE
+    argList$omit.imps  <- omit.imps
+    argList$asANOVA    <- FALSE
+    argList$standard.test <- fm.args$standard.test
+    argList$scaled.test   <- fm.args$scaled.test
     out <- do.call(lavTestLRT.mi, argList)
     ## check for scaled test statistic (if not, set robust=FALSE)
     if (robust && is.na(out["chisq.scaled"])) robust <- FALSE
@@ -953,8 +966,10 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
                                     useImps[!baseImps])
         argList <- c(list(object = baseFit), dots)
         argList$asymptotic <- TRUE # in case it wasn't set in list(...)
-        argList$omit.imps <- setdiff(omit.imps, "no.se") # se="none" in baseFit
-        argList$asANOVA <- FALSE
+        argList$omit.imps  <- setdiff(omit.imps, "no.se") # se="none" in baseFit
+        argList$asANOVA    <- FALSE
+        argList$standard.test <- fm.args$standard.test
+        argList$scaled.test   <- fm.args$scaled.test
         baseOut <- do.call(lavTestLRT.mi, argList)
       }
       # else { already used "D2" with @baselineList info to make baseOut }

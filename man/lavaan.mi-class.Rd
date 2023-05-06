@@ -23,7 +23,9 @@
   level = 0.95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
   scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE, header = TRUE, output = "text",
-  fit.measures = FALSE, ...)
+  fit.measures = FALSE, fm.args = list(standard.test = "default",
+  scaled.test = "default", rmsea.ci.level = 0.9, rmsea.h0.closefit = 0.05,
+  rmsea.h0.notclosefit = 0.08), ...)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
@@ -36,12 +38,16 @@
 \S4method{anova}{lavaan.mi}(object, ...)
 
 \S4method{fitMeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, output = "vector", omit.imps = c("no.conv",
-  "no.se"), ...)
+  baseline.model = NULL, fm.args = list(standard.test = "default",
+  scaled.test = "default", rmsea.ci.level = 0.9, rmsea.close.h0 = 0.05,
+  rmsea.notclose.h0 = 0.08, cat.check.pd = TRUE), output = "vector",
+  omit.imps = c("no.conv", "no.se"), ...)
 
 \S4method{fitmeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, output = "vector", omit.imps = c("no.conv",
-  "no.se"), ...)
+  baseline.model = NULL, fm.args = list(standard.test = "default",
+  scaled.test = "default", rmsea.ci.level = 0.9, rmsea.close.h0 = 0.05,
+  rmsea.notclose.h0 = 0.08, cat.check.pd = TRUE), output = "vector",
+  omit.imps = c("no.conv", "no.se"), ...)
 
 \S4method{fitted}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
@@ -104,7 +110,7 @@ distribution, so it is printed as a \emph{z} statistic; likewise,
 \emph{F} times its numerator \emph{df} is printed, assumed to follow
 a \eqn{\chi^2} distribution.}
 
-\item{fit.measures, baseline.model}{See \code{\link[lavaan]{fitMeasures}}.
+\item{fit.measures, baseline.model, fm.args}{See \code{\link[lavaan]{fitMeasures}}.
 \code{summary(object, fit.measures = TRUE)} will print (but not
 return) a table of fit measures to the console.}
 
@@ -163,10 +169,12 @@ should include parameter labels. Default is \code{TRUE}.}
   find details about additional arguments.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi",
-  fit.measures = "all", baseline.model = NULL, output = "vector",
-  omit.imps = c("no.conv","no.se"), ...)}: See lavaan's
-  \code{\link[lavaan]{fitMeasures}} for details. Pass additional arguments
-  to \code{\link{lavTestLRT.mi}} via \code{...}.}
+  fit.measures = "all", baseline.model = NULL,
+  fm.args = list(standard.test = "default", scaled.test = "default",
+  rmsea.ci.level = 0.90, rmsea.close.h0 = 0.05, rmsea.notclose.h0 = 0.08,
+  cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"),
+  ...)}: See lavaan's  \code{\link[lavaan]{fitMeasures}} for details.
+  Pass additional arguments to \code{\link{lavTestLRT.mi}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
 
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
@@ -177,7 +185,9 @@ should include parameter labels. Default is \code{TRUE}.}
   level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
   scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
   asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE,
-  ...)}:
+  fm.args = list(standard.test = "default", scaled.test = "default",
+                 rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
+                 rmsea.h0.notclosefit = 0.08), ...)}:
  see \code{\link[lavaan]{parameterEstimates}} for details.
  By default, \code{summary} returns pooled point and \emph{SE}
  estimates, along with \emph{t} test statistics and their associated

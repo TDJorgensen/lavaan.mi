@@ -147,6 +147,7 @@
 ##' }
 ##'
 ##' @importFrom lavaan lavInspect parTable
+##' @importFrom methods as
 ##' @export
 lavaan.mi <- function(model, data, ...) {
   CALL <- match.call()
