@@ -4,9 +4,6 @@
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
 
-#TODO:  whenever Yves adds scale/shift as attribute to anova output...
-
-
 ## -------------
 ## Main function
 ## -------------
@@ -73,7 +70,8 @@
 ##'   statistic to pool with the \code{test="D2"} method when
 ##'   \code{pool.robust=TRUE}. The default is the first robust test listed in
 ##'   `lavInspect(object, "options")$test`, but could be any listed on
-##'   \code{\link[lavaan]{lavTest}}.
+##'   \code{\link[lavaan]{lavTest}} that were requested when \code{object}
+##'   (and \code{h1}) were fitted.
 ##' @param omit.imps \code{character} vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
@@ -97,8 +95,8 @@
 ##'   robust test was requested. If \code{pool.robust = TRUE}, the robust test
 ##'   statistic is pooled, whereas \code{pool.robust = FALSE} will pool
 ##'   the naive test statistic (or difference statistic) and apply the average
-##'   scale/shift parameter to it (unavailable for mean- and variance-adjusted
-##'   difference statistics, so \code{pool.robust} will be set \code{TRUE}).
+##'   scale/shift parameter to it. The harmonic mean is applied to the scaling
+##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##'
 ##' @return
 ##'   A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
@@ -351,7 +349,8 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
 
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
-                   return.mean.chisq = FALSE, # TRUE to ease D4
+                   return.mean.chisq  = FALSE, # TRUE to ease D4
+                   return.scale.shift = FALSE, # TRUE for shift in robustify()
                    standard.test = "standard", scaled.test = "default",
                    pool.robust = FALSE, LRTargs = list()) {
   warn <- lavListInspect(object, "options")$warn
@@ -382,13 +381,22 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
       out <- try(do.call(lavTestLRT, argList),
                  silent = TRUE)
       if (inherits(out, "try-error")) return("lavTestLRT() failed")
-      c(chisq = out[2, "Chisq diff"], df = out[2, "Df diff"])
+      c(chisq = out[2, "Chisq diff"], df = out[2, "Df diff"],
+        scale = attr(out, "scale")[2], shift = attr(out, "shift")[2])
     }
     FIT <- eval(as.call(oldCall))
     ## check if there are any results
     noFit <- sapply(FIT@funList, function(x) x[1] == "fit failed")
     noLRT <- sapply(FIT@funList, function(x) x[1] == "lavTestLRT() failed")
     if (all(noFit | noLRT)) stop("No success using lavTestScore() on any imputations.")
+
+    if (return.scale.shift) {
+      SCALE <- sapply(FIT@funList[ intersect(which(!(noFit | noLRT)), useImps) ],
+                      "[[", i = "scale")
+      SHIFT <- sapply(FIT@funList[ intersect(which(!(noFit | noLRT)), useImps) ],
+                      "[[", i = "shift")
+      return(data.frame(scale = SCALE, shift = SHIFT))
+    }
 
     chiList <- sapply(FIT@funList[ intersect(which(!(noFit | noLRT)), useImps) ],
                       "[[", i = "chisq")
@@ -607,6 +615,7 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
     PT <- parTable(object)
     npar <- max(PT$free) - sum(PT$op == "==")
     out <- c(out, npar = npar, ntotal = N,
+             #FIXME: omit? (also info criteria?)
              logl = mean(LL0), unrestricted.logl = mean(LL1),
              aic = -2*mean(LL0) + 2*npar, bic = -2*mean(LL0) + npar*log(N),
              bic2 = -2*mean(LL0) + npar*log((N + 2) / 24))
@@ -691,6 +700,7 @@ D4.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
     LL1 <- getLLs(object, useImps, saturated = TRUE, omit.imps = omit.imps)
 
     out <- c(out, npar = npar, ntotal = N,
+             #FIXME: omit? (also info criteria?)
              logl = mean(LL0), unrestricted.logl = mean(LL1),
              aic = -2*mean(LL0) + 2*npar, bic = -2*mean(LL0) + npar*log(N),
              bic2 = -2*mean(LL0) + npar*log((N + 2) / 24))
@@ -705,7 +715,10 @@ D4.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
 
 ##' @importFrom stats pchisq
 ##' @importFrom lavaan lavListInspect
-robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
+robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
+                      harm = TRUE, # harmonic or arithmetic mean of scaling.factor
+                      LRTargs = list(), # for D2.LRT() when h1 + shifted
+                      standard.test = "standard", scaled.test = "default") {
   test.names <- lavListInspect(object, "options")$test
   # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
   if (length(test.names) > 1L) {
@@ -726,30 +739,58 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps) {
   } else TEST <- object@testList[useImps]
 
   d0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["df"]]))
-  c0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+  if (harm) {
+    c0 <- 1/ mean(1/sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+  } else c0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+
+
   if (!is.null(h1)) {
+    ## MODEL COMPARISON
+
     d1 <- mean(sapply(h1@testList[useImps], function(x) x[[ test.names[1] ]][["df"]]))
-    c1 <- mean(sapply(h1@testList[useImps],
-                      function(x) x[[ test.names[1] ]][["scaling.factor"]]))
-    delta_c <- (d0*c0 - d1*c1) / (d0 - d1)
-    ChiSq["chisq.scaled"] <- ChiSq[["chisq"]] / delta_c
+    if (scaleshift) {
+      ScSh <- D2.LRT(object = object, h1 = h1, useImps = useImps, asymptotic = TRUE,
+                     return.scale.shift = TRUE, LRTargs = LRTargs,
+                     standard.test = standard.test, scaled.test = scaled.test,
+                     pool.robust = TRUE) # just so D2.LRT() doesn't skip it
+      delta_c <- if (harm) 1/mean(1/ScSh$scale) else mean(ScSh$scale)
+      shift   <- mean(ScSh$shift)
+
+    } else {
+      if (harm) {
+        c1 <- 1/mean(1/sapply(h1@testList[useImps],
+                              function(x)  x[[ test.names[1] ]][["scaling.factor"]]))
+      } else c1 <- mean(sapply(h1@testList[useImps],
+                               function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+      delta_c <- (d0*c0 - d1*c1) / (d0 - d1)
+      shift   <- 0
+    }
+
+    ChiSq["chisq.scaled"] <- ChiSq[["chisq"]] / delta_c + shift
     ChiSq["df.scaled"] <- d0 - d1
     ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                      df = ChiSq[["df.scaled"]],
                                      lower.tail = FALSE)
     ChiSq["chisq.scaling.factor"] <- delta_c
+    if (scaleshift) ChiSq["chisq.shift.parameter"] <- shift
+
   } else {
+    ## TEST SINGLE MODEL (against saturated h1)
+
     ChiSq["chisq.scaled"] <- ChiSq[["chisq"]] / c0
     ChiSq["df.scaled"] <- d0
     if (scaleshift) {
-      ## add average shift parameter (or average of sums, if nG > 1)
-      shift <- mean(sapply(TEST, function(x) sum(x[[ test.names[1] ]][["shift.parameter"]]) ))
+      ## add average shift parameter
+      shift <- mean(sapply(TEST, function(x) {
+        #FIXME: sum() no longer necessary, since lavaan returns 1 sum for MG-SEM
+        sum(x[[ test.names[1] ]][["shift.parameter"]])
+      }))
       ChiSq["chisq.scaled"] <- ChiSq[["chisq.scaled"]] + shift
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],
                                        lower.tail = FALSE)
       ChiSq["chisq.scaling.factor"] <- c0
-      ChiSq["chisq.shift.parameters"] <- shift
+      ChiSq["chisq.shift.parameter"] <- shift
     } else {
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
                                        df = ChiSq[["df.scaled"]],
@@ -901,19 +942,6 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
   robust <- length(scaled.test) > 0L
   if (!robust) pool.robust <- FALSE
 
-  scaleshift <- scaled.test == "scaled.shifted"
-  if (scaleshift && !is.null(h1)) {
-    if (test %in% c("D3","D4") | !pool.robust)
-      #TODO: find scale/shift in lavaan's anova-table attributes
-      message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
-              "model comparison is only available by (re)setting test = 'D2' ",
-              "and pool.robust = TRUE.\n",
-              "Control more options by passing arguments to lavTestLRT() via ",
-              "the '...' argument.\n")
-    pool.robust <- TRUE
-    test <- 'D2'
-  }
-
   if (robust && !pool.robust && !asymptotic) {
     message('Robust correction can only be applied to pooled chi-squared ',
             'statistic, not F statistic. "asymptotic" was switched to TRUE.')
@@ -970,13 +998,16 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
 
   ## If robust statistics were not pooled above, robustify naive statistics
   if (robust & !pool.robust) {
-    out <- robustify(ChiSq = out, object = object, h1 = h1, useImps = useImps)
+    out <- robustify(ChiSq = out, object = object, h1 = h1, useImps = useImps,
+                     LRTargs = dots, # in case scaled.shifted (same for below)
+                     standard.test = standard.test, scaled.test = scaled.test)
+    #TODO: default looks smarter, remove unnecessary distracting warning below
     # if (scaleshift) {
     #   extraWarn <- ' and shift parameter'
     # } else if (any(test.names == "mean.var.adjusted")) {
     #   extraWarn <- ' and degrees of freedom'
     # } else extraWarn <- ''
-    # message('Robust corrections are made by pooling the naive chi-squared ',
+    # message('Robust corrections are made by pooling the standard chi-squared ',
     #         'statistic across ', m, ' imputations for which the model ',
     #         'converged, then applying the average (across imputations) scaling',
     #         ' factor', extraWarn, ' to that pooled value. \n',

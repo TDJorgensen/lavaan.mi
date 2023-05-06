@@ -1005,7 +1005,7 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
         if (!pool.robust) {
           cb <- baseOut[["chisq.scaling.factor"]]
           out["baseline.chisq.scaling.factor"] <- cb
-          if (scaleshift) out["baseline.chisq.shift.parameters"] <- baseOut[["chisq.shift.parameters"]]
+          if (scaleshift) out["baseline.chisq.shift.parameter"] <- baseOut[["chisq.shift.parameter"]]
         }
       }
     }

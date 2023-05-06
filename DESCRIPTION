@@ -1,6 +1,6 @@
 Encoding: UTF-8
 Package: lavaan.mi
-Version: 0.1-0.0002
+Version: 0.1-0.0003
 Title: Fit Structural Equation Models to Multiply Imputed Data
 Description: Extends the `lavaan` package for multiply imputed data.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
@@ -14,6 +14,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/TDJorgensen/lavaan.mi
 BugReports: https://github.com/TDJorgensen/lavaan.mi/issues
-Date/Publication: 2023-05-02
+Date/Publication: 2023-05-06
 RoxygenNote: 7.2.3
 Roxygen: list(old_usage = TRUE)

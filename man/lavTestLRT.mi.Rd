@@ -62,8 +62,8 @@ with \code{df1}.}
 robust test was requested. If \code{pool.robust = TRUE}, the robust test
 statistic is pooled, whereas \code{pool.robust = FALSE} will pool
 the naive test statistic (or difference statistic) and apply the average
-scale/shift parameter to it (unavailable for mean- and variance-adjusted
-difference statistics, so \code{pool.robust} will be set \code{TRUE}).}
+scale/shift parameter to it. The harmonic mean is applied to the scaling
+factor, whereas the arithmetic mean is applied to the shift parameter.}
 
 \item{standard.test}{\code{character} indicating which standard test
 statistic to pool with the \code{test="D2"} method. The default is
@@ -74,7 +74,8 @@ statistics, listed on \code{\link[lavaan]{lavTest}}.}
 statistic to pool with the \code{test="D2"} method when
 \code{pool.robust=TRUE}. The default is the first robust test listed in
 `lavInspect(object, "options")$test`, but could be any listed on
-\code{\link[lavaan]{lavTest}}.}
+\code{\link[lavaan]{lavTest}} that were requested when \code{object}
+(and \code{h1}) were fitted.}
 }
 \value{
 A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
