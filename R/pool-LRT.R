@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 6 May 2023
+### Last updated: 28 October 2023
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -29,19 +29,18 @@
 ##' \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 ##' (see Asparouhov & Muthen, 2010).
 ##'
-##' Note that unlike \code{\link[lavaan]{lavTestLRT}}, \code{lavTestLRT.mi} can
-##' only be used to compare a single pair of models, not a longer list of
-##' models.  To compare several nested models fitted to multiple imputations,
-##' see examples on the \code{\link[semTools]{compareFit}} help page, which can
-##' be called via the \code{anova} method (see \code{\linkS4class{lavaan.mi}}).
+#FIXME: this is no longer true, right?
+##' Note that the \code{anova} method (see \code{\linkS4class{lavaan.mi}})
+##' simply calls \code{lavTestLRT(..., asANOVA = TRUE)}.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavTestLRT
 ##'
 ##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
 ##'   \code{object} should be nested within (more constrained than) \code{h1}.
-##' @param ... Additional arguments passed to \code{\link[lavaan]{lavTestLRT}},
-##'   only if \code{test = "D2"} and \code{pool.robust = TRUE}
+##' @param ... Additional objects of class \code{\linkS4class{lavaan.mi}}, as
+##'   well as arguments passed to \code{\link[lavaan]{lavTestLRT}} when
+##'   \code{test = "D2"} and \code{pool.robust = TRUE}.
 ##' @param modnames Optional \code{character} of model names to use as row names
 ##'   in the resulting matrix of results (when more than 2 models are compared)
 ##' @param asANOVA \code{logical} indicating whether to return an object of
@@ -883,8 +882,11 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
     DF <- DF0 - DF1
   } else DF <- DF0
 
-  ## only keep arguments relevant to pass to lavTestLRT (if D2)
-  dots <- list(...)[names(formals(lavTestLRT))]
+  ## arguments passed to lavTestLRT (if D2)
+  dots <- list(...)
+  ## only keep relevant arguments
+  keepArgs <- intersect(names(dots), names(formals(lavTestLRT)))
+  if (length(keepArgs)) dots <- dots[keepArgs]
 
   ## check test-pooling options, for backward compatibility?
   test <- tolower(test[1])
@@ -902,7 +904,8 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
   }
 
   ## check for robust
-  test.names <- lavListInspect(object, "options")$test
+  TEST_slot <- object@testList[[ useImps[1] ]]
+  test.names <- unname(sapply(TEST_slot, "[[", "test"))
   if (standard.test[1] %in% c("standard", "browne.residual.nt",
                               "browne.residual.nt.model",
                               "browne.residual.adf",
@@ -916,6 +919,7 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
   }
 
   # any non-standard test stats?
+  robust <- FALSE
   if (length(test.names) > 1L) {
     ## remove standard and any bootstrapped tests
     rm.idx <- which(test.names %in% c("none","default","standard",
@@ -936,10 +940,12 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
                                    "yuan.bentler", "yuan.bentler.mplus",
                                    "mean.var.adjusted", "scaled.shifted"))[1]
       }
+    } else if (length(test.names) == 1L) {
+      scaled.test <- test.names
+    } else scaled.test <- character(0)
 
-    }
+    robust <- length(scaled.test) > 0L
   }
-  robust <- length(scaled.test) > 0L
   if (!robust) pool.robust <- FALSE
 
   if (robust && !pool.robust && !asymptotic) {
