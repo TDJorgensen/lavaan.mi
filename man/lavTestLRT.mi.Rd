@@ -12,8 +12,9 @@ lavTestLRT.mi(object, ..., modnames = NULL, asANOVA = TRUE,
 \item{object, h1}{An object of class \code{\linkS4class{lavaan.mi}}.
 \code{object} should be nested within (more constrained than) \code{h1}.}
 
-\item{...}{Additional arguments passed to \code{\link[lavaan]{lavTestLRT}},
-only if \code{test = "D2"} and \code{pool.robust = TRUE}}
+\item{...}{Additional objects of class \code{\linkS4class{lavaan.mi}}, as
+well as arguments passed to \code{\link[lavaan]{lavTestLRT}} when
+\code{test = "D2"} and \code{pool.robust = TRUE}.}
 
 \item{modnames}{Optional \code{character} of model names to use as row names
 in the resulting matrix of results (when more than 2 models are compared)}
@@ -108,11 +109,8 @@ that \code{test} was set to \code{"D2"}.
 \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
 
-Note that unlike \code{\link[lavaan]{lavTestLRT}}, \code{lavTestLRT.mi} can
-only be used to compare a single pair of models, not a longer list of
-models.  To compare several nested models fitted to multiple imputations,
-see examples on the \code{\link[semTools]{compareFit}} help page, which can
-be called via the \code{anova} method (see \code{\linkS4class{lavaan.mi}}).
+Note that the \code{anova} method (see \code{\linkS4class{lavaan.mi}})
+simply calls \code{lavTestLRT(..., asANOVA = TRUE)}.
 }
 \examples{
 ## impose missing data for example
