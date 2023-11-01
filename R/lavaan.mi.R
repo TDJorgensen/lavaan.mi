@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 November 2022
+### Last updated: 1 November 2022
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -220,9 +220,7 @@ lavaan.mi <- function(model, data, ...) {
         Heywood.lv <- !all(sapply(lavaan::lavInspect(obj, "cov.lv"), det) > 0)
         Heywood.ov <- !all(sapply(lavaan::lavInspect(obj, "theta"), det) > 0)
       }
-      if (fitMeasures(obj, "df") > 0) {
-        suppressWarnings(MIs <- try(lavaan::modindices(obj), silent = TRUE))
-      } else MIs <- NULL # can't free anything
+      suppressWarnings(MIs <- try(lavaan::modindices(obj), silent = TRUE))
 
     } else {
       se.test <- Heywood.lv <- Heywood.ov <- NA
