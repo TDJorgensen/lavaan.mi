@@ -16,22 +16,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
                       ## pass arguments to lavTestLRT.mi()
                       ...) {
   stopifnot(inherits(object, "lavaan.mi"))
-
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
 
   DOTS <- list(...)

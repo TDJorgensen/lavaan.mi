@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 6 May 2023
+### Last updated: 1 November 2023
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -186,24 +186,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             univariate = TRUE, cumulative = FALSE,
                             epc = FALSE, standardized = epc, cov.std = epc,
                             verbose = FALSE, warn = TRUE, information = "expected") {
-  stopifnot(inherits(object, "lavaan.mi"))
-  lavoptions <- object@Options
+  ## this also checks the class:
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  lavoptions <- object@Options
 
   test <- toupper(test[1])
   if (!test %in% c("D2","D1")) stop('Invalid choice of "test" argument.')

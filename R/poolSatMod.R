@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 April 2023
+### Last updated: 1 November 2023
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -279,22 +279,8 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
   satFit <- do.call(lavaan.mi, dots)
   if (return.fit) return(satFit)
 
-  ## apply omit.imps= criteria
-  useImps <- rep(TRUE, length(satFit@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(satFit@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(satFit@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(satFit@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(satFit@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  ## apply omit.imps= criteria (this also checks the class is lavaan.mi)
+  useImps <- imps2use(object = satFit, omit.imps = omit.imps)
 
 
   N             <- lavListInspect(satFit, "nobs")

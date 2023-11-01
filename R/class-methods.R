@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 May 2023
+### Last updated: 1 November 2023
 ### Class and Methods for lavaan.mi object
 
 
@@ -273,21 +273,7 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                                              rmsea.h0.closefit    = 0.05,
                                              rmsea.h0.notclosefit = 0.08),
                               ...) {
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   lavoptions <- lavListInspect(object, "options")
 
@@ -472,21 +458,7 @@ setMethod("nobs", "lavaan.mi", function(object, total = TRUE) {
 ##' @importFrom lavaan parTable
 coef_lavaan_mi <- function(object, type = "free", labels = TRUE,
                            omit.imps = c("no.conv","no.se")) {
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   PT <- parTable(object)
   if (type == "user" || type == "all") {
@@ -515,21 +487,7 @@ setMethod("coef", "lavaan.mi", coef_lavaan_mi)
 ##' @importFrom lavaan lavListInspect parTable
 vcov_lavaan_mi <- function(object, type = c("pooled","between","within","ariv"),
                            scale.W = TRUE, omit.imps = c("no.conv","no.se")) {
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
@@ -772,21 +730,7 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
                            output = "vector", omit.imps = c("no.conv","no.se"),
                            ...) {
 
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   lavoptions <- lavListInspect(object, "options")
 
@@ -896,7 +840,7 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
       } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
         baseFit <- object@external$baseline.model
 
-        ## MUST fit PTb for "D3" likelihoods, but for "D2" use @baselineList
+        ## MUST fit PTb for D3 or D4 likelihoods, but for D2 use @baselineList
       } else if (test == "D2") {
         ## length(baseImps) == m, not just length(useImps)
         baseImps <- object@meta$baseline.ok
@@ -960,7 +904,8 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
       }
 
       if (!is.null(baseFit)) {
-        ## length(baseImps) is only as long as length(useImps), not the original m
+        #FIXME? Is length(baseImps) always only as long as length(useImps), not the
+        #       original m? (even when passed as argument or stored in @external)?
         baseImps <- sapply(baseFit@convergence, "[[", i = "converged")
         if (!all(baseImps)) warning('baseline.model did not converge for data set(s): ',
                                     useImps[!baseImps])
@@ -1341,21 +1286,7 @@ setMethod("fitmeasures", "lavaan.mi", fitMeasures_mi)
 ##' @importFrom lavaan lavListInspect lavNames
 ##' @importFrom stats fitted fitted.values
 fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   ## how many blocks to loop over
   nG <- lavListInspect(object, "ngroups")
@@ -1459,21 +1390,8 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
                             omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
-  useImps <- rep(TRUE, length(object@DataList))
-  if ("no.conv" %in% omit.imps) useImps <- sapply(object@convergence, "[[", i = "converged")
-  if ("no.se" %in% omit.imps) useImps <- useImps & sapply(object@convergence, "[[", i = "SE")
-  if ("no.npd" %in% omit.imps) {
-    Heywood.lv <- sapply(object@convergence, "[[", i = "Heywood.lv")
-    Heywood.ov <- sapply(object@convergence, "[[", i = "Heywood.ov")
-    useImps <- useImps & !(Heywood.lv | Heywood.ov)
-  }
-  ## custom removal by imputation number
-  rm.imps <- omit.imps[ which(omit.imps %in% 1:length(useImps)) ]
-  if (length(rm.imps)) useImps[as.numeric(rm.imps)] <- FALSE
-  ## whatever is left
-  m <- sum(useImps)
-  if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-  useImps <- which(useImps)
+
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   ## check type options
   type <- tolower(type[1])
