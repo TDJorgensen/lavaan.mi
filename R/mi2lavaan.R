@@ -124,6 +124,15 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
       }
     }
 
+    ## add log-likelihoods and information criteria?  (only for ML estimators)
+    if (!is.na(TEST["logl"])) {
+      FIT@loglik$loglik  <- TEST["logl"]
+      FIT@h1$logl$loglik <- TEST["unrestricted.logl"]
+      FIT@loglik$AIC     <- TEST["aic"]
+      FIT@loglik$BIC     <- TEST["bic"]
+      FIT@loglik$BIC2    <- TEST["bic2"]
+    }
+
     ##TODO: pool baseline model's test stats
     #       or call this function again to store in @external?
 
