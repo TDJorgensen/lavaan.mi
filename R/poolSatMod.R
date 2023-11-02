@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 November 2023
+### Last updated: 2 November 2023
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -281,6 +281,7 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
 
   ## apply omit.imps= criteria (this also checks the class is lavaan.mi)
   useImps <- imps2use(object = satFit, omit.imps = omit.imps)
+  m <- length(useImps)
 
 
   N             <- lavListInspect(satFit, "nobs")

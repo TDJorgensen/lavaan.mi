@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 November 2023
+### Last updated: 2 November 2023
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -148,6 +148,7 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
                            verbose = FALSE, warn = TRUE) {
   ## this also checks the class:
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   test <- tolower(test[1])
   if (test %in% c("d2", "lmrr", "li.et.al")) test <- "D2"

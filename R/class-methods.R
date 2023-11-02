@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 November 2023
+### Last updated: 2 November 2023
 ### Class and Methods for lavaan.mi object
 
 
@@ -274,6 +274,7 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
                                              rmsea.h0.notclosefit = 0.08),
                               ...) {
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   lavoptions <- lavListInspect(object, "options")
 
@@ -488,6 +489,7 @@ setMethod("coef", "lavaan.mi", coef_lavaan_mi)
 vcov_lavaan_mi <- function(object, type = c("pooled","between","within","ariv"),
                            scale.W = TRUE, omit.imps = c("no.conv","no.se")) {
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   if (lavListInspect(object, "options")$se == "none") {
     warning('requested se="none", so only between-imputation (co)variance can',
@@ -731,6 +733,7 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
                            ...) {
 
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   lavoptions <- lavListInspect(object, "options")
 
@@ -1392,6 +1395,7 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
 
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   ## check type options
   type <- tolower(type[1])

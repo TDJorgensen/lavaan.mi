@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 November 2023
+### Last updated: 2 November 2023
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -188,6 +188,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                             verbose = FALSE, warn = TRUE, information = "expected") {
   ## this also checks the class:
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   lavoptions <- object@Options
 

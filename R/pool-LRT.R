@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 November 2023
+### Last updated: 2 November 2023
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -809,6 +809,7 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
                         pool.robust = FALSE, ...) {
   ## this also checks the class
   useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
 
   DF0 <- object@testList[[ useImps[1] ]]$standard[["df"]]
 
