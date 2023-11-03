@@ -772,7 +772,7 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
     if (tolower(test) %in% c("cm","chan.meng","new.lrt","d4")) test <- "D4"
     if (tolower(test) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) test <- "D3"
     if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-    if (test %in% c("D3","D4") && !lavoptions$estimator %in% c("ML","PML","FML")) {
+    if (test %in% c("D3","D4") && !grepl(pattern = "ML", x = lavoptions$estimator)) {
       message('"D3" and "D4" only available using maximum likelihood estimation. ',
               'Changed test to "D2".')
       test <- "D2"
@@ -806,15 +806,15 @@ fitMeasures_mi <- function(object, fit.measures = "all", baseline.model = NULL,
     } else dots$pool.robust <- pool.robust <- FALSE
 
     scaleshift <- any(test.names == "scaled.shifted")
-    if (scaleshift) {
-      if (test %in% c("D3","D4")) {
-        message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
-                "model evaluation is only available by (re)setting .",
-                "test = 'D2'.\nControl more options by passing arguments to ",
-                "lavTestLRT() via the '...' argument.\n")
-        test <- 'D2'
-      }
-    }
+    # if (scaleshift) {
+    #   if (test %in% c("D3","D4")) {
+    #     message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
+    #             "model evaluation is only available by (re)setting ",
+    #             "test = 'D2'.\nControl more options by passing arguments to ",
+    #             "lavTestLRT() via the '...' argument.\n")
+    #     test <- 'D2'
+    #   }
+    # }
 
     if (pool.robust && test %in% c("D3","D4")) {
       message('pool.robust = TRUE is only applicable when test = "D2". ',
