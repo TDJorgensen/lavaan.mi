@@ -820,17 +820,7 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
       stop('Different (sets of) test statistics were requested for the 2 models.')
     }
 
-    useImps1 <- rep(TRUE, length(h1@DataList))
-    if ("no.conv" %in% omit.imps) useImps1 <- sapply(h1@convergence, "[[", i = "converged")
-    if ("no.se" %in% omit.imps) useImps1 <- useImps1 & sapply(h1@convergence, "[[", i = "SE")
-    if ("no.npd" %in% omit.imps) {
-      Heywood.lv <- sapply(h1@convergence, "[[", i = "Heywood.lv")
-      Heywood.ov <- sapply(h1@convergence, "[[", i = "Heywood.ov")
-      useImps1 <- useImps1 & !(Heywood.lv | Heywood.ov)
-    }
-    m <- sum(useImps1)
-    if (m == 0L) stop('No imputations meet "omit.imps" criteria.')
-    useImps1 <- which(useImps1)
+    useImps1 <- imps2use(object = h1, omit.imps = omit.imps)
 
     h0.not.h1 <- setdiff(useImps, useImps1)
     if (length(h0.not.h1)) warn0 <- paste('\n\nFor the following imputations, ',
