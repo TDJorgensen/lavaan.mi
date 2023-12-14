@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 November 2023
+### Last updated: 14 December 2023
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -363,7 +363,7 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
   #FIXME: if (categorical) {}
   WLS.V <-  vector("list", length = ngroups)
   for (g in 1:ngroups) {
-    WLS.V[[g]] <- diag(diag(solve(NACOV[[g]])))
+    WLS.V[[g]] <- solve(diag(diag(NACOV[[g]])))
     dimnames(WLS.V[[g]]) <- dimnames(NACOV[[g]])
     class(WLS.V[[g]]) <- c("lavaan.matrix.symmetric","matrix")
   }
