@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 November 2023
+### Last updated: 11 January 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -379,6 +379,8 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
     PE$label <- PT$label
     #FIXME: no longer needed?  PE$exo <- 0L
     class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
+    attr(PE, "categorical") <- lavoptions$categorical
+    attr(PE, "parameterization") <- lavoptions$parameterization
     attr(PE, "information") <- lavoptions$information[1]
     attr(PE, "information.meat") <- lavoptions$information.meat
     attr(PE, "se") <- lavoptions$se
