@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 November 2023
+### Last updated: 22 January 2024
 ### Create faux lavaan-class object with
 ### - pooled stat(s) in @test (basline.model in @external)
 ### - pooled moments in @SampleStats and @implied
@@ -241,6 +241,10 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all", baseline.mod
 
       ## fit default baseline.model using PTb from @baselineList
     } else {
+      if (is.null(object@baselineList[[ useImps[1] ]]$partable)) {
+        stop('No baseline.model provided or fitted. Fit a custom baseline.model',
+             ' or set baseline=TRUE when fitting the target model.')
+      }
       PTb <- object@baselineList[[ useImps[1] ]]$partable
       PTb[c("est","se")] <- NULL
       # FIXME: shouldn't need this line, but lav_partable_merge() fails when
@@ -254,12 +258,15 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all", baseline.mod
       ## check for estimator= and test= arguments, to avoid unnecessary
       ## concatenation of "standard"
       ## https://github.com/yrosseel/lavaan/issues/306
-      if (!is.null(object@call$estimator)) {
-        lavoptions$estimator <- object@call$estimator
-      }
-      if (!is.null(object@call$test)) {
-        lavoptions$test <- object@call$test
-      }
+      ## Yves updated lavaan to avoid this.  Unnecessary now?
+      # if (!is.null(object@call$estimator)) {
+      #   ESTIMATOR <- try(object@call$estimator, silent = TRUE)
+      #   # evalq(meth, envir = parent.frame())
+      #   lavoptions$estimator <- object@call$estimator
+      # }
+      # if (!is.null(object@call$test)) {
+      #   lavoptions$test <- object@call$test
+      # }
       baseFit <- lavaan.mi(model = PTb, data = object@DataList[useImps],
                            group = group, cluster = cluster,
                            test = lavoptions$test, estimator = lavoptions$estimator,
