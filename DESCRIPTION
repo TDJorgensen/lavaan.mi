@@ -14,6 +14,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/TDJorgensen/lavaan.mi
 BugReports: https://github.com/TDJorgensen/lavaan.mi/issues
-Date/Publication: 2024-01-22
-RoxygenNote: 7.2.3
+Date/Publication: 2024-03-21
+RoxygenNote: 7.3.1
 Roxygen: list(old_usage = TRUE)

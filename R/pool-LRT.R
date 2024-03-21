@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 2 November 2023
+### Last updated: 21 March 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -20,7 +20,7 @@
 ##'   \item The Meng & Rubin (1992) method, commonly referred to as \code{"D3"}.
 ##'         This method has many problems, discussed in Chan & Meng (2022).
 ##'   \item The Chan & Meng (2022) method, referred to as \code{"D4"} by
-##'         Grund et al. (2021 preprint), resolves problems with \code{"D3"}.
+##'         Grund et al. (2023), resolves problems with \code{"D3"}.
 ##' }
 ##' When \code{"D2"} is not explicitly requested in situations it is the only
 ##' applicable method, (e.g., DWLS for categorical outcomes), users are notified
@@ -125,9 +125,10 @@
 ##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
 ##'   New York, NY: Guilford.
 ##'
-##'   Grund, S., Lüdtke, O., & Robitzsch, A. (2021). Pooling methods for
-##'   likelihood ratio tests in multiply imputed data sets. \emph{PsyArXiv}
-##'   preprint: \doi{10.31234/osf.io/d459g}
+##'   Grund, S., Lüdtke, O., & Robitzsch, A. (2023). Pooling methods for
+##'   likelihood ratio tests in multiply imputed data sets.
+##'   \emph{Psychological Methods, 28}(5), 1207--1221.
+##'   \doi{10.1037/met0000556}
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 ##'   Significance levels from repeated \emph{p}-values with multiply-imputed
