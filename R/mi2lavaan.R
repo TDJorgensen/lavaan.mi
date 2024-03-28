@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 22 January 2024
+### Last updated: 26 March 2024
 ### Create faux lavaan-class object with
 ### - pooled stat(s) in @test (basline.model in @external)
 ### - pooled moments in @SampleStats and @implied
@@ -86,7 +86,8 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
 
 
     ## pool model's test stats
-    TEST <- lavTestLRT.mi(object, omit.imps = omit.imps, ...) # asANOVA = FALSE set in mi_fit_indices_via_lavaan()
+    TEST <- lavTestLRT.mi(object, omit.imps = omit.imps,
+                          ...) # asANOVA = FALSE set in mi_fit_indices_via_lavaan()
     FIT@test$standard$stat.group <- NULL
     FIT@test$standard$stat       <- TEST[["chisq"]]
     FIT@test$standard$df         <- TEST[["df"]]

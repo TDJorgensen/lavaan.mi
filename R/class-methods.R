@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 11 January 2024
+### Last updated: 28 March 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -338,7 +338,21 @@ summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
         standardized <- c(standardized, "std.nox")
       }
     } else standardized <- NULL
-  } else standardized <- tolower(as.character(standardized))
+  } else {
+    # !is.logical(standardized)
+    standardized <- tolower(as.character(standardized))
+    if ("std.nox" %in% standardized) {
+      # sanity checks
+      if (length(lavNames(object, "ov.x")) == 0) {
+        message("`std.nox' unavailable without fixed exogenous predictors")
+        standardized <- setdiff(standardized, "std.nox")
+      }
+      if (!object@Options$fixed.x) {
+        message("`std.nox' unavailable when fixed.x=FALSE")
+        standardized <- setdiff(standardized, "std.nox")
+      }
+    }
+  }
 
   if (length(standardized) || rsquare) {
     ## pooled estimates for standardizedSolution()
