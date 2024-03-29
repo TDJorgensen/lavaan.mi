@@ -258,195 +258,68 @@ setMethod("show", "lavaan.mi", function(object) {
 #TODO: add test stat, like lavaan-class prints
 
 
+## analog to lavaan:::lav_object_summary(), which creates a list of
+## components to appear in the summary() output.  Creating a similar
+## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
+lavaan_mi_object_summary <- function(object) {
+
+}
 ##' @importFrom stats pt qt pnorm qnorm
 ##' @importFrom lavaan lavListInspect parTable lavNames
 ##' @importFrom methods getMethod
-summary_lavaan_mi <- function(object, se = TRUE, ci = FALSE, level = .95,
-                              standardized = FALSE, rsquare = FALSE,
-                              fmi = FALSE, scale.W = !asymptotic,
+summary_lavaan_mi <- function(object, header = TRUE,
+                              # fit.measures = FALSE,
+                              # fm.args =
+                              #   list(
+                              #     standard.test = "default",
+                              #     scaled.test = "default",
+                              #     rmsea.ci.level = 0.90,
+                              #     rmsea.h0.closefit = 0.05,
+                              #     rmsea.h0.notclosefit = 0.08
+                              #   ),
+                              estimates = TRUE,
+                              ci = FALSE, #level = .95,
+                              ## standardization
+                              standardized = FALSE, std = standardized,
+                              cov.std = TRUE, rsquare = FALSE,
+                              ## control over pooling
+                              fmi = FALSE, asymptotic = FALSE,
+                              scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
-                              asymptotic = FALSE, header = TRUE,
-                              output = "text", fit.measures = FALSE,
-                              fm.args = list(standard.test        = "default",
-                                             scaled.test          = "default",
-                                             rmsea.ci.level       = 0.90,
-                                             rmsea.h0.closefit    = 0.05,
-                                             rmsea.h0.notclosefit = 0.08),
+                              ## remove rows?
+                              remove.step1 = TRUE,
+                              remove.unused = TRUE,
+                              # modindices = FALSE,
                               ...) {
-  useImps <- imps2use(object = object, omit.imps = omit.imps)
-  m <- length(useImps)
+  PE <- parameterEstimates.mi(object = object,
+                              ci = ci, standardized = standardized,
+                              rsquare = rsquare, fmi = fmi,
+                              cov.std = cov.std,
+                              remove.eq = FALSE, remove.system.eq = TRUE,
+                              remove.ineq = FALSE, remove.def = FALSE,
+                              remove.nonfree = FALSE,
+                              remove.step1 = remove.step1,
+                              remove.unused = remove.unused,
+                              output = "text",
+                              header = TRUE)
 
-  lavoptions <- lavListInspect(object, "options")
+  #TODO: move this to a print method for an object class this function returns
+  #      (like lav_object_summary() does)
+  # if (output == "text") {
+  #   getMethod("show", "lavaan.mi")(object)
+  #   cat(messPool)
+  # }
 
-  ## extract parameter table with attributes for printing
-  PT <- parTable(object)
-  myCols <- c("lhs","op","rhs","exo")
-  if (lavListInspect(object, "ngroups") > 1L) myCols <- c(myCols,"block","group")
-  if (lavListInspect(object, "nlevels") > 1L) myCols <- c(myCols,"block","level")
-  PE <- PT[ , unique(myCols)]
-  free <- PT$free > 0L | PT$op == ":="
-  STDs <- !(PT$op %in% c("==","<",">")) # which rows can be standardized
 
-  PE$est <- coef_lavaan_mi(object, type = "all", omit.imps = omit.imps)
+  # if (fit.measures) {
+  #   indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
+  #   FITS <- suppressWarnings(fitMeasures_mi(object, output = "text",
+  #                                           fit.measures = indices,
+  #                                           fm.args = fm.args, ...))
+  #   try(print(FITS, add.h0 = TRUE), silent = TRUE)
+  # }
 
-  if (lavoptions$se == "none") {
-    warning('pooled variances and tests unavailable when se="none" is requested')
-    se <- FALSE
-  }
-  if (!se) fmi <- FALSE
-  messPool <- paste0("Rubin's (1987) rules were used to pool point",
-                     if (se) " and SE",
-                     " estimates across ", m, " imputed data sets",
-                     if (se & !asymptotic) ", and to calculate degrees of",
-                     if (se & !asymptotic) " freedom for each parameter's t",
-                     if (se & !asymptotic) " test and CI.",
-                     "\n")
-  if (se) {
-    VCOV <- vcov_lavaan_mi(object, scale.W = scale.W, omit.imps = omit.imps)
-    PE$se <- lavaan::lav_model_vcov_se(object@Model, VCOV = VCOV,
-                                       lavpartable = object@ParTable)
-    W <- rowMeans(sapply(object@ParTableList[useImps], "[[", i = "se")^2)
-    B <- apply(sapply(object@ParTableList[useImps], "[[", i = "est"), 1, var)
-    Bm <- B + B/m
-    Tot <- W + Bm
-    if (asymptotic) {
-      PE$z[free] <- PE$est[free] / PE$se[free]
-      PE$pvalue <- pnorm(-abs(PE$z))*2
-      crit <- qnorm(1 - (1 - level) / 2)
-    } else {
-      PE$t[free] <- PE$est[free] / PE$se[free]
-      ## calculate df for t test
-      ## can't do finite-sample correction because Wald z tests have no df
-      ## (see Enders, 2010, p. 231, eq. 8.13 & 8.14)
-      PE$df[free] <- (m - 1) * (1 + W[free] / Bm[free])^2
-      ## if DF are obscenely large, set them to infinity for pretty printing
-      PE$df <- ifelse(PE$df > 9999, Inf, PE$df)
-      PE$pvalue <- pt(-abs(PE$t), df = PE$df)*2
-      crit <- qt(1 - (1 - level) / 2, df = PE$df)
-    }
-    if (ci) {
-      PE$ci.lower <- PE$est - crit * PE$se
-      PE$ci.upper <- PE$est + crit * PE$se
-      PE$ci.lower[!free] <- PE$ci.upper[!free] <- PE$est[!free]
-    }
-  }
-
-  if (is.logical(standardized)) {
-    if (standardized) {
-      standardized <- c("std.lv","std.all")
-      if (length(lavNames(object, "ov.x")) && lavoptions$fixed.x) {
-        standardized <- c(standardized, "std.nox")
-      }
-    } else standardized <- NULL
-  } else {
-    # !is.logical(standardized)
-    standardized <- tolower(as.character(standardized))
-    if ("std.nox" %in% standardized) {
-      # sanity checks
-      if (length(lavNames(object, "ov.x")) == 0) {
-        message("`std.nox' unavailable without fixed exogenous predictors")
-        standardized <- setdiff(standardized, "std.nox")
-      }
-      if (!object@Options$fixed.x) {
-        message("`std.nox' unavailable when fixed.x=FALSE")
-        standardized <- setdiff(standardized, "std.nox")
-      }
-    }
-  }
-
-  if (length(standardized) || rsquare) {
-    ## pooled estimates for standardizedSolution()
-    est <- coef_lavaan_mi(object, omit.imps = omit.imps)
-    ## updates @Model@GLIST for standardizedSolution(..., GLIST=)
-    object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
-  }
-
-  if ("std.lv" %in% standardized) {
-    PE$std.lv[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
-                                                    type = "std.lv",
-                                                    GLIST = object@Model@GLIST,
-                                                    est = PE$est)$est.std
-  }
-  if ("std.all" %in% standardized) {
-    PE$std.all[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
-                                                     type = "std.all",
-                                                     GLIST = object@Model@GLIST,
-                                                     est = PE$est)$est.std
-  }
-  if ("std.nox" %in% standardized) {
-    PE$std.nox[STDs] <- lavaan::standardizedSolution(object, se = FALSE,
-                                                     type = "std.nox",
-                                                     GLIST = object@Model@GLIST,
-                                                     est = PE$est)$est.std
-  }
-
-  if (fmi) {
-    PE$fmi[free] <- Bm[free] / Tot[free]
-    PE$riv[free] <- Bm[free] / W[free] # (Enders, 2010, p. 226, eq. 8.10)
-    # == PE$riv[free] <- PE$fmi1[free] / (1 - PE$fmi1[free])
-    messRIV <- paste("The RIV will exceed 1 whenever between-imputation",
-                     "variance exceeds within-imputation variance",
-                     "(when FMI(1) > 50%).\n\n")
-  }
-  ## fancy or not?
-  if (output == "text") {
-    PE$label <- PT$label
-    #FIXME: no longer needed?  PE$exo <- 0L
-    class(PE) <- c("lavaan.parameterEstimates","lavaan.data.frame","data.frame")
-    attr(PE, "categorical") <- lavoptions$categorical
-    attr(PE, "parameterization") <- lavoptions$parameterization
-    attr(PE, "information") <- lavoptions$information[1]
-    attr(PE, "information.meat") <- lavoptions$information.meat
-    attr(PE, "se") <- lavoptions$se
-    attr(PE, "group.label") <- lavListInspect(object, "group.label")
-    attr(PE, "level.label") <- c("within", lavListInspect(object, "cluster"))
-    attr(PE, "bootstrap") <- lavoptions$bootstrap
-    attr(PE, "bootstrap.successful") <- 0L #FIXME: assumes none. Implement Wei & Fan's mixing method?
-    attr(PE, "missing") <- lavoptions$missing
-    attr(PE, "observed.information") <- lavoptions$observed.information[1]
-    attr(PE, "h1.information") <- lavoptions$h1.information[1]
-    attr(PE, "h1.information.meat") <- lavoptions$h1.information.meat
-    attr(PE, "header") <- header
-    # FIXME: lavaan may add more!!
-    if (fmi) cat("\n", messRIV, sep = "")
-  } else {
-    PE$exo <- NULL
-    class(PE) <- c("lavaan.data.frame","data.frame")
-  }
-  ## requested R-squared?
-  endoNames <- c(lavNames(object, "ov.nox"), lavNames(object, "lv.nox"))
-  if (rsquare & length(endoNames)) {
-    isEndo <- sapply(PE$lhs, function(x) x %in% endoNames)
-    rsqPE <- PE[PE$lhs == PE$rhs & PE$op == "~~" & isEndo, ]
-    rsqPE$op <- "r2"
-    for (i in which(!sapply(colnames(PE),
-                            function(x) x %in% c("lhs","op","rhs","block",
-                                                 "level","group","est","exo")))) {
-      rsqPE[ , i] <- NA
-    }
-    STD <- lavaan::standardizedSolution(object, se = FALSE, type = "std.all",
-                                        GLIST = object@Model@GLIST, est = PE$est)
-    isEndoSTD <- sapply(STD$lhs, function(x) x %in% endoNames)
-    std.all <- STD$est.std[STD$lhs == STD$rhs & STD$op == "~~" & isEndoSTD]
-    rsqPE$est <- ifelse(std.all < 0, NA, 1 - std.all) # negative variances
-    if (output == "text") rsqPE$label <- ""
-    PE <- rbind(PE, rsqPE)
-  }
-
-  if (output == "data.frame") PE <- PE[!(PE$op %in% c("==","<",">")), ]
-  rownames(PE) <- NULL
-
-  if (output == "text") {
-    getMethod("show", "lavaan.mi")(object)
-    cat(messPool)
-  }
-  if (fit.measures) {
-    indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
-    FITS <- suppressWarnings(fitMeasures_mi(object, output = "text",
-                                            fit.measures = indices,
-                                            fm.args = fm.args, ...))
-    try(print(FITS, add.h0 = TRUE), silent = TRUE)
-  }
+  #TODO: add score-test option: if (modindices) {}
 
   PE
 }
