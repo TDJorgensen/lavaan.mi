@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 March 2024
+### Last updated: 30 March 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -1177,7 +1177,8 @@ setMethod("fitmeasures", "lavaan.mi", fitMeasures_mi)
 
 ##' @importFrom lavaan lavListInspect lavNames
 ##' @importFrom stats fitted fitted.values
-fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
+fitted_lavaan_mi <- function(object, momentsNblocks = TRUE, # the way users see it
+                             omit.imps = c("no.conv","no.se")) {
   useImps <- imps2use(object = object, omit.imps = omit.imps)
 
   ## how many blocks to loop over
@@ -1197,8 +1198,12 @@ fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
   # if (lavListInspect(object, "categorical")) {
   #   th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
   #   if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
-  #   #FIXME when multilevel accepts categorical
+      #FIXME when multilevel accepts categorical
   # }
+
+  ## blocks nested in moments, for use in mi2lavaan(rmr=TRUE)
+  if (!momentsNblocks) return(impMats)
+
 
   #TODO: adapt to multilevel, multigroup, or both
   ## loop over (blocks and) moments
@@ -1259,7 +1264,7 @@ fitted_lavaan_mi <- function(object, omit.imps = c("no.conv","no.se")) {
   }
 
   ## drop list for 1 block, or add labels for multiple
-  if (nBlocks == 1L)  {
+  if (nBlocks == 1L) {
     Implied <- Implied[[1]]
   } else names(Implied) <- block.label
 
@@ -1275,6 +1280,53 @@ setMethod("fitted", "lavaan.mi", fitted_lavaan_mi)
 setMethod("fitted.values", "lavaan.mi", fitted_lavaan_mi)
 
 
+## utility function called within resid_lavaan_mi() and mi2lavaan()
+pool_h1 <- function(object, momentsNblocks = TRUE, # the way users see it
+                    omit.imps = c("no.conv","no.se")) {
+  useImps <- imps2use(object = object, omit.imps = omit.imps)
+  m <- length(useImps)
+
+  nBlocks <- object@Model@nblocks
+  momentNames <- names(object@h1List[[ useImps[1] ]]$implied)
+
+  if (lavListInspect(object, "categorical")) {
+    th.idx <- lavListInspect(object, "th.idx") # to select $(res.)th
+    if (nBlocks == 1L) th.idx <- list(th.idx)  # to loop over
+    #FIXME when multilevel accepts categorical
+  }
+
+  ## template to store saturated moments
+  OBS <- vector("list", ifelse(momentsNblocks, nBlocks, length(momentNames)))
+
+  ## loop over (blocks and) moments
+  for (b in 1:nBlocks) {
+    for (nm in momentNames) {
+
+      ## skip if Implied element is not part of the saturated list
+      if (is.null(object@h1List[[ useImps[1] ]]$implied[[nm]][[b]])) next
+
+      ## H1 (saturated model) implied moments
+      ## (block-list nested in moments-list)
+      momentList <- lapply(object@h1List[useImps],
+                           function(x) x$implied[[nm]][[b]])
+      target <- Reduce("+", momentList) / m
+      #TODO: unnecessary calculation if standardized and nm %in% c("th","slopes")
+
+      ## remove numeric -means from thresholds
+      if (nm %in% c("th","res.th")) target <- as.numeric(target)[ th.idx[[b]] ]
+
+      if (momentsNblocks) {
+        OBS[[b]][[nm]] <- target # used by resid_lavaan_mi()
+      } else {
+        OBS[[nm]][[b]] <- target # used by mi2lavaan()
+      }
+      ## end loop over moments
+    }
+    ## end loop over blocks
+  }
+
+  OBS
+}
 
 ##' @importFrom lavaan lavListInspect
 ##' @importFrom stats cov2cor resid residuals
@@ -1282,6 +1334,7 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
                             omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
+  ## Code below gets equivalent information from @h1List
 
   useImps <- imps2use(object = object, omit.imps = omit.imps)
   m <- length(useImps)
@@ -1313,30 +1366,22 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
     #FIXME when multilevel accepts categorical
   }
 
-  ## H0-model-implied moments, already pooled
-  ## (moments-list nested in block-list)
-  Implied <- fitted_lavaan_mi(object, omit.imps = omit.imps)
+  ## H0 (structured model) implied moments
+  Implied <- fitted_lavaan_mi(object, momentsNblocks = TRUE, omit.imps = omit.imps)
   if (nBlocks == 1L) Implied <- list(Implied) # store single block in a block-list
 
-  ## template to store observed moments & residuals
-  RES <- OBS <- vector("list", nBlocks)
+  ## H1 (saturated model) implied moments
+  OBS <- pool_h1(object, momentsNblocks = TRUE, omit.imps = omit.imps)
 
-  ## loop over (blocks and) moments
+  ## template to store observed moments & residuals
+  RES <- vector("list", nBlocks)
+
+  ## loop over (blocks and) moments (moments-list nested in block-list)
   for (b in 1:nBlocks) {
     for (nm in names(Implied[[b]])) {
 
       ## skip if Implied element is not part of the saturated list
       if (is.null(object@h1List[[ useImps[1] ]]$implied[[nm]][[b]])) next
-
-      ## H1 (saturated model) implied moments
-      ## (block-list nested in moments-list)
-      momentList <- lapply(object@h1List[useImps],
-                           function(x) x$implied[[nm]][[b]])
-      OBS[[b]][[nm]] <- Reduce("+", momentList) / m
-      #TODO: unnecessary calculation if standardized and nm %in% c("th","slopes")
-
-      ## remove numeric -means from thresholds
-      if (nm %in% c("th","res.th")) OBS[[b]][[nm]] <- as.numeric(OBS[[b]][[nm]])[ th.idx[[b]] ]
 
       ## calculate residuals
       if (type == "raw") {
