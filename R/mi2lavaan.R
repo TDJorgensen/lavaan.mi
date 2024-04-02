@@ -1,23 +1,23 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 March 2024
-### Create faux lavaan-class object with
-### - pooled stat(s) in @test (basline.model in @external)
-### - pooled moments in @SampleStats and @implied
-      #FIXME: This won't be nearly so easy for ML-SEM
-### in order to pass to
+### Last updated: 1 April 2024
+### Create faux lavaan-class object in order to pass to
 ### - lavaan::fitMeasures() within fitMeasures.mi()
-### - standardizedSolution()
-### - lavResiduals()
+### - standardizedSolution() within standardizedSolution.mi()
+### - lavResiduals() within lavResiduals.mi()
 
 
 ##' @importFrom lavaan lavaan lavaanList
 mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
-                      chi2 = TRUE, implied = TRUE,
+                      chi2  = FALSE, # store info for chisq-based indices
+                      rmr   = FALSE, # store info for residual-based indices
+                      resid = FALSE, # store additional info for lavResiduals()
+                      std   = FALSE, # store infor for standardizedSolution()
                       ## pass arguments to lavTestLRT.mi()
                       ...) {
   ## this also checks the class
   useImps <- imps2use(object = object, omit.imps = omit.imps)
 
+  if (resid) rmr <- TRUE # lavResiduals() requires same info as RMR
 
   DOTS <- list(...)
 
@@ -38,6 +38,17 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
   ## (instead, run this function separately on fitted baseline.model)
   CALL$baseline <- FALSE
   FIT <- eval(as.call(CALL))
+
+  ## assemble saturated-model call?
+  if (resid) {
+    CALL1 <- object@call
+    CALL1[[1]] <- poolSat
+    CALL1$model <- NULL
+    if (!is.null(CALL1$cmd)) CALL1$cmd <- NULL
+    CALL1$omit.imps <- omit.imps
+    CALL1$data <- lapply(object@DataList, function(x) x[lavNames(object)])
+    FIT1 <- eval(as.call(CALL1))
+  }
 
   ## store pooled test statistic(s)?
   if (chi2) {
@@ -121,12 +132,101 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
 
   }
 
-  ##TODO: store pooled summary statistics?
-  if (implied) {
+  ## store pooled summary statistics?
+  if (rmr) {
+    ## @nobs & @ntotal should already be correct
 
+    FIT@SampleStats@missing.flag <- FALSE # so lavaan doesn't look in @missing.h1
+
+    ## pool unstructured sample moments
+    SAT <- pool_h1(object, momentsNblocks = FALSE, omit.imps = omit.imps)
+
+    ## Update @SampleStats slot
+    sameNames <- intersect(names(SAT), slotNames(FIT@SampleStats))
+    for (nn in sameNames) slot(FIT@SampleStats, nn) <- SAT[[nn]]
+
+    ## Update @h1$impled (same info as @SampleStats)
+    sameNames1 <- intersect(names(SAT), names(FIT@h1$implied))
+    for (nn in sameNames1) FIT@h1$implied[[nn]] <- SAT[[nn]]
+
+    ## Update @implied slot (analogous info from structured model)
+    sameNames0 <- intersect(names(SAT), slotNames(FIT@implied))
+    for (nn in sameNames0) slot(FIT@implied, nn) <- SAT[[nn]]
+
+
+    ## Additional information used by lavResiduals()
+        # - In @Data slot:
+        #     - @weights (average group weights across imputations? or assume constant?)
+        #     - @eXo and @X (only for PML)
+        #       - these could vary, making average not categorical
+        #       - just don't allow lavResiduals.mi() for PML
+    if (resid) {
+      ## @x.idx should already be correct
+
+      ## N times the ACOV of the SATURATED model (use poolSat)
+      if (is.list(FIT1$NACOV)) {
+        FIT@SampleStats@NACOV <- FIT1$NACOV
+      } else FIT@SampleStats@NACOV <- list(FIT1$NACOV)
+
+      ## invert COV, unless conditional.x
+      if (!FIT@Options$conditional.x) {
+        FIT@SampleStats@icov <- lapply(FIT@SampleStats@cov, solve)
+      }
+
+      ## Weight matrices for least-squares estimators
+      if (FIT@Options$estimator == "ULS") {
+        FIT@SampleStats@WLS.V <- lapply(FIT@SampleStats@NACOV,
+                                        function(x) diag(1, nrow = nrow(x)))
+        FIT@SampleStats@WLS.VD <- lapply(FIT@SampleStats@WLS.V, diag)
+
+        ## other least-squares estimators
+      } else if (grepl(pattern = "LS", x = FIT@Options$estimator)) {
+        FIT@SampleStats@WLS.V <- lapply(FIT@SampleStats@NACOV,
+                                        function(x) solve(diag(diag(x))) )
+        FIT@SampleStats@WLS.VD <- lapply(FIT@SampleStats@WLS.V, diag)
+      }
+
+      ## sampling weights?
+      if (length(FIT@Data@sampling.weights)) {
+        #TODO: take (harmonic) mean across imputations? Rescale if sum != 1?
+
+        ## For now, assume constant across imputations (first stored in @Data)
+      }
+      ## end resid
+    }
+    ## end rmr
   }
 
   ##TODO: store anything for standardizedSolution()?
+  if (std) {
+    ## pooled estimates for standardizedSolution()
+    est <- coef_lavaan_mi(object, omit.imps = omit.imps)
+    ## update @Model@GLIST
+    object@Model <- lavaan::lav_model_set_parameters(object@Model, x = est)
+    ## store in fake object
+    FIT@Model@GLIST <- object@Model@GLIST
+
+    ## start with existing parameter table (without estimates / start values)
+    PT <- data.frame(FIT@ParTable)
+    if (!is.null(PT$start)) PT$start <- NULL
+    if (!is.null(PT$est  )) PT$est   <- NULL
+    if (!is.null(PT$se   )) PT$se    <- NULL
+    ## get pooled estimates
+    PE <- parameterEstimates.mi(object, se = FALSE, omit.imps = omit.imps,
+                                remove.system.eq = FALSE, remove.eq = FALSE)
+    ## merge pooled estimates into parameter table
+    FIT@ParTable$est <- merge(PT, PE, sort = FALSE,
+                              all.x = TRUE, all.y = FALSE)$est
+
+    ## store pooled exogenous covariance matrix?
+    if (object@Options$conditional.x) {
+      FIT@implied$cov.x <- fitted_lavaan_mi(object, omit.imps = omit.imps,
+                                            momentsNblocks = FALSE)$cov.x
+    }
+
+    ## ACOV of target model, for delta-method SEs
+    FIT@vcov$vcov <- vcov_lavaan_mi(object, omit.imps = omit.imps)
+  }
 
   FIT
 }
@@ -221,8 +321,8 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all", baseline.mod
   argList$standard.test <- fm.args$standard.test # passed to pairwiseLRT() via ...
   argList$scaled.test   <- fm.args$scaled.test   # passed to pairwiseLRT() via ...
   argList$chi2    <- poolChiSq
-  argList$implied <- FALSE
-  #TODO: argList$implied <- any(grepl(pattern = "rmr", x = tolower(fit.measures)))
+  argList$rmr <- FALSE
+  #TODO: argList$rmr <- any(grepl(pattern = "rmr", x = tolower(fit.measures)))
 
   FIT <- do.call(mi2lavaan, argList)
 
