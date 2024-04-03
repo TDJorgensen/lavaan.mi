@@ -153,6 +153,11 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     sameNames0 <- intersect(names(SAT), slotNames(FIT@implied))
     for (nn in sameNames0) slot(FIT@implied, nn) <- SAT[[nn]]
 
+    ## group.w is not part of @SampleStats, so add the pooled one
+    if (!is.null(FIT@implied$group.w[[1]])) {
+      FIT@implied$group.w <- fitted_lavaan_mi(object, momentsNblocks = FALSE)$group.w
+    }
+
 
     ## Additional information used by lavResiduals()
         # - In @Data slot:

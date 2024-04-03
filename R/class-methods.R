@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 March 2024
+### Last updated: 1 April 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -258,6 +258,7 @@ setMethod("show", "lavaan.mi", function(object) {
 #TODO: add test stat, like lavaan-class prints
 
 
+
 ## analog to lavaan:::lav_object_summary(), which creates a list of
 ## components to appear in the summary() output.  Creating a similar
 ## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
@@ -432,6 +433,7 @@ vcov_lavaan_mi <- function(object, type = c("pooled","between","within","ariv"),
 setMethod("vcov", "lavaan.mi", vcov_lavaan_mi)
 
 
+
 #FIXME: delete anova_lavaan_mi (not needed)
 ##' @importFrom stats anova
 ##' @importFrom lavaan lavListInspect lavTestLRT
@@ -538,10 +540,10 @@ function(object, ...) {
 
 
 
-
 ##' @importFrom lavaan lavListInspect lavNames
 ##' @importFrom stats fitted fitted.values
 fitted_lavaan_mi <- function(object, momentsNblocks = TRUE, # the way users see it
+                             ## momentsNblocks = FALSE is how lavaan stores it
                              omit.imps = c("no.conv","no.se")) {
   useImps <- imps2use(object = object, omit.imps = omit.imps)
 
@@ -646,6 +648,7 @@ setMethod("fitted.values", "lavaan.mi", fitted_lavaan_mi)
 
 ## utility function called within resid_lavaan_mi() and mi2lavaan()
 pool_h1 <- function(object, momentsNblocks = TRUE, # the way users see it
+                    ## momentsNblocks = FALSE is how lavaan stores it
                     omit.imps = c("no.conv","no.se")) {
   useImps <- imps2use(object = object, omit.imps = omit.imps)
   m <- length(useImps)
