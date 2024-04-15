@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 November 2022
+### Last updated: 15 April 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -153,6 +153,16 @@ lavaan.mi <- function(model, data, ...) {
   CALL <- match.call()
   dots <- list(...)
   if (is.null(dots$cmd)) dots$cmd <- "lavaan"
+
+  ## check model
+  MOD <- lavaanify(model)
+  ## Don't waste time on EFA, suggest (pre)pooling saturated model
+  if (!is.null(MOD$efa)) {
+    stop("efa()* blocks detected in model= syntax. (Un)rotated factors cannot ",
+         "be matched across imputations, threatening validity of pooled results.",
+         "\nInstead, EFA/ESEM should be conducted on a single set of (pre)pooled",
+         " summary statistics (see the ?poolSat help page).")
+  }
 
   ## check for (Bollen-Stine) bootstrap request
   if (all(!is.null(dots$test),
