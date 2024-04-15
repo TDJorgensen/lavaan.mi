@@ -211,6 +211,10 @@ Lee, T., & Cai, L. (2012). Alternative multiple imputation inference for
   \emph{Multivariate Behavioral Research, 54}(3), 323--337.
   \doi{10.1080/00273171.2018.1523000}
 }
+\seealso{
+\code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
+  pool results afterward).
+}
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 }

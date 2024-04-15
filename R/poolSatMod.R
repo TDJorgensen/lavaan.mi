@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 14 December 2023
+### Last updated: 15 April 2024
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -78,6 +78,9 @@
 ##'   corresponding sampling variances of those eliminated (co)variances from
 ##'   \code{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
 ##'   the appropriate summary statistics for any particular SEM (see Examples).
+##'
+##' @seealso \code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
+##'   pool results afterward).
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})

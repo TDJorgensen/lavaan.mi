@@ -33,6 +33,9 @@
 ##'   \code{semTools} package, but there are differences.  See the README file
 ##'   on the GitHub page for this package (find link in DESCRIPTION).
 ##'
+##' @seealso \code{\link{poolSat}} for a more efficient method to obtain SEM results
+##'  for multiple imputations
+##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
