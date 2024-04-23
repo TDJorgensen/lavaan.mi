@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 April 2024
+### Last updated: 23 April 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -149,7 +149,7 @@
 ##'
 ##' }
 ##'
-##' @importFrom lavaan lavInspect parTable
+##' @importFrom lavaan lavInspect parTable lavParseModelString
 ##' @importFrom methods as
 ##' @export
 lavaan.mi <- function(model, data, ...) {
@@ -158,9 +158,9 @@ lavaan.mi <- function(model, data, ...) {
   if (is.null(dots$cmd)) dots$cmd <- "lavaan"
 
   ## check model
-  MOD <- lavaanify(model)
+  MOD <- lavParseModelString(model)
   ## Don't waste time on EFA, suggest (pre)pooling saturated model
-  if (!is.null(MOD$efa)) {
+  if (any(MOD$efa != "")) {
     stop("efa()* blocks detected in model= syntax. (Un)rotated factors cannot ",
          "be matched across imputations, threatening validity of pooled results.",
          "\nInstead, EFA/ESEM should be conducted on a single set of (pre)pooled",
