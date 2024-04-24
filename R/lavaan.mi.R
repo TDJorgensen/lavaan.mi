@@ -11,15 +11,15 @@
 ##' @aliases lavaan.mi cfa.mi sem.mi growth.mi
 ##'
 ##' @param model The analysis model can be specified using lavaan
-##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-##'   \code{\link[lavaan]{parTable}}).
+##'   [lavaan::model.syntax()] or a parameter table (as returned by
+##'   [lavaan::parameterTable()]).
 ##' @param data A a `list` of imputed data sets, or an object class from
 ##'   which imputed data can be extracted. Recognized classes are
 ##'   `lavaan.mi` (stored in the `@@DataList` slot),
 ##'   `amelia` (created by the Amelia package), or
 ##'   `mids` (created by the mice package).
-##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+##' @param \dots additional arguments to pass to [lavaan::lavaan()] or
+##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()].
 ##'   Note that `lavaanList` provides parallel computing options, as well as
 ##'   a `FUN=` argument so the user can extract custom output after the model
 ##'   is fitted to each imputed data set (see **Examples**).  TIP: If a
@@ -27,13 +27,13 @@
 ##'   the user-supplied function should explicitly call `library` or use
 ##'   \code{\link[base]{::}} for any functions not part of the base distribution.
 ##'
-##' @return A \code{\linkS4class{lavaan.mi}} object
+##' @return A [lavaan.mi-class] object
 ##'
 ##' @note This functionality was originally provided via `runMI()` in the
 ##'   `semTools` package, but there are differences.  See the README file
 ##'   on the GitHub page for this package (find link in DESCRIPTION).
 ##'
-##' @seealso \code{\link{poolSat}} for a more efficient method to obtain SEM results
+##' @seealso [poolSat()] for a more efficient method to obtain SEM results
 ##'  for multiple imputations
 ##'
 ##' @author

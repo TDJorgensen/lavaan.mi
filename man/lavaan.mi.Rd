@@ -17,8 +17,8 @@ growth.mi(model, data, ...)
 }
 \arguments{
 \item{model}{The analysis model can be specified using lavaan
-\code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
-\code{\link[lavaan]{parTable}}).}
+\code{\link[lavaan:model.syntax]{lavaan::model.syntax()}} or a parameter table (as returned by
+\code{\link[lavaan:lavParTable]{lavaan::parameterTable()}}).}
 
 \item{data}{A a \code{list} of imputed data sets, or an object class from
 which imputed data can be extracted. Recognized classes are
@@ -26,8 +26,8 @@ which imputed data can be extracted. Recognized classes are
 \code{amelia} (created by the Amelia package), or
 \code{mids} (created by the mice package).}
 
-\item{\dots}{additional arguments to pass to \code{\link[lavaan]{lavaan}} or
-\code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
+\item{\dots}{additional arguments to pass to \code{\link[lavaan:lavaan]{lavaan::lavaan()}} or
+\code{\link[lavaan:lavaanList]{lavaan::lavaanList()}}. See also \code{\link[lavaan:lavOptions]{lavaan::lavOptions()}}.
 Note that \code{lavaanList} provides parallel computing options, as well as
 a \verb{FUN=} argument so the user can extract custom output after the model
 is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
@@ -36,7 +36,7 @@ the user-supplied function should explicitly call \code{library} or use
 \code{\link[base]{::}} for any functions not part of the base distribution.}
 }
 \value{
-A \code{\linkS4class{lavaan.mi}} object
+A \linkS4class{lavaan.mi} object
 }
 \description{
 This function fits a lavaan model to a list of imputed data sets.
@@ -158,7 +158,7 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley.
 }
 \seealso{
-\code{\link{poolSat}} for a more efficient method to obtain SEM results
+\code{\link[=poolSat]{poolSat()}} for a more efficient method to obtain SEM results
 for multiple imputations
 }
 \author{

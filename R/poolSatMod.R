@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 April 2024
+### Last updated: 24 April 2024
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -19,10 +19,10 @@
 ##'   `amelia` (created by the Amelia package), or
 ##'   `mids` (created by the mice package).
 ##' @param \dots
-##'   Additional arguments passed to \code{\link[lavaan]{lavCor}} or to
-##'   \code{\link{lavaan.mi}}.
+##'   Additional arguments passed to [lavaan::lavCor()] or to
+##'   [lavaan.mi()].
 ##' @param return.fit
-##'   `logical` indicating whether to return a \code{\linkS4class{lavaan.mi}}
+##'   `logical` indicating whether to return a [lavaan.mi-class]
 ##'   object containing the results of fitting the saturated model to multiple
 ##'   imputed `data`.  Could be useful for diagnostic purposes.
 ##' @param scale.W
@@ -51,16 +51,16 @@
 ##'   apply their own custom omission criteria (or simulation studies can use
 ##'   different numbers of imputations without redundantly refitting the model).
 ##'
-##' @return If `return.fit=TRUE`, a \code{\linkS4class{lavaan.mi}} object.
+##' @return If `return.fit=TRUE`, a [lavaan.mi-class] object.
 ##'   Otherwise, an object of class `lavMoments`, which is a `list`
 ##'   that contains at least `$sample.cov` and `$sample.nobs`,
 ##'   potentially also `$sample.mean`, `$sample.th`, `$NACOV`,
 ##'   and `$WLS.V`.  Also contains `$lavOptions` that will be passed
-##'   to \code{\link[lavaan]{lavaan}(...)}.
+##'   to `lavaan(...)`.
 ##'
 ##' @note The `$lavOptions` list will always set `fixed.x=FALSE` and
 ##'   `conditional.x=FALSE`.  Users should not override those options when
-##'   calling \code{\link[lavaan]{lavaan}} because doing so would yield
+##'   calling [lavaan::lavaan()] because doing so would yield
 ##'   incorrect *SE*s and test statistics. Computing the correct
 ##'   `$NACOV` argument would depend on which specific variables are
 ##'   treated as fixed, which would require an argument to `poolSat()` for
@@ -79,7 +79,7 @@
 ##'   `$NACOV`.  Thus, it is necessary to use `poolSat()` to obtain
 ##'   the appropriate summary statistics for any particular SEM (see Examples).
 ##'
-##' @seealso \code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
+##' @seealso [lavaan.mi()] for traditional method (fit SEM to each imputation,
 ##'   pool results afterward).
 ##'
 ##' @author

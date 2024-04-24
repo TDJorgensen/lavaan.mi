@@ -24,7 +24,7 @@
 ##' @importFrom lavaan parTable lavListInspect
 ##' @importFrom stats pchisq pf
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan.mi}}.
+##' @param object An object of class [lavaan.mi-class].
 ##' @param constraints A `character` string (typically between single
 ##'   quotes) containing one or more equality constraints.
 ##'   See examples for more details
@@ -82,7 +82,7 @@
 ##'   Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##'   Based on source code for \code{\link[lavaan]{lavTestWald}} by Yves Rosseel
+##'   Based on source code for [lavaan::lavTestWald()] by Yves Rosseel
 ##'
 ##' @references
 ##'   Enders, C. K. (2010). *Applied missing data analysis*.
@@ -96,7 +96,7 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
-##' @seealso \code{\link[lavaan]{lavTestWald}}
+##' @seealso [lavaan::lavTestWald()]
 ##'
 ##' @examples
 ##'  \dontrun{

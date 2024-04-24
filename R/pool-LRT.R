@@ -30,16 +30,16 @@
 ##' (see Asparouhov & Muthen, 2010).
 ##'
 #FIXME: this is no longer true, right?
-##' Note that the `anova` method (see \code{\linkS4class{lavaan.mi}})
+##' Note that the `anova` method (see [lavaan.mi-class])
 ##' simply calls `lavTestLRT(..., asANOVA = TRUE)`.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavTestLRT
 ##'
-##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
+##' @param object,h1 An object of class [lavaan.mi-class].
 ##'   `object` should be nested within (more constrained than) `h1`.
-##' @param ... Additional objects of class \code{\linkS4class{lavaan.mi}}, as
-##'   well as arguments passed to \code{\link[lavaan]{lavTestLRT}} when
+##' @param ... Additional objects of class [lavaan.mi-class], as
+##'   well as arguments passed to [lavaan::lavTestLRT()] when
 ##'   `test = "D2"` and `pool.robust = TRUE`.
 ##' @param modnames Optional `character` of model names to use as row names
 ##'   in the resulting matrix of results (when more than 2 models are compared)
@@ -64,12 +64,12 @@
 ##' @param standard.test `character` indicating which standard test
 ##'   statistic to pool with the `test="D2"` method. The default is
 ##'   `"standard"` but can also be one of Browne's residual-based
-##'   statistics, listed on \code{\link[lavaan]{lavTest}}.
+##'   statistics, listed on [lavaan::lavTest()].
 ##' @param scaled.test `character` indicating which robust/scaled test
 ##'   statistic to pool with the `test="D2"` method when
 ##'   `pool.robust=TRUE`. The default is the first robust test listed in
 ##'   `lavInspect(object, "options")$test`, but could be any listed on
-##'   \code{\link[lavaan]{lavTest}} that were requested when `object`
+##'   [lavaan::lavTest()] that were requested when `object`
 ##'   (and `h1`) were fitted.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
@@ -111,7 +111,7 @@
 ##'   Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##'   Based on source code for \code{\link[lavaan]{lavTestLRT}} by Yves Rosseel
+##'   Based on source code for [lavaan::lavTestLRT()] by Yves Rosseel
 ##'
 ##' @references
 ##'   Asparouhov, T., & Muthen, B. (2010). *Chi-square statistics
@@ -142,7 +142,7 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
-##' @seealso \code{\link[lavaan]{lavTestLRT}}, \code{\link[semTools]{compareFit}}
+##' @seealso [lavaan::lavTestLRT()], [semTools::compareFit()]
 ##'
 ##' @examples
 ##  \dontrun{

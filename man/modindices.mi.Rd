@@ -43,7 +43,7 @@ modificationIndices.mi(
 )
 }
 \arguments{
-\item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
+\item{object}{An object of class \linkS4class{lavaan.mi}}
 
 \item{test}{\code{character} indicating which pooling method to use.
 \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
@@ -86,7 +86,7 @@ covariances are scaled by the square-root of the diagonal elements of the
 model-implied covariance matrix of the latent variables.}
 
 \item{information}{\code{character} indicating the type of information
-matrix to use (check \code{\link{lavInspect}} for available options).
+matrix to use (check \code{\link[=lavInspect]{lavInspect()}} for available options).
 \code{"expected"} information is the default, which provides better
 control of Type I errors.}
 
@@ -186,12 +186,12 @@ models. \emph{Psychological Methods, 25}(4), 393--411.
 \doi{10.1037/met0000243}
 }
 \seealso{
-\code{\link{lavTestScore.mi}}
+\code{\link[=lavTestScore.mi]{lavTestScore.mi()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Based on source code for \code{\link[lavaan]{modindices}} by Yves Rosseel
+Based on source code for \code{\link[lavaan:modificationIndices]{lavaan::modindices()}} by Yves Rosseel
 
 \code{test = "D1"} method proposed by
 Maxwell Mansolf (University of California, Los Angeles;

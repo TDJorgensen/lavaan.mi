@@ -16,11 +16,11 @@ lavTestLRT.mi(
 )
 }
 \arguments{
-\item{object, h1}{An object of class \code{\linkS4class{lavaan.mi}}.
+\item{object, h1}{An object of class \linkS4class{lavaan.mi}.
 \code{object} should be nested within (more constrained than) \code{h1}.}
 
-\item{...}{Additional objects of class \code{\linkS4class{lavaan.mi}}, as
-well as arguments passed to \code{\link[lavaan]{lavTestLRT}} when
+\item{...}{Additional objects of class \linkS4class{lavaan.mi}, as
+well as arguments passed to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} when
 \code{test = "D2"} and \code{pool.robust = TRUE}.}
 
 \item{modnames}{Optional \code{character} of model names to use as row names
@@ -76,13 +76,13 @@ factor, whereas the arithmetic mean is applied to the shift parameter.}
 \item{standard.test}{\code{character} indicating which standard test
 statistic to pool with the \code{test="D2"} method. The default is
 \code{"standard"} but can also be one of Browne's residual-based
-statistics, listed on \code{\link[lavaan]{lavTest}}.}
+statistics, listed on \code{\link[lavaan:lavTest]{lavaan::lavTest()}}.}
 
 \item{scaled.test}{\code{character} indicating which robust/scaled test
 statistic to pool with the \code{test="D2"} method when
 \code{pool.robust=TRUE}. The default is the first robust test listed in
 \code{lavInspect(object, "options")$test}, but could be any listed on
-\code{\link[lavaan]{lavTest}} that were requested when \code{object}
+\code{\link[lavaan:lavTest]{lavaan::lavTest()}} that were requested when \code{object}
 (and \code{h1}) were fitted.}
 }
 \value{
@@ -116,7 +116,7 @@ that \code{test} was set to \code{"D2"}.
 \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
 
-Note that the \code{anova} method (see \code{\linkS4class{lavaan.mi}})
+Note that the \code{anova} method (see \linkS4class{lavaan.mi})
 simply calls \code{lavTestLRT(..., asANOVA = TRUE)}.
 }
 \examples{
@@ -198,11 +198,11 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley.
 }
 \seealso{
-\code{\link[lavaan]{lavTestLRT}}, \code{\link[semTools]{compareFit}}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, \code{\link[semTools:compareFit]{semTools::compareFit()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
 \email{TJorgensen314@gmail.com})
 
-Based on source code for \code{\link[lavaan]{lavTestLRT}} by Yves Rosseel
+Based on source code for \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} by Yves Rosseel
 }

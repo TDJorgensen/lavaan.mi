@@ -19,7 +19,7 @@
 ##' @importFrom lavaan lavInspect lavListInspect lavNames
 ##' @importFrom stats cov pchisq qchisq
 ##'
-##' @param object An object of class \code{\linkS4class{lavaan.mi}}
+##' @param object An object of class [lavaan.mi-class]
 ##' @param test `character` indicating which pooling method to use.
 ##'  `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
@@ -57,7 +57,7 @@
 ##'   covariances are scaled by the square-root of the diagonal elements of the
 ##'   model-implied covariance matrix of the latent variables.
 ##' @param information `character` indicating the type of information
-##'   matrix to use (check \code{\link{lavInspect}} for available options).
+##'   matrix to use (check [lavInspect()] for available options).
 ##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
 ##' @param power `logical`. If `TRUE`, the (post-hoc) power is
@@ -93,7 +93,7 @@
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
-##'   Based on source code for \code{\link[lavaan]{modindices}} by Yves Rosseel
+##'   Based on source code for [lavaan::modindices()] by Yves Rosseel
 ##'
 ##' `test = "D1"` method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
@@ -113,7 +113,7 @@
 ##'   models. *Psychological Methods, 25*(4), 393--411.
 ##'   \doi{10.1037/met0000243}
 ##'
-##' @seealso \code{\link{lavTestScore.mi}}
+##' @seealso [lavTestScore.mi()]
 ##'
 ##' @examples
 ##'  \dontrun{
@@ -387,6 +387,6 @@ modindices.mi <- function(object,
 
 ## alias
 ##' @rdname modindices.mi
-##' @aliases modindices.mi modificationIndices.mi
+##' @aliases modindices.mi modificationIndices.mi modificationindices.mi
 ##' @export
 modificationIndices.mi <- modindices.mi

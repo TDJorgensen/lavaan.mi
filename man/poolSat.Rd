@@ -19,10 +19,10 @@ which imputed data can be extracted. Recognized classes are
 \code{amelia} (created by the Amelia package), or
 \code{mids} (created by the mice package).}
 
-\item{\dots}{Additional arguments passed to \code{\link[lavaan]{lavCor}} or to
-\code{\link{lavaan.mi}}.}
+\item{\dots}{Additional arguments passed to \code{\link[lavaan:lavCor]{lavaan::lavCor()}} or to
+\code{\link[=lavaan.mi]{lavaan.mi()}}.}
 
-\item{return.fit}{\code{logical} indicating whether to return a \code{\linkS4class{lavaan.mi}}
+\item{return.fit}{\code{logical} indicating whether to return a \linkS4class{lavaan.mi}
 object containing the results of fitting the saturated model to multiple
 imputed \code{data}.  Could be useful for diagnostic purposes.}
 
@@ -52,12 +52,12 @@ apply their own custom omission criteria (or simulation studies can use
 different numbers of imputations without redundantly refitting the model).}
 }
 \value{
-If \code{return.fit=TRUE}, a \code{\linkS4class{lavaan.mi}} object.
+If \code{return.fit=TRUE}, a \linkS4class{lavaan.mi} object.
 Otherwise, an object of class \code{lavMoments}, which is a \code{list}
 that contains at least \verb{$sample.cov} and \verb{$sample.nobs},
 potentially also \verb{$sample.mean}, \verb{$sample.th}, \verb{$NACOV},
 and \verb{$WLS.V}.  Also contains \verb{$lavOptions} that will be passed
-to \code{\link[lavaan]{lavaan}(...)}.
+to \verb{[lavaan][lavaan::lavaan](...)}.
 }
 \description{
 This function fits a saturated model to a list of imputed data sets, and
@@ -66,7 +66,7 @@ returns a list of pooled summary statistics to treat as data.
 \note{
 The \verb{$lavOptions} list will always set \code{fixed.x=FALSE} and
 \code{conditional.x=FALSE}.  Users should not override those options when
-calling \code{\link[lavaan]{lavaan}} because doing so would yield
+calling \code{\link[lavaan:lavaan]{lavaan::lavaan()}} because doing so would yield
 incorrect \emph{SE}s and test statistics. Computing the correct
 \verb{$NACOV} argument would depend on which specific variables are
 treated as fixed, which would require an argument to \code{poolSat()} for
@@ -217,7 +217,7 @@ for categorical structural equation modeling,
 \doi{10.1080/00273171.2018.1523000}
 }
 \seealso{
-\code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
+\code{\link[=lavaan.mi]{lavaan.mi()}} for traditional method (fit SEM to each imputation,
 pool results afterward).
 }
 \author{

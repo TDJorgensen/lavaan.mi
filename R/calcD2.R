@@ -6,9 +6,9 @@
 ##'
 ##' This is a utility function used to calculate the "D2" statistic for pooling
 ##' test statistics across multiple imputations. This function is called by
-##' several functions used for \code{\linkS4class{lavaan.mi}} objects, such as
-##' \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}}, and
-##' \code{\link{lavTestScore.mi}}. But this function can be used for any general
+##' several functions used for [lavaan.mi-class] objects, such as
+##' [lavTestLRT.mi()], [lavTestWald.mi()], and
+##' [lavTestScore.mi()]. But this function can be used for any general
 ##' scenario because it only requires a vector of \eqn{\chi^2} statistics (one
 ##' from each imputation) and the degrees of freedom for the test statistic.
 ##' See Li, Meng, Raghunathan, & Rubin (1991) and Enders (2010, chapter 8) for
@@ -35,8 +35,8 @@
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
-##' @seealso \code{\link{lavTestLRT.mi}}, \code{\link{lavTestWald.mi}},
-##'   \code{\link{lavTestScore.mi}}
+##' @seealso [lavTestLRT.mi()], [lavTestWald.mi()],
+##'   [lavTestScore.mi()]
 ##'
 ##' @author Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})

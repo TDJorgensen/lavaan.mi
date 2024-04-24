@@ -23,7 +23,7 @@ lavTestScore.mi(
 )
 }
 \arguments{
-\item{object}{An object of class \code{\linkS4class{lavaan.mi}}.}
+\item{object}{An object of class \linkS4class{lavaan.mi}.}
 
 \item{add}{Either a \code{character} string (typically between single
 quotes) or a parameter table containing additional (currently
@@ -89,16 +89,16 @@ constraint, only specify one parameter in \code{add} or one constraint in
 
 \item{standardized}{If \code{TRUE}, two extra columns (\code{sepc.lv} and
 \code{sepc.all}) in the \verb{$epc} table will contain standardized values
-for the EPCs. See \code{\link{lavTestScore}}.}
+for the EPCs. See \code{\link[=lavTestScore]{lavTestScore()}}.}
 
-\item{cov.std}{\code{logical}. See \code{\link{standardizedSolution}}.}
+\item{cov.std}{\code{logical}. See \code{\link[=standardizedSolution]{standardizedSolution()}}.}
 
 \item{verbose}{\code{logical}. Not used for now.}
 
 \item{warn}{\code{logical}. If \code{TRUE}, print warnings if they occur.}
 
 \item{information}{\code{character} indicating the type of information
-matrix to use (check \code{\link{lavInspect}} for available options).
+matrix to use (check \code{\link[=lavInspect]{lavInspect()}} for available options).
 \code{"expected"} information is the default, which provides better
 control of Type I errors.}
 }
@@ -122,7 +122,7 @@ Cumulative score tests, with ARIV and FMI if \code{asymptotic=FALSE}.}
 expected parameter changes, and expected parameter values if ALL
 the tested constraints were freed.}
 }
-See \code{\link[lavaan]{lavTestScore}} for details.
+See \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}} for details.
 }
 \description{
 Score test (or "Lagrange multiplier" test) for lavaan models fitted to
@@ -189,12 +189,12 @@ models. \emph{Psychological Methods, 25}(4), 393--411.
 \doi{10.1037/met0000243}
 }
 \seealso{
-\code{\link[lavaan]{lavTestScore}}
+\code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Based on source code for \code{\link[lavaan]{lavTestScore}} by Yves Rosseel
+Based on source code for \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}} by Yves Rosseel
 
 \code{test = "D1"} method proposed by
 Maxwell Mansolf (University of California, Los Angeles;
