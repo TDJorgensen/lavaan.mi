@@ -147,7 +147,7 @@ data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 \url{https://www.jstor.org/stable/24303994}
 
 Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+New York, NY: Wiley. \doi{10.1002/9780470316696}
 }
 \seealso{
 \code{\link[lavaan:lavTestWald]{lavaan::lavTestWald()}}

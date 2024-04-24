@@ -195,7 +195,7 @@ multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
 \doi{10.2307/2337151}
 
 Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+New York, NY: Wiley. \doi{10.1002/9780470316696}
 }
 \seealso{
 \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, \code{\link[semTools:compareFit]{semTools::compareFit()}}

@@ -49,10 +49,10 @@
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
 ##' @slot baselineList See [lavaanList-class]
 ##'
-##' @param object An object of class `lavaan.mi`
 ##' @param se,ci,level,standardized,rsquare,header,output See
 ##'        [lavaan::parameterEstimates()]. `output`
 ##'        can also be passed to [lavaan::fitMeasures()].
+##' @param object An object of class `lavaan.mi`
 ##' @param fmi `logical` indicating whether to include the Fraction Missing
 ##'        Information (FMI) for parameter estimates in the `summary`
 ##'        output (see **Value** section).
@@ -198,7 +198,7 @@
 ##'   Guilford.
 ##'
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
-##'   New York, NY: Wiley.
+##'   New York, NY: Wiley. \doi{10.1002/9780470316696}
 ##'
 ##'
 ##' @examples

@@ -140,7 +140,7 @@
 ##'   \doi{10.2307/2337151}
 ##'
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
-##'   New York, NY: Wiley.
+##'   New York, NY: Wiley. \doi{10.1002/9780470316696}
 ##'
 ##' @seealso [lavaan::lavTestLRT()], [semTools::compareFit()]
 ##'

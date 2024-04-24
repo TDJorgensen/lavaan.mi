@@ -57,7 +57,7 @@ Otherwise, an object of class \code{lavMoments}, which is a \code{list}
 that contains at least \verb{$sample.cov} and \verb{$sample.nobs},
 potentially also \verb{$sample.mean}, \verb{$sample.th}, \verb{$NACOV},
 and \verb{$WLS.V}.  Also contains \verb{$lavOptions} that will be passed
-to \verb{[lavaan][lavaan::lavaan](...)}.
+to \code{lavaan(...)}.
 }
 \description{
 This function fits a saturated model to a list of imputed data sets, and

@@ -155,7 +155,7 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}.
 New York, NY: Guilford.
 
 Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-New York, NY: Wiley.
+New York, NY: Wiley. \doi{10.1002/9780470316696}
 }
 \seealso{
 \code{\link[=poolSat]{poolSat()}} for a more efficient method to obtain SEM results
