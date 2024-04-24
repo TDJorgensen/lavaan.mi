@@ -13,24 +13,24 @@
 ##' @param model The analysis model can be specified using lavaan
 ##'   \code{\link[lavaan]{model.syntax}} or a parameter table (as returned by
 ##'   \code{\link[lavaan]{parTable}}).
-##' @param data A a \code{list} of imputed data sets, or an object class from
+##' @param data A a `list` of imputed data sets, or an object class from
 ##'   which imputed data can be extracted. Recognized classes are
-##'   \code{lavaan.mi} (stored in the \code{@@DataList} slot),
-##'   \code{amelia} (created by the Amelia package), or
-##'   \code{mids} (created by the mice package).
+##'   `lavaan.mi` (stored in the `@@DataList` slot),
+##'   `amelia` (created by the Amelia package), or
+##'   `mids` (created by the mice package).
 ##' @param \dots additional arguments to pass to \code{\link[lavaan]{lavaan}} or
 ##'   \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
-##'   Note that \code{lavaanList} provides parallel computing options, as well as
-##'   a \code{FUN=} argument so the user can extract custom output after the model
-##'   is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
-##'   custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
-##'   the user-supplied function should explicitly call \code{library} or use
+##'   Note that `lavaanList` provides parallel computing options, as well as
+##'   a `FUN=` argument so the user can extract custom output after the model
+##'   is fitted to each imputed data set (see **Examples**).  TIP: If a
+##'   custom `FUN` is used *and* `parallel = "snow"` is requested,
+##'   the user-supplied function should explicitly call `library` or use
 ##'   \code{\link[base]{::}} for any functions not part of the base distribution.
 ##'
 ##' @return A \code{\linkS4class{lavaan.mi}} object
 ##'
-##' @note This functionality was originally provided via \code{runMI()} in the
-##'   \code{semTools} package, but there are differences.  See the README file
+##' @note This functionality was originally provided via `runMI()` in the
+##'   `semTools` package, but there are differences.  See the README file
 ##'   on the GitHub page for this package (find link in DESCRIPTION).
 ##'
 ##' @seealso \code{\link{poolSat}} for a more efficient method to obtain SEM results
@@ -40,10 +40,10 @@
 ##'   Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
+##'   Enders, C. K. (2010). *Applied missing data analysis*.
 ##'   New York, NY: Guilford.
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @examples

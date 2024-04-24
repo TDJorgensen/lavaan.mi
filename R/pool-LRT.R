@@ -13,99 +13,99 @@
 ##' Likelihood ratio test (LRT) for lavaan models fitted to multiple imputed
 ##' data sets.
 ##'
-##' The \code{"D2"} method is available using any estimator and test statistic.
+##' The `"D2"` method is available using any estimator and test statistic.
 ##' When using a likelihood-based estimator, 2 additional methods are available
 ##' to pool the LRT.
 ##' \itemize{
-##'   \item The Meng & Rubin (1992) method, commonly referred to as \code{"D3"}.
+##'   \item The Meng & Rubin (1992) method, commonly referred to as `"D3"`.
 ##'         This method has many problems, discussed in Chan & Meng (2022).
-##'   \item The Chan & Meng (2022) method, referred to as \code{"D4"} by
-##'         Grund et al. (2023), resolves problems with \code{"D3"}.
+##'   \item The Chan & Meng (2022) method, referred to as `"D4"` by
+##'         Grund et al. (2023), resolves problems with `"D3"`.
 ##' }
-##' When \code{"D2"} is not explicitly requested in situations it is the only
+##' When `"D2"` is not explicitly requested in situations it is the only
 ##' applicable method, (e.g., DWLS for categorical outcomes), users are notified
-##' that \code{test} was set to \code{"D2"}.
+##' that `test` was set to `"D2"`.
 ##'
-##' \code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
+##' `test = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
 ##' (see Asparouhov & Muthen, 2010).
 ##'
 #FIXME: this is no longer true, right?
-##' Note that the \code{anova} method (see \code{\linkS4class{lavaan.mi}})
-##' simply calls \code{lavTestLRT(..., asANOVA = TRUE)}.
+##' Note that the `anova` method (see \code{\linkS4class{lavaan.mi}})
+##' simply calls `lavTestLRT(..., asANOVA = TRUE)`.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavTestLRT
 ##'
 ##' @param object,h1 An object of class \code{\linkS4class{lavaan.mi}}.
-##'   \code{object} should be nested within (more constrained than) \code{h1}.
+##'   `object` should be nested within (more constrained than) `h1`.
 ##' @param ... Additional objects of class \code{\linkS4class{lavaan.mi}}, as
 ##'   well as arguments passed to \code{\link[lavaan]{lavTestLRT}} when
-##'   \code{test = "D2"} and \code{pool.robust = TRUE}.
-##' @param modnames Optional \code{character} of model names to use as row names
+##'   `test = "D2"` and `pool.robust = TRUE`.
+##' @param modnames Optional `character` of model names to use as row names
 ##'   in the resulting matrix of results (when more than 2 models are compared)
-##' @param asANOVA \code{logical} indicating whether to return an object of
-##'   class \code{"anova"}.  If \code{FALSE}, a numeric vector is returned for
-##'   one (pair of) model(s), or a \code{data.frame} is returned for multiple
+##' @param asANOVA `logical` indicating whether to return an object of
+##'   class `"anova"`.  If `FALSE`, a numeric vector is returned for
+##'   one (pair of) model(s), or a `data.frame` is returned for multiple
 ##'   pairs of models.
-##' @param test \code{character} indicating which pooling method to use.
+##' @param test `character` indicating which pooling method to use.
 ##'   \itemize{
-##'     \item \code{"D4"}, \code{"new.LRT"}, \code{"cm"}, or \code{"chan.meng"}
+##'     \item `"D4"`, `"new.LRT"`, `"cm"`, or `"chan.meng"`
 ##'           requests the method described by Chan & Meng (2022).
 ##'           This is currently the default.
-##'     \item \code{"D3"}, \code{"old.LRT"}, \code{"mr"}, or \code{"meng.rubin"}
+##'     \item `"D3"`, `"old.LRT"`, `"mr"`, or `"meng.rubin"`
 ##'           requests the method described by Meng & Rubin (1992).
-##'     \item \code{"D2"}, \code{"LMRR"}, or \code{"Li.et.al"} requests the
+##'     \item `"D2"`, `"LMRR"`, or `"Li.et.al"` requests the
 ##'           complete-data LRT statistic should be calculated using each
 ##'           imputed data set, which will then be pooled across imputations, as
 ##'           described in Li, Meng, Raghunathan, & Rubin (1991).
 ##'   }
 ##'   Find additional details in Enders (2010, chapter 8).
 ##'
-##' @param standard.test \code{character} indicating which standard test
-##'   statistic to pool with the \code{test="D2"} method. The default is
-##'   \code{"standard"} but can also be one of Browne's residual-based
+##' @param standard.test `character` indicating which standard test
+##'   statistic to pool with the `test="D2"` method. The default is
+##'   `"standard"` but can also be one of Browne's residual-based
 ##'   statistics, listed on \code{\link[lavaan]{lavTest}}.
-##' @param scaled.test \code{character} indicating which robust/scaled test
-##'   statistic to pool with the \code{test="D2"} method when
-##'   \code{pool.robust=TRUE}. The default is the first robust test listed in
+##' @param scaled.test `character` indicating which robust/scaled test
+##'   statistic to pool with the `test="D2"` method when
+##'   `pool.robust=TRUE`. The default is the first robust test listed in
 ##'   `lavInspect(object, "options")$test`, but could be any listed on
-##'   \code{\link[lavaan]{lavTest}} that were requested when \code{object}
-##'   (and \code{h1}) were fitted.
-##' @param omit.imps \code{character} vector specifying criteria for omitting
+##'   \code{\link[lavaan]{lavTest}} that were requested when `object`
+##'   (and `h1`) were fitted.
+##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases. Specific imputation numbers can also be included in this
 ##'   argument, in case users want to  apply their own custom omission criteria
 ##'   (or simulations can use different numbers of imputations without
 ##'   redundantly refitting the model).
-##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
-##'   will be returned as an \emph{F}-distributed statistic with numerator
-##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}.
-##' @param pool.robust \code{logical}. Ignored unless \code{test = "D2"} and a
-##'   robust test was requested. If \code{pool.robust = TRUE}, the robust test
-##'   statistic is pooled, whereas \code{pool.robust = FALSE} will pool
+##'   with `df1`.
+##' @param pool.robust `logical`. Ignored unless `test = "D2"` and a
+##'   robust test was requested. If `pool.robust = TRUE`, the robust test
+##'   statistic is pooled, whereas `pool.robust = FALSE` will pool
 ##'   the naive test statistic (or difference statistic) and apply the average
 ##'   scale/shift parameter to it. The harmonic mean is applied to the scaling
 ##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##'
 ##' @return
-##'   A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-##'   statistic, depending on the \code{asymptotic} argument), its degrees of
-##'   freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
-##'   \emph{p} value, and 2 missing-data diagnostics: the relative increase
+##'   A vector containing the LRT statistic (either an `F` or \eqn{\chi^2}
+##'   statistic, depending on the `asymptotic` argument), its degrees of
+##'   freedom (numerator and denominator, if `asymptotic = FALSE`), its
+##'   *p* value, and 2 missing-data diagnostics: the relative increase
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
 ##'   will also include the average (across imputations) scaling factor and
-##'   (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+##'   (if relevant) shift parameter(s), unless `pool.robust = TRUE`.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
@@ -114,32 +114,32 @@
 ##'   Based on source code for \code{\link[lavaan]{lavTestLRT}} by Yves Rosseel
 ##'
 ##' @references
-##'   Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
-##'   with multiple imputation}. Technical Report. Retrieved from
-##'   \url{http://www.statmodel.com/}
+##'   Asparouhov, T., & Muthen, B. (2010). *Chi-square statistics
+##'   with multiple imputation*. Technical Report. Retrieved from
+##'   <http://www.statmodel.com/>
 ##'
 ##'   Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
-##'   imputation likelihood ratio tests. \emph{Statistica Sinica, 32},
+##'   imputation likelihood ratio tests. *Statistica Sinica, 32*,
 ##'   1489--1514. \doi{10.5705/ss.202019.0314}
 ##'
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}.
+##'   Enders, C. K. (2010). *Applied missing data analysis*.
 ##'   New York, NY: Guilford.
 ##'
 ##'   Grund, S., Lüdtke, O., & Robitzsch, A. (2023). Pooling methods for
 ##'   likelihood ratio tests in multiply imputed data sets.
-##'   \emph{Psychological Methods, 28}(5), 1207--1221.
+##'   *Psychological Methods, 28*(5), 1207--1221.
 ##'   \doi{10.1037/met0000556}
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##'   Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-##'   multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+##'   multiply-imputed data sets. *Biometrika, 79*(1), 103--111.
 ##'   \doi{10.2307/2337151}
 ##'
-##'   Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley.
 ##'
 ##' @seealso \code{\link[lavaan]{lavTestLRT}}, \code{\link[semTools]{compareFit}}

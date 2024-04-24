@@ -13,32 +13,32 @@
 ##'
 ##' @importFrom lavaan lavNames lavListInspect lavInspect parTable
 ##'
-##' @param data A a \code{list} of imputed data sets, or an object class from
+##' @param data A a `list` of imputed data sets, or an object class from
 ##'   which imputed data can be extracted. Recognized classes are
-##'   \code{lavaan.mi} (stored in the \code{@@DataList} slot),
-##'   \code{amelia} (created by the Amelia package), or
-##'   \code{mids} (created by the mice package).
+##'   `lavaan.mi` (stored in the `@@DataList` slot),
+##'   `amelia` (created by the Amelia package), or
+##'   `mids` (created by the mice package).
 ##' @param \dots
 ##'   Additional arguments passed to \code{\link[lavaan]{lavCor}} or to
 ##'   \code{\link{lavaan.mi}}.
 ##' @param return.fit
-##'   \code{logical} indicating whether to return a \code{\linkS4class{lavaan.mi}}
+##'   `logical` indicating whether to return a \code{\linkS4class{lavaan.mi}}
 ##'   object containing the results of fitting the saturated model to multiple
-##'   imputed \code{data}.  Could be useful for diagnostic purposes.
+##'   imputed `data`.  Could be useful for diagnostic purposes.
 ##' @param scale.W
-##'   \code{logical}. If \code{TRUE} (default), the within- and
+##'   `logical`. If `TRUE` (default), the within- and
 ##'   between-imputation components will be pooled by scaling the
 ##'   within-imputation component by the ARIV (see Enders, 2010, p. 235,
 ##'   for definition and formula). Otherwise, the pooled matrix is
 ##'   calculated as the weighted sum of the within-imputation and
 ##'   between-imputation components (see Enders, 2010, ch. 8, for details).
 ##' @param omit.imps
-##'   \code{character} vector specifying criteria for omitting
+##'   `character` vector specifying criteria for omitting
 ##'   imputations from pooled results of saturated model.  Can include any of
-##'   \code{c("no.conv", "no.se", "no.npd")}, the first 2 of which are the
+##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
 ##'   default setting, which excludes any imputations that did not
 ##'   converge or for which standard errors could not be computed.  The
-##'   last option (\code{"no.npd"}) would exclude any imputations which
+##'   last option (`"no.npd"`) would exclude any imputations which
 ##'   yielded a nonpositive definite covariance matrix for observed or
 ##'   latent variables, which would include any "improper solutions" such
 ##'   as Heywood cases.  NPD solutions are not excluded by default because
@@ -51,32 +51,32 @@
 ##'   apply their own custom omission criteria (or simulation studies can use
 ##'   different numbers of imputations without redundantly refitting the model).
 ##'
-##' @return If \code{return.fit=TRUE}, a \code{\linkS4class{lavaan.mi}} object.
-##'   Otherwise, an object of class \code{lavMoments}, which is a \code{list}
-##'   that contains at least \code{$sample.cov} and \code{$sample.nobs},
-##'   potentially also \code{$sample.mean}, \code{$sample.th}, \code{$NACOV},
-##'   and \code{$WLS.V}.  Also contains \code{$lavOptions} that will be passed
+##' @return If `return.fit=TRUE`, a \code{\linkS4class{lavaan.mi}} object.
+##'   Otherwise, an object of class `lavMoments`, which is a `list`
+##'   that contains at least `$sample.cov` and `$sample.nobs`,
+##'   potentially also `$sample.mean`, `$sample.th`, `$NACOV`,
+##'   and `$WLS.V`.  Also contains `$lavOptions` that will be passed
 ##'   to \code{\link[lavaan]{lavaan}(...)}.
 ##'
-##' @note The \code{$lavOptions} list will always set \code{fixed.x=FALSE} and
-##'   \code{conditional.x=FALSE}.  Users should not override those options when
+##' @note The `$lavOptions` list will always set `fixed.x=FALSE` and
+##'   `conditional.x=FALSE`.  Users should not override those options when
 ##'   calling \code{\link[lavaan]{lavaan}} because doing so would yield
-##'   incorrect \emph{SE}s and test statistics. Computing the correct
-##'   \code{$NACOV} argument would depend on which specific variables are
-##'   treated as fixed, which would require an argument to \code{poolSat()} for
+##'   incorrect *SE*s and test statistics. Computing the correct
+##'   `$NACOV` argument would depend on which specific variables are
+##'   treated as fixed, which would require an argument to `poolSat()` for
 ##'   users to declare names of exogenous variables. This has not yet been
 ##'   programmed, but that feature may be added in the future in order to reduce
 ##'   the number of parameters to estimate.
 ##'   However, if "exogenous" predictors were incomplete and imputed, then they
 ##'   are not truly fixed (i.e., unvarying across samples), so treating them as
-##'   fixed would be illogical and yield biased \emph{SE}s and test statistics.
+##'   fixed would be illogical and yield biased *SE*s and test statistics.
 ##'
-##'   The information returned by \code{poolSat()} must assume that any fitted
-##'   SEM will include all the variables in \code{$sample.cov} and (more
-##'   importantly) in \code{$NACOV}.  Although \code{lavaan} can drop unused
-##'   rows/columns from \code{$sample.cov}, it cannot be expected to drop the
+##'   The information returned by `poolSat()` must assume that any fitted
+##'   SEM will include all the variables in `$sample.cov` and (more
+##'   importantly) in `$NACOV`.  Although `lavaan` can drop unused
+##'   rows/columns from `$sample.cov`, it cannot be expected to drop the
 ##'   corresponding sampling variances of those eliminated (co)variances from
-##'   \code{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
+##'   `$NACOV`.  Thus, it is necessary to use `poolSat()` to obtain
 ##'   the appropriate summary statistics for any particular SEM (see Examples).
 ##'
 ##' @seealso \code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
@@ -88,12 +88,12 @@
 ##' @references
 ##'   Lee, T., & Cai, L. (2012). Alternative multiple imputation inference for
 ##'   mean and covariance structure modeling.
-##'   \emph{Journal of Educational and Behavioral Statistics, 37}(6), 675--702.
+##'   *Journal of Educational and Behavioral Statistics, 37*(6), 675--702.
 ##'   \doi{10.3102/1076998612458320}
 ##'
 ##'   Chung, S., & Cai, L. (2019). Alternative multiple imputation inference
 ##'   for categorical structural equation modeling,
-##'   \emph{Multivariate Behavioral Research, 54}(3), 323--337.
+##'   *Multivariate Behavioral Research, 54*(3), 323--337.
 ##'   \doi{10.1080/00273171.2018.1523000}
 ##'
 ##' @examples

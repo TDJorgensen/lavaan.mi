@@ -16,22 +16,22 @@
 ##'
 ##' @importFrom stats var pf pchisq
 ##'
-##' @param w \code{numeric} vector of Wald \eqn{\chi^2} statistics. Can also
-##'   be Wald \emph{z} statistics, which will be internally squared to make
-##'   \eqn{\chi^2} statistics with one \emph{df} (must set \code{DF = 0L}).
-##' @param DF degrees of freedom (\emph{df}) of the \eqn{\chi^2} statistics.
-##'   If \code{DF = 0L} (default), \code{w} is assumed to contain \emph{z}
+##' @param w `numeric` vector of Wald \eqn{\chi^2} statistics. Can also
+##'   be Wald *z* statistics, which will be internally squared to make
+##'   \eqn{\chi^2} statistics with one *df* (must set `DF = 0L`).
+##' @param DF degrees of freedom (*df*) of the \eqn{\chi^2} statistics.
+##'   If `DF = 0L` (default), `w` is assumed to contain *z*
 ##'   statistics, which will be internally squared.
-##' @param asymptotic \code{logical}. If \code{FALSE} (default), the pooled test
-##'   will be returned as an \emph{F}-distributed statistic with numerator
-##'   (\code{df1}) and denominator (\code{df2}) degrees of freedom.
-##'   If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-##'   \code{df1} on the assumption that its \code{df2} is sufficiently large
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with \code{df1}.
+##'   with `df1`.
 ##'
-##' @return A \code{numeric} vector containing the test statistic, \emph{df},
-##'   its \emph{p} value, and 2 missing-data diagnostics: the relative invrease
+##' @return A `numeric` vector containing the test statistic, *df*,
+##'   its *p* value, and 2 missing-data diagnostics: the relative invrease
 ##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
 ##'   fraction missing information (FMI = ARIV / (1 + ARIV)).
 ##'
@@ -42,13 +42,13 @@
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
 ##' @references
-##'   Enders, C. K. (2010). \emph{Applied missing data analysis}. New
+##'   Enders, C. K. (2010). *Applied missing data analysis*. New
 ##'   York, NY: Guilford.
 ##'
 ##'   Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-##'   Significance levels from repeated \emph{p}-values with multiply-imputed
-##'   data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-##'   \url{https://www.jstor.org/stable/24303994}
+##'   Significance levels from repeated *p*-values with multiply-imputed
+##'   data. *Statistica Sinica, 1*(1), 65--92. Retrieved from
+##'   <https://www.jstor.org/stable/24303994>
 ##'
 ##' @examples
 ##' ## generate a vector of chi-squared values, just for example

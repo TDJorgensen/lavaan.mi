@@ -15,7 +15,7 @@ poolSat(
 \arguments{
 \item{data}{A a \code{list} of imputed data sets, or an object class from
 which imputed data can be extracted. Recognized classes are
-\code{lavaan.mi} (stored in the \code{@DataList} slot),
+\code{lavaan.mi} (stored in the \verb{@DataList} slot),
 \code{amelia} (created by the Amelia package), or
 \code{mids} (created by the mice package).}
 
@@ -54,9 +54,9 @@ different numbers of imputations without redundantly refitting the model).}
 \value{
 If \code{return.fit=TRUE}, a \code{\linkS4class{lavaan.mi}} object.
 Otherwise, an object of class \code{lavMoments}, which is a \code{list}
-that contains at least \code{$sample.cov} and \code{$sample.nobs},
-potentially also \code{$sample.mean}, \code{$sample.th}, \code{$NACOV},
-and \code{$WLS.V}.  Also contains \code{$lavOptions} that will be passed
+that contains at least \verb{$sample.cov} and \verb{$sample.nobs},
+potentially also \verb{$sample.mean}, \verb{$sample.th}, \verb{$NACOV},
+and \verb{$WLS.V}.  Also contains \verb{$lavOptions} that will be passed
 to \code{\link[lavaan]{lavaan}(...)}.
 }
 \description{
@@ -64,11 +64,11 @@ This function fits a saturated model to a list of imputed data sets, and
 returns a list of pooled summary statistics to treat as data.
 }
 \note{
-The \code{$lavOptions} list will always set \code{fixed.x=FALSE} and
+The \verb{$lavOptions} list will always set \code{fixed.x=FALSE} and
 \code{conditional.x=FALSE}.  Users should not override those options when
 calling \code{\link[lavaan]{lavaan}} because doing so would yield
 incorrect \emph{SE}s and test statistics. Computing the correct
-\code{$NACOV} argument would depend on which specific variables are
+\verb{$NACOV} argument would depend on which specific variables are
 treated as fixed, which would require an argument to \code{poolSat()} for
 users to declare names of exogenous variables. This has not yet been
 programmed, but that feature may be added in the future in order to reduce
@@ -78,11 +78,11 @@ are not truly fixed (i.e., unvarying across samples), so treating them as
 fixed would be illogical and yield biased \emph{SE}s and test statistics.
 
 The information returned by \code{poolSat()} must assume that any fitted
-SEM will include all the variables in \code{$sample.cov} and (more
-importantly) in \code{$NACOV}.  Although \code{lavaan} can drop unused
-rows/columns from \code{$sample.cov}, it cannot be expected to drop the
+SEM will include all the variables in \verb{$sample.cov} and (more
+importantly) in \verb{$NACOV}.  Although \code{lavaan} can drop unused
+rows/columns from \verb{$sample.cov}, it cannot be expected to drop the
 corresponding sampling variances of those eliminated (co)variances from
-\code{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
+\verb{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
 the appropriate summary statistics for any particular SEM (see Examples).
 }
 \examples{

@@ -22,14 +22,14 @@ growth.mi(model, data, ...)
 
 \item{data}{A a \code{list} of imputed data sets, or an object class from
 which imputed data can be extracted. Recognized classes are
-\code{lavaan.mi} (stored in the \code{@DataList} slot),
+\code{lavaan.mi} (stored in the \verb{@DataList} slot),
 \code{amelia} (created by the Amelia package), or
 \code{mids} (created by the mice package).}
 
 \item{\dots}{additional arguments to pass to \code{\link[lavaan]{lavaan}} or
 \code{\link[lavaan]{lavaanList}}. See also \code{\link[lavaan]{lavOptions}}.
 Note that \code{lavaanList} provides parallel computing options, as well as
-a \code{FUN=} argument so the user can extract custom output after the model
+a \verb{FUN=} argument so the user can extract custom output after the model
 is fitted to each imputed data set (see \strong{Examples}).  TIP: If a
 custom \code{FUN} is used \emph{and} \code{parallel = "snow"} is requested,
 the user-supplied function should explicitly call \code{library} or use
