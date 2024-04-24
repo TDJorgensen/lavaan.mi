@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 April 2024
+### Last updated: 15 April 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -272,12 +272,13 @@ summary_lavaan_mi <- function(object, header = TRUE,
                               # fit.measures = FALSE,
                               # fm.args =
                               #   list(
-                              #     standard.test = "default",
-                              #     scaled.test = "default",
-                              #     rmsea.ci.level = 0.90,
-                              #     rmsea.h0.closefit = 0.05,
+                              #     standard.test        = "default",
+                              #     scaled.test          = "default",
+                              #     rmsea.ci.level       = 0.90,
+                              #     rmsea.h0.closefit    = 0.05,
                               #     rmsea.h0.notclosefit = 0.08
-                              #   ),
+                              #     robust               = TRUE,
+                              #     cat.check.pd         = TRUE),
                               estimates = TRUE,
                               ci = FALSE, #level = .95,
                               ## standardization
