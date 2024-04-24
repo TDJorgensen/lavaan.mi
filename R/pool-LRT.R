@@ -1,7 +1,11 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 21 March 2024
+### Last updated: 24 April 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
+
+#FIXME: test= argument now conflicts with new lavTestLRT(test=) argument.
+#       Make a lrtArgs=list() argument to pass on, or check for which scale
+#       parameter to use.
 
 
 ## -------------
@@ -145,20 +149,7 @@
 ##' @seealso [lavaan::lavTestLRT()], [semTools::compareFit()]
 ##'
 ##' @examples
-##  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' data(HS20imps)
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
@@ -167,7 +158,7 @@
 ##'   speed   =~ x7 + b3*x8 + x9
 ##' '
 ##'
-##' fit1 <- cfa.mi(HS.model, data = imps, estimator = "mlm")
+##' fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
 ##'
 ##' ## more constrained model: parallel indicators
 ##' HS.parallel <- '
@@ -176,10 +167,10 @@
 ##'   speed   =~ x7 + 1*x8 + 1*x9
 ##' '
 ##'
-##' fitp <- cfa.mi(HS.parallel, data = imps, estimator = "mlm")
+##' fitp <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm")
 ##'
 ##' ## Even more constrained model: orthogonal factors
-##' fit0 <- cfa.mi(HS.parallel, data = imps, estimator = "mlm",
+##' fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
 ##'                orthogonal = TRUE)
 ##'
 ##' ## By default, use D4.
@@ -192,7 +183,6 @@
 ##' ## ... or pool the robust chi-squared statistic
 ##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2",
 ##'               pool.robust = TRUE)
-## }
 ##'
 ##' @export
 lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,

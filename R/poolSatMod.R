@@ -98,22 +98,10 @@
 ##'
 ##' @examples
 ##'
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste0("x", 1:9),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(123)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data with Amelia
-##' library(Amelia)
-##' set.seed(456)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' data(HS20imps)
 ##'
 ##' ## fit saturated model to imputations, pool those results
-##' impSubset1 <- lapply(imps, "[", i = paste0("x", 1:9)) # only modeled variables
+##' impSubset1 <- lapply(HS20imps, "[", i = paste0("x", 1:9)) # only modeled variables
 ##' (prePooledData <- poolSat(impSubset1))
 ##'
 ##' ## Note: no means were returned (default lavOption() is meanstructure=FALSE)
@@ -159,7 +147,7 @@
 ##'
 ##' ## As explained in the "Note" section, you must use poolSat() again for
 ##' ## this subset of variables
-##' impSubset3 <- lapply(imps, "[", i = paste0("x", 1:3)) # only modeled variables
+##' impSubset3 <- lapply(HS20imps, "[", i = paste0("x", 1:3)) # only modeled variables
 ##' visData <- poolSat(impSubset3)
 ##' fit.vis <- cfa(mod.vis, data = visData) # no problem
 ##'
@@ -167,7 +155,7 @@
 ##' ## OTHER lavaan OPTIONS
 ##'
 ##' ## fit saturated MULIPLE-GROUP model to imputations
-##' impSubset2 <- lapply(imps, "[", i = c(paste0("x", 1:9), "school"))
+##' impSubset2 <- lapply(HS20imps, "[", i = c(paste0("x", 1:9), "school"))
 ##' (prePooledData2 <- poolSat(impSubset2, group = "school", se = "robust.sem"))
 ##' ## Nonnormality accounted for in this step by requesting robust
 ##' ## standard errors.  These are used as weights in the next step:

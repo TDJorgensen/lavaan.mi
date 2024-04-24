@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 2 November 2023
+### Last updated: 24 April 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -99,20 +99,7 @@
 ##' @seealso [lavaan::lavTestWald()]
 ##'
 ##' @examples
-##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' data(HS20imps)
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
@@ -121,7 +108,7 @@
 ##'   speed   =~ x7 + b3*x8 + x9
 ##' '
 ##'
-##' fit <- cfa.mi(HS.model, data = imps)
+##' fit <- cfa.mi(HS.model, data = HS20imps)
 ##'
 ##' ## Testing whether a single parameter equals zero yields the 'chi-square'
 ##' ## version of the Wald z statistic from the summary() output, or the
@@ -139,7 +126,6 @@
 ##' lavTestWald.mi(fit, constraints = con) # default F statistic
 ##' lavTestWald.mi(fit, constraints = con, asymptotic = TRUE) # chi-squared
 ##'
-##' }
 ##'
 ##' @export
 lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),

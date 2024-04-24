@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 2 November 2023
+### Last updated: 24 April 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -144,27 +144,14 @@
 ##' @seealso [lavaan::lavTestScore()]
 ##'
 ##' @examples
-##'  \dontrun{
-##' ## impose missing data for example
-##' HSMiss <- HolzingerSwineford1939[ , c(paste("x", 1:9, sep = ""),
-##'                                       "ageyr","agemo","school")]
-##' set.seed(12345)
-##' HSMiss$x5 <- ifelse(HSMiss$x5 <= quantile(HSMiss$x5, .3), NA, HSMiss$x5)
-##' age <- HSMiss$ageyr + HSMiss$agemo/12
-##' HSMiss$x9 <- ifelse(age <= quantile(age, .3), NA, HSMiss$x9)
-##'
-##' ## impute missing data
-##' library(Amelia)
-##' set.seed(12345)
-##' HS.amelia <- amelia(HSMiss, m = 20, noms = "school", p2s = FALSE)
-##' imps <- HS.amelia$imputations
+##' data(HS20imps)
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
 ##'   speed =~ c(L1, L1)*x7 + c(L1, L1)*x8 + c(L1, L1)*x9
 ##' '
 ##'
-##' out <- cfa.mi(HS.model, data = imps, group = "school", std.lv = TRUE)
+##' out <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
 ##'
 ##' ## Mode 1: Score test for releasing equality constraints
 ##'
@@ -176,7 +163,6 @@
 ##' ## Mode 2: Score test for adding currently fixed-to-zero parameters
 ##' lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
 ##'
-##' }
 ##'
 ##' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
