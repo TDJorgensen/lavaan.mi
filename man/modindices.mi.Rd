@@ -6,17 +6,41 @@
 \alias{modificationindices.mi}
 \title{Modification Indices for Multiple Imputations}
 \usage{
-modindices.mi(object, test = c("D2", "D1"), omit.imps = c("no.conv",
-  "no.se"), standardized = TRUE, cov.std = TRUE,
-  information = "expected", power = FALSE, delta = 0.1, alpha = 0.05,
-  high.power = 0.75, sort. = FALSE, minimum.value = 0,
-  maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
+modindices.mi(
+  object,
+  test = c("D2", "D1"),
+  omit.imps = c("no.conv", "no.se"),
+  standardized = TRUE,
+  cov.std = TRUE,
+  information = "expected",
+  power = FALSE,
+  delta = 0.1,
+  alpha = 0.05,
+  high.power = 0.75,
+  sort. = FALSE,
+  minimum.value = 0,
+  maximum.number = nrow(LIST),
+  na.remove = TRUE,
+  op = NULL
+)
 
-modificationIndices.mi(object, test = c("D2", "D1"),
-  omit.imps = c("no.conv", "no.se"), standardized = TRUE, cov.std = TRUE,
-  information = "expected", power = FALSE, delta = 0.1, alpha = 0.05,
-  high.power = 0.75, sort. = FALSE, minimum.value = 0,
-  maximum.number = nrow(LIST), na.remove = TRUE, op = NULL)
+modificationIndices.mi(
+  object,
+  test = c("D2", "D1"),
+  omit.imps = c("no.conv", "no.se"),
+  standardized = TRUE,
+  cov.std = TRUE,
+  information = "expected",
+  power = FALSE,
+  delta = 0.1,
+  alpha = 0.05,
+  high.power = 0.75,
+  sort. = FALSE,
+  minimum.value = 0,
+  maximum.number = nrow(LIST),
+  na.remove = TRUE,
+  op = NULL
+)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{lavaan.mi}}}
@@ -111,10 +135,10 @@ statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 }
 \note{
 When \code{test = "D2"}, each (S)EPC will be pooled by taking its
-  average across imputations. When \code{test = "D1"}, EPCs will be
-  calculated in the standard way using the pooled gradient and information,
-  and SEPCs will be calculated by standardizing the EPCs using model-implied
-  (residual) variances.
+average across imputations. When \code{test = "D1"}, EPCs will be
+calculated in the standard way using the pooled gradient and information,
+and SEPCs will be calculated by standardizing the EPCs using model-implied
+(residual) variances.
 }
 \examples{
  \dontrun{
@@ -149,17 +173,17 @@ modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+New York, NY: Guilford.
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data.\emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
-  imputation score test for model modification in structural equation
-  models. \emph{Psychological Methods, 25}(4), 393--411.
-  \doi{10.1037/met0000243}
+Mansolf, M., Jorgensen, T. D., & Enders, C. K. (2020). A multiple
+imputation score test for model modification in structural equation
+models. \emph{Psychological Methods, 25}(4), 393--411.
+\doi{10.1037/met0000243}
 }
 \seealso{
 \code{\link{lavTestScore.mi}}
@@ -167,9 +191,9 @@ Enders, C. K. (2010). \emph{Applied missing data analysis}.
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-  Based on source code for \code{\link[lavaan]{modindices}} by Yves Rosseel
+Based on source code for \code{\link[lavaan]{modindices}} by Yves Rosseel
 
 \code{test = "D1"} method proposed by
-  Maxwell Mansolf (University of California, Los Angeles;
-  \email{mamansolf@gmail.com})
+Maxwell Mansolf (University of California, Los Angeles;
+\email{mamansolf@gmail.com})
 }

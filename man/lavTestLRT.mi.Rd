@@ -4,9 +4,16 @@
 \alias{lavTestLRT.mi}
 \title{Likelihood Ratio Test for Multiple Imputations}
 \usage{
-lavTestLRT.mi(object, ..., modnames = NULL, asANOVA = TRUE,
-  test = c("D4", "D3", "D2"), omit.imps = c("no.conv", "no.se"),
-  asymptotic = FALSE, pool.robust = FALSE)
+lavTestLRT.mi(
+  object,
+  ...,
+  modnames = NULL,
+  asANOVA = TRUE,
+  test = c("D4", "D3", "D2"),
+  omit.imps = c("no.conv", "no.se"),
+  asymptotic = FALSE,
+  pool.robust = FALSE
+)
 }
 \arguments{
 \item{object, h1}{An object of class \code{\linkS4class{lavaan.mi}}.
@@ -26,15 +33,15 @@ pairs of models.}
 
 \item{test}{\code{character} indicating which pooling method to use.
 \itemize{
-  \item \code{"D4"}, \code{"new.LRT"}, \code{"cm"}, or \code{"chan.meng"}
-        requests the method described by Chan & Meng (2022).
-        This is currently the default.
-  \item \code{"D3"}, \code{"old.LRT"}, \code{"mr"}, or \code{"meng.rubin"}
-        requests the method described by Meng & Rubin (1992).
-  \item \code{"D2"}, \code{"LMRR"}, or \code{"Li.et.al"} requests the
-        complete-data LRT statistic should be calculated using each
-        imputed data set, which will then be pooled across imputations, as
-        described in Li, Meng, Raghunathan, & Rubin (1991).
+\item \code{"D4"}, \code{"new.LRT"}, \code{"cm"}, or \code{"chan.meng"}
+requests the method described by Chan & Meng (2022).
+This is currently the default.
+\item \code{"D3"}, \code{"old.LRT"}, \code{"mr"}, or \code{"meng.rubin"}
+requests the method described by Meng & Rubin (1992).
+\item \code{"D2"}, \code{"LMRR"}, or \code{"Li.et.al"} requests the
+complete-data LRT statistic should be calculated using each
+imputed data set, which will then be pooled across imputations, as
+described in Li, Meng, Raghunathan, & Rubin (1991).
 }
 Find additional details in Enders (2010, chapter 8).}
 
@@ -74,19 +81,19 @@ statistics, listed on \code{\link[lavaan]{lavTest}}.}
 \item{scaled.test}{\code{character} indicating which robust/scaled test
 statistic to pool with the \code{test="D2"} method when
 \code{pool.robust=TRUE}. The default is the first robust test listed in
-`lavInspect(object, "options")$test`, but could be any listed on
+\code{lavInspect(object, "options")$test}, but could be any listed on
 \code{\link[lavaan]{lavTest}} that were requested when \code{object}
 (and \code{h1}) were fitted.}
 }
 \value{
 A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-  statistic, depending on the \code{asymptotic} argument), its degrees of
-  freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
-  \emph{p} value, and 2 missing-data diagnostics: the relative increase
-  in variance (RIV, or average for multiparameter tests: ARIV) and the
-  fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
-  will also include the average (across imputations) scaling factor and
-  (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+statistic, depending on the \code{asymptotic} argument), its degrees of
+freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
+\emph{p} value, and 2 missing-data diagnostics: the relative increase
+in variance (RIV, or average for multiparameter tests: ARIV) and the
+fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
+will also include the average (across imputations) scaling factor and
+(if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
 }
 \description{
 Likelihood ratio test (LRT) for lavaan models fitted to multiple imputed
@@ -97,10 +104,10 @@ The \code{"D2"} method is available using any estimator and test statistic.
 When using a likelihood-based estimator, 2 additional methods are available
 to pool the LRT.
 \itemize{
-  \item The Meng & Rubin (1992) method, commonly referred to as \code{"D3"}.
-        This method has many problems, discussed in Chan & Meng (2022).
-  \item The Chan & Meng (2022) method, referred to as \code{"D4"} by
-        Grund et al. (2023), resolves problems with \code{"D3"}.
+\item The Meng & Rubin (1992) method, commonly referred to as \code{"D3"}.
+This method has many problems, discussed in Chan & Meng (2022).
+\item The Chan & Meng (2022) method, referred to as \code{"D4"} by
+Grund et al. (2023), resolves problems with \code{"D3"}.
 }
 When \code{"D2"} is not explicitly requested in situations it is the only
 applicable method, (e.g., DWLS for categorical outcomes), users are notified
@@ -163,39 +170,39 @@ lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2",
 }
 \references{
 Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
-  with multiple imputation}. Technical Report. Retrieved from
-  \url{http://www.statmodel.com/}
+with multiple imputation}. Technical Report. Retrieved from
+\url{http://www.statmodel.com/}
 
-  Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
-  imputation likelihood ratio tests. \emph{Statistica Sinica, 32},
-  1489--1514. \doi{10.5705/ss.202019.0314}
+Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
+imputation likelihood ratio tests. \emph{Statistica Sinica, 32},
+1489--1514. \doi{10.5705/ss.202019.0314}
 
-  Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+Enders, C. K. (2010). \emph{Applied missing data analysis}.
+New York, NY: Guilford.
 
-  Grund, S., Lüdtke, O., & Robitzsch, A. (2023). Pooling methods for
-  likelihood ratio tests in multiply imputed data sets.
-  \emph{Psychological Methods, 28}(5), 1207--1221.
-  \doi{10.1037/met0000556}
+Grund, S., Lüdtke, O., & Robitzsch, A. (2023). Pooling methods for
+likelihood ratio tests in multiply imputed data sets.
+\emph{Psychological Methods, 28}(5), 1207--1221.
+\doi{10.1037/met0000556}
 
-  Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
-  Significance levels from repeated \emph{p}-values with multiply-imputed
-  data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
-  \url{https://www.jstor.org/stable/24303994}
+Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
+Significance levels from repeated \emph{p}-values with multiply-imputed
+data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
+\url{https://www.jstor.org/stable/24303994}
 
-  Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
-  multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
-  \doi{10.2307/2337151}
+Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
+multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.
+\doi{10.2307/2337151}
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \seealso{
 \code{\link[lavaan]{lavTestLRT}}, \code{\link[semTools]{compareFit}}
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 
-  Based on source code for \code{\link[lavaan]{lavTestLRT}} by Yves Rosseel
+Based on source code for \code{\link[lavaan]{lavTestLRT}} by Yves Rosseel
 }

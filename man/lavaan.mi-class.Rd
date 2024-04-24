@@ -20,45 +20,70 @@
 \usage{
 \S4method{show}{lavaan.mi}(object)
 
-\S4method{summary}{lavaan.mi}(object, header = TRUE, estimates = TRUE,
-  ci = FALSE, standardized = FALSE, std = standardized, cov.std = TRUE,
-  rsquare = FALSE, fmi = FALSE, asymptotic = FALSE,
-  scale.W = !asymptotic, omit.imps = c("no.conv", "no.se"),
-  remove.step1 = TRUE, remove.unused = TRUE, ...)
+\S4method{summary}{lavaan.mi}(
+  object,
+  header = TRUE,
+  estimates = TRUE,
+  ci = FALSE,
+  standardized = FALSE,
+  std = standardized,
+  cov.std = TRUE,
+  rsquare = FALSE,
+  fmi = FALSE,
+  asymptotic = FALSE,
+  scale.W = !asymptotic,
+  omit.imps = c("no.conv", "no.se"),
+  remove.step1 = TRUE,
+  remove.unused = TRUE,
+  ...
+)
 
 \S4method{nobs}{lavaan.mi}(object, total = TRUE)
 
-\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE,
-  omit.imps = c("no.conv", "no.se"))
+\S4method{coef}{lavaan.mi}(object, type = "free", labels = TRUE, omit.imps = c("no.conv", "no.se"))
 
-\S4method{vcov}{lavaan.mi}(object, type = c("pooled", "between", "within",
-  "ariv"), scale.W = TRUE, omit.imps = c("no.conv", "no.se"))
+\S4method{vcov}{lavaan.mi}(
+  object,
+  type = c("pooled", "between", "within", "ariv"),
+  scale.W = TRUE,
+  omit.imps = c("no.conv", "no.se")
+)
 
 \S4method{anova}{lavaan.mi}(object, ...)
 
-\S4method{fitted}{lavaan.mi}(object, momentsNblocks = TRUE,
-  omit.imps = c("no.conv", "no.se"))
+\S4method{fitted}{lavaan.mi}(object, momentsNblocks = TRUE, omit.imps = c("no.conv", "no.se"))
 
-\S4method{fitted.values}{lavaan.mi}(object, momentsNblocks = TRUE,
-  omit.imps = c("no.conv", "no.se"))
+\S4method{fitted.values}{lavaan.mi}(object, momentsNblocks = TRUE, omit.imps = c("no.conv", "no.se"))
 
-\S4method{fitMeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, h1.model = NULL, fm.args = list(standard.test =
-  "default", scaled.test = "default", rmsea.ci.level = 0.9, rmsea.h0.closefit =
-  0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08, cat.check.pd = TRUE),
-  output = "vector", omit.imps = c("no.conv", "no.se"), ...)
+\S4method{fitMeasures}{lavaan.mi}(
+  object,
+  fit.measures = "all",
+  baseline.model = NULL,
+  h1.model = NULL,
+  fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
+    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08,
+    cat.check.pd = TRUE),
+  output = "vector",
+  omit.imps = c("no.conv", "no.se"),
+  ...
+)
 
-\S4method{fitmeasures}{lavaan.mi}(object, fit.measures = "all",
-  baseline.model = NULL, h1.model = NULL, fm.args = list(standard.test =
-  "default", scaled.test = "default", rmsea.ci.level = 0.9, rmsea.h0.closefit =
-  0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08, cat.check.pd = TRUE),
-  output = "vector", omit.imps = c("no.conv", "no.se"), ...)
+\S4method{fitmeasures}{lavaan.mi}(
+  object,
+  fit.measures = "all",
+  baseline.model = NULL,
+  h1.model = NULL,
+  fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
+    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08,
+    cat.check.pd = TRUE),
+  output = "vector",
+  omit.imps = c("no.conv", "no.se"),
+  ...
+)
 
-\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"),
-  omit.imps = c("no.conv", "no.se"))
+\S4method{residuals}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
 
-\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"),
-  omit.imps = c("no.conv", "no.se"))
+\S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}
@@ -131,42 +156,42 @@ can also be passed to \code{\link[lavaan]{fitMeasures}}.}
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free",
   labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-  See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
-  averaged across imputed data sets; see Rubin, 1987).}
+See \code{\linkS4class{lavaan}}. Returns the pooled point estimates (i.e.,
+averaged across imputed data sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE,
   omit.imps = c("no.conv","no.se"),
   type = c("pooled","between","within","ariv"))}:  By default, returns the
-  pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
-  the within-imputations covariance matrix (\code{type = "within"}), the
-  between-imputations covariance matrix (\code{type = "between"}), or the
-  average relative increase in variance (\code{type = "ariv"}) due to
-  missing data.}
+pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
+the within-imputations covariance matrix (\code{type = "within"}), the
+between-imputations covariance matrix (\code{type = "between"}), or the
+average relative increase in variance (\code{type = "ariv"}) due to
+missing data.}
 
 \item{fitted.values}{\code{signature(object = "lavaan.mi",
   omit.imps = c("no.conv","no.se"))}: See \code{\linkS4class{lavaan}}.
-  Returns model-implied moments, evaluated at the pooled point estimates.}
+Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{fitted}{alias for \code{fitted.values}}
 
 \item{residuals}{\code{signature(object = "lavaan.mi",
   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))}:
-  See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
-  the difference between the model-implied moments from \code{fitted.values}
-  and the pooled observed moments (i.e., averaged across imputed data sets).
-  Standardized residuals are also available, using Bollen's
-  (\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
-  (\code{type = "cor.bentler"}) formulas.}
+See \code{\linkS4class{lavaan}}. By default (\code{type = "raw"}), returns
+the difference between the model-implied moments from \code{fitted.values}
+and the pooled observed moments (i.e., averaged across imputed data sets).
+Standardized residuals are also available, using Bollen's
+(\code{type = "cor"} or \code{"cor.bollen"}) or Bentler's
+(\code{type = "cor.bentler"}) formulas.}
 \item{resid}{alias for \code{residuals}}
 
 \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
-  the total (default) sample size or a vector of group sample sizes
-  (\code{total = FALSE}).}
+the total (default) sample size or a vector of group sample sizes
+(\code{total = FALSE}).}
 
 \item{anova}{\code{signature(object = "lavaan.mi", ...)}:
-  Returns a test of model fit for a single model (\code{object}) or test(s)
-  of the difference(s) in fit between nested models passed via \code{...}.
-  This is just a wrapper around \code{\link{lavTestLRT.mi}}, where you can
-  find details about additional arguments.}
+Returns a test of model fit for a single model (\code{object}) or test(s)
+of the difference(s) in fit between nested models passed via \code{...}.
+This is just a wrapper around \code{\link{lavTestLRT.mi}}, where you can
+find details about additional arguments.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi",
   fit.measures = "all", baseline.model = NULL,
@@ -174,12 +199,12 @@ can also be passed to \code{\link[lavaan]{fitMeasures}}.}
   rmsea.ci.level = 0.90, rmsea.close.h0 = 0.05, rmsea.notclose.h0 = 0.08,
   cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"),
   ...)}: See lavaan's  \code{\link[lavaan]{fitMeasures}} for details.
-  Pass additional arguments to \code{\link{lavTestLRT.mi}} via \code{...}.}
+Pass additional arguments to \code{\link{lavTestLRT.mi}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
 
 \item{show}{\code{signature(object = "lavaan.mi")}: returns a message about
-  convergence rates and estimation problems (if applicable) across imputed
-  data sets.}
+convergence rates and estimation problems (if applicable) across imputed
+data sets.}
 
 \item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
   level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
@@ -188,24 +213,24 @@ can also be passed to \code{\link[lavaan]{fitMeasures}}.}
   fm.args = list(standard.test = "default", scaled.test = "default",
                  rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
                  rmsea.h0.notclosefit = 0.08), ...)}:
- see \code{\link[lavaan]{parameterEstimates}} for details.
- By default, \code{summary} returns pooled point and \emph{SE}
- estimates, along with \emph{t} test statistics and their associated
- \emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervals
- are returned with the specified confidence \code{level} (default 95\% CI).
- If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
- returned. \code{standardized} solution(s) can also be requested by name
- (\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
- \emph{R}-squared for endogenous variables can be requested, as well as the
- Fraction Missing Information (FMI) for parameter estimates. By default, the
- output will appear like \code{lavaan}'s \code{summary} output, but if
- \code{output == "data.frame"}, the returned \code{data.frame} will resemble
- the \code{parameterEstimates} output. The \code{scale.W} argument is
- passed to \code{vcov} (see description above).
- Setting \code{fit.measures=TRUE} will additionally print fit measures to
- the console, but they will not be returned; additional arguments may be
- passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
- subsequently to \code{\link{lavTestLRT.mi}}.}
+see \code{\link[lavaan]{parameterEstimates}} for details.
+By default, \code{summary} returns pooled point and \emph{SE}
+estimates, along with \emph{t} test statistics and their associated
+\emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervals
+are returned with the specified confidence \code{level} (default 95\\% CI).
+If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
+returned. \code{standardized} solution(s) can also be requested by name
+(\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
+\emph{R}-squared for endogenous variables can be requested, as well as the
+Fraction Missing Information (FMI) for parameter estimates. By default, the
+output will appear like \code{lavaan}'s \code{summary} output, but if
+\code{output == "data.frame"}, the returned \code{data.frame} will resemble
+the \code{parameterEstimates} output. The \code{scale.W} argument is
+passed to \code{vcov} (see description above).
+Setting \code{fit.measures=TRUE} will additionally print fit measures to
+the console, but they will not be returned; additional arguments may be
+passed via \code{...} to \code{\link[lavaan]{fitMeasures}} and
+subsequently to \code{\link{lavTestLRT.mi}}.}
 }
 \description{
 This class extends the \code{\linkS4class{lavaanList}} class, created by
@@ -261,8 +286,8 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 
 \section{Objects from the Class}{
  See the \code{\link{lavaan.mi}} function
-  for details. Wrapper functions include \code{\link{cfa.mi}},
-  \code{\link{sem.mi}}, and \code{\link{growth.mi}}.
+for details. Wrapper functions include \code{\link{cfa.mi}},
+\code{\link{sem.mi}}, and \code{\link{growth.mi}}.
 }
 
 \examples{
@@ -272,12 +297,12 @@ table, returned by \code{\link[lavaan]{lav_partable_unrestricted}}.}
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}. New York, NY:
-  Guilford.
+Guilford.
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
-  \email{TJorgensen314@gmail.com})
+\email{TJorgensen314@gmail.com})
 }

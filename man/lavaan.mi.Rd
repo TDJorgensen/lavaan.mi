@@ -43,8 +43,8 @@ This function fits a lavaan model to a list of imputed data sets.
 }
 \note{
 This functionality was originally provided via \code{runMI()} in the
-  \code{semTools} package, but there are differences.  See the README file
-  on the GitHub page for this package (find link in DESCRIPTION).
+\code{semTools} package, but there are differences.  See the README file
+on the GitHub page for this package (find link in DESCRIPTION).
 }
 \examples{
  \dontrun{
@@ -152,14 +152,14 @@ catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
 }
 \references{
 Enders, C. K. (2010). \emph{Applied missing data analysis}.
-  New York, NY: Guilford.
+New York, NY: Guilford.
 
-  Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
-  New York, NY: Wiley.
+Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
+New York, NY: Wiley.
 }
 \seealso{
 \code{\link{poolSat}} for a more efficient method to obtain SEM results
- for multiple imputations
+for multiple imputations
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})

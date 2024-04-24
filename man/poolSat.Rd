@@ -4,8 +4,13 @@
 \alias{poolSat}
 \title{Fit a Saturated lavaan Model to Multiple Imputed Data Sets}
 \usage{
-poolSat(data, ..., return.fit = FALSE, scale.W = TRUE,
-  omit.imps = c("no.conv", "no.se"))
+poolSat(
+  data,
+  ...,
+  return.fit = FALSE,
+  scale.W = TRUE,
+  omit.imps = c("no.conv", "no.se")
+)
 }
 \arguments{
 \item{data}{A a \code{list} of imputed data sets, or an object class from
@@ -48,11 +53,11 @@ different numbers of imputations without redundantly refitting the model).}
 }
 \value{
 If \code{return.fit=TRUE}, a \code{\linkS4class{lavaan.mi}} object.
-  Otherwise, an object of class \code{lavMoments}, which is a \code{list}
-  that contains at least \code{$sample.cov} and \code{$sample.nobs},
-  potentially also \code{$sample.mean}, \code{$sample.th}, \code{$NACOV},
-  and \code{$WLS.V}.  Also contains \code{$lavOptions} that will be passed
-  to \code{\link[lavaan]{lavaan}(...)}.
+Otherwise, an object of class \code{lavMoments}, which is a \code{list}
+that contains at least \code{$sample.cov} and \code{$sample.nobs},
+potentially also \code{$sample.mean}, \code{$sample.th}, \code{$NACOV},
+and \code{$WLS.V}.  Also contains \code{$lavOptions} that will be passed
+to \code{\link[lavaan]{lavaan}(...)}.
 }
 \description{
 This function fits a saturated model to a list of imputed data sets, and
@@ -60,25 +65,25 @@ returns a list of pooled summary statistics to treat as data.
 }
 \note{
 The \code{$lavOptions} list will always set \code{fixed.x=FALSE} and
-  \code{conditional.x=FALSE}.  Users should not override those options when
-  calling \code{\link[lavaan]{lavaan}} because doing so would yield
-  incorrect \emph{SE}s and test statistics. Computing the correct
-  \code{$NACOV} argument would depend on which specific variables are
-  treated as fixed, which would require an argument to \code{poolSat()} for
-  users to declare names of exogenous variables. This has not yet been
-  programmed, but that feature may be added in the future in order to reduce
-  the number of parameters to estimate.
-  However, if "exogenous" predictors were incomplete and imputed, then they
-  are not truly fixed (i.e., unvarying across samples), so treating them as
-  fixed would be illogical and yield biased \emph{SE}s and test statistics.
+\code{conditional.x=FALSE}.  Users should not override those options when
+calling \code{\link[lavaan]{lavaan}} because doing so would yield
+incorrect \emph{SE}s and test statistics. Computing the correct
+\code{$NACOV} argument would depend on which specific variables are
+treated as fixed, which would require an argument to \code{poolSat()} for
+users to declare names of exogenous variables. This has not yet been
+programmed, but that feature may be added in the future in order to reduce
+the number of parameters to estimate.
+However, if "exogenous" predictors were incomplete and imputed, then they
+are not truly fixed (i.e., unvarying across samples), so treating them as
+fixed would be illogical and yield biased \emph{SE}s and test statistics.
 
-  The information returned by \code{poolSat()} must assume that any fitted
-  SEM will include all the variables in \code{$sample.cov} and (more
-  importantly) in \code{$NACOV}.  Although \code{lavaan} can drop unused
-  rows/columns from \code{$sample.cov}, it cannot be expected to drop the
-  corresponding sampling variances of those eliminated (co)variances from
-  \code{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
-  the appropriate summary statistics for any particular SEM (see Examples).
+The information returned by \code{poolSat()} must assume that any fitted
+SEM will include all the variables in \code{$sample.cov} and (more
+importantly) in \code{$NACOV}.  Although \code{lavaan} can drop unused
+rows/columns from \code{$sample.cov}, it cannot be expected to drop the
+corresponding sampling variances of those eliminated (co)variances from
+\code{$NACOV}.  Thus, it is necessary to use \code{poolSat()} to obtain
+the appropriate summary statistics for any particular SEM (see Examples).
 }
 \examples{
 
@@ -202,18 +207,18 @@ summary(fitcu)
 }
 \references{
 Lee, T., & Cai, L. (2012). Alternative multiple imputation inference for
-  mean and covariance structure modeling.
-  \emph{Journal of Educational and Behavioral Statistics, 37}(6), 675--702.
-  \doi{10.3102/1076998612458320}
+mean and covariance structure modeling.
+\emph{Journal of Educational and Behavioral Statistics, 37}(6), 675--702.
+\doi{10.3102/1076998612458320}
 
-  Chung, S., & Cai, L. (2019). Alternative multiple imputation inference
-  for categorical structural equation modeling,
-  \emph{Multivariate Behavioral Research, 54}(3), 323--337.
-  \doi{10.1080/00273171.2018.1523000}
+Chung, S., & Cai, L. (2019). Alternative multiple imputation inference
+for categorical structural equation modeling,
+\emph{Multivariate Behavioral Research, 54}(3), 323--337.
+\doi{10.1080/00273171.2018.1523000}
 }
 \seealso{
 \code{\link{lavaan.mi}} for traditional method (fit SEM to each imputation,
-  pool results afterward).
+pool results afterward).
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
