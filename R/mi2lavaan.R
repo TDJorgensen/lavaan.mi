@@ -1,7 +1,7 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 April 2024
+### Last updated: 23 April 2024
 ### Create faux lavaan-class object in order to pass to
-### - lavaan::fitMeasures() within fitMeasures.mi()
+### - lavaan::fitMeasures() within fitMeasures_mi()
 ### - standardizedSolution() within standardizedSolution.mi()
 ### - lavResiduals() within lavResiduals.mi()
 
@@ -11,7 +11,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
                       chi2  = FALSE, # store info for chisq-based indices
                       rmr   = FALSE, # store info for residual-based indices
                       resid = FALSE, # store additional info for lavResiduals()
-                      std   = FALSE, # store infor for standardizedSolution()
+                      std   = FALSE, # store info for standardizedSolution()
                       ## pass arguments to lavTestLRT.mi()
                       ...) {
   ## this also checks the class
@@ -217,11 +217,12 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     if (!is.null(PT$est  )) PT$est   <- NULL
     if (!is.null(PT$se   )) PT$se    <- NULL
     ## get pooled estimates
-    PE <- parameterEstimates.mi(object, se = FALSE, omit.imps = omit.imps,
-                                remove.system.eq = FALSE, remove.eq = FALSE)
+    FIT@ParTable$est <- coef_lavaan_mi(object, type = "user")
+    # PE <- parameterEstimates.mi(object, se = FALSE, omit.imps = omit.imps,
+    #                             remove.system.eq = FALSE, remove.eq = FALSE)
     ## merge pooled estimates into parameter table
-    FIT@ParTable$est <- merge(PT, PE, sort = FALSE,
-                              all.x = TRUE, all.y = FALSE)$est
+    # FIT@ParTable$est <- merge(PT, PE, sort = FALSE, all.x = TRUE, all.y = FALSE)$est
+
 
     ## store pooled exogenous covariance matrix?
     if (object@Options$conditional.x) {
@@ -236,163 +237,4 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
   FIT
 }
 
-
-##' @importFrom lavaan lavTestLRT lavListInspect
-mi_fit_indices_via_lavaan <- function(object, fit.measures = "all", baseline.model = NULL,
-                                      fm.args = list(standard.test     = "default",
-                                                     scaled.test       = "default",
-                                                     rmsea.ci.level    = 0.90,
-                                                     rmsea.close.h0    = 0.05,
-                                                     rmsea.notclose.h0 = 0.08,
-                                                     cat.check.pd      = TRUE),
-                                      output = "vector", omit.imps = c("no.conv","no.se"),
-                                      ...) {
-  ## this also checks the class
-  useImps <- imps2use(object = object, omit.imps = omit.imps)
-
-  lavoptions <- lavListInspect(object, "options")
-
-  ## necessary to pool CHI-SQUARED for fit indices?
-  poolChiSq <- TRUE
-  if (object@testList[[ useImps[1] ]][[1]]$test == "none") poolChiSq <- FALSE
-  if (!poolChiSq) stop('lavaan ERROR: fit measures not available if test = "none".')
-  #TODO: check fit.measures for indices calculated from chi-squared
-
-
-  ## check for additional arguments
-  dots <- list(...)
-  if (length(dots)) {
-    LRT.names <- intersect(names(dots),
-                           union(names(formals(lavTestLRT)),
-                                 names(formals(lavTestLRT.mi))))
-    dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
-  } else dots <- list(asymptotic = TRUE)
-
-  ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
-  test <- dots$test
-  if (is.null(test)) {
-    test <- "d4"
-  } else test <- tolower(test[1])
-  if (tolower(test) %in% c("cm","chan.meng","new.lrt","d4")) test <- "D4"
-  if (tolower(test) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) test <- "D3"
-  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-  if (test %in% c("D3","D4") && !lavoptions$estimator %in% c("ML","PML","FML")) {
-    message('"D3" and "D4" only available using maximum likelihood estimation. ',
-            'Changed test to "D2".')
-    test <- "D2"
-  }
-
-  ## check for robust
-  test.names <- lavoptions$test
-  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
-  if (length(test.names) > 1L) {
-    ## remove standard and any bootstrapped tests
-    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
-    if (length(rm.idx) > 0L) {
-      test.names <- test.names[-rm.idx]
-    }
-    ## only acknowledge the first scaled test statistic
-    if (length(test.names) > 1L) {
-      test.names <- test.names[1]
-    }
-  }
-
-  robust <- any(test.names %in% c("satorra.bentler","yuan.bentler",
-                                  "yuan.bentler.mplus","scaled.shifted",
-                                  "mean.var.adjusted","satterthwaite"))
-  if (robust) {
-    ## assign pool.robust option to object
-    if (is.null(dots$pool.robust)) {
-      pool.robust <- formals(lavTestLRT.mi)$pool.robust # default value
-    } else {
-      pool.robust <- dots$pool.robust # user-specified value
-    }
-  } else dots$pool.robust <- pool.robust <- FALSE
-
-  scaleshift <- any(test.names == "scaled.shifted")
-
-  if (pool.robust && test %in% c("D3","D4")) {
-    message('pool.robust = TRUE is only applicable when test = "D2". ',
-            'Changed test to "D2".')
-    test <- "D2"
-  }
-
-  dots$test <- test
-
-  ## mi2lavaan(...) arguments passed to lavTestLRT.mi() to pool the test stat
-  argList <- list(object = object, omit.imps = omit.imps)
-  argList <- c(argList, dots) # attach lavTestLRT.mi() arguments
-  argList$asANOVA    <- FALSE
-  argList$standard.test <- fm.args$standard.test # passed to pairwiseLRT() via ...
-  argList$scaled.test   <- fm.args$scaled.test   # passed to pairwiseLRT() via ...
-  argList$chi2    <- poolChiSq
-  argList$rmr <- FALSE
-  #TODO: argList$rmr <- any(grepl(pattern = "rmr", x = tolower(fit.measures)))
-
-  FIT <- do.call(mi2lavaan, argList)
-
-
-  ## BASELINE model (if necessary)
-  incremental <- c("cfi","tli","nnfi","rfi","nfi","pnfi","ifi","rni")
-  checkEach <- sapply(incremental, function(i) {
-    any(grepl(pattern = i, x = tolower(fit.measures)))
-  })
-  if (any(checkEach) || fit.measures[1] == "all") {
-
-    if (inherits(baseline.model, "lavaan.mi")) {
-      baseFit <- baseline.model
-
-    } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
-      baseFit <- object@external$baseline.model
-
-      ## fit default baseline.model using PTb from @baselineList
-    } else {
-      if (is.null(object@baselineList[[ useImps[1] ]]$partable)) {
-        stop('No baseline.model provided or fitted. Fit a custom baseline.model',
-             ' or set baseline=TRUE when fitting the target model.')
-      }
-      PTb <- object@baselineList[[ useImps[1] ]]$partable
-      PTb[c("est","se")] <- NULL
-      # FIXME: shouldn't need this line, but lav_partable_merge() fails when
-      #        lavaan:::lav_object_extended() returns a NULL slot instead of "plabel"
-      PTb$plabel <- paste0(".p", PTb$id, ".")
-      group <- lavListInspect(object, "group")
-      if (length(group) == 0L) group <- NULL
-      cluster <- lavListInspect(object, "cluster")
-      if (length(cluster) == 0L) cluster <- NULL
-
-      ## check for estimator= and test= arguments, to avoid unnecessary
-      ## concatenation of "standard"
-      ## https://github.com/yrosseel/lavaan/issues/306
-      ## Yves updated lavaan to avoid this.  Unnecessary now?
-      # if (!is.null(object@call$estimator)) {
-      #   ESTIMATOR <- try(object@call$estimator, silent = TRUE)
-      #   # evalq(meth, envir = parent.frame())
-      #   lavoptions$estimator <- object@call$estimator
-      # }
-      # if (!is.null(object@call$test)) {
-      #   lavoptions$test <- object@call$test
-      # }
-      baseFit <- lavaan.mi(model = PTb, data = object@DataList[useImps],
-                           group = group, cluster = cluster,
-                           test = lavoptions$test, estimator = lavoptions$estimator,
-                           fixed.x = lavoptions$fixed.x, se = "none", # to save time
-                           conditional.x = lavoptions$conditional.x,
-                           ordered = lavListInspect(object, "ordered"),
-                           parameterization = lavoptions$parameterization)
-    }
-
-    #FIXME? Is length(baseImps) always only as long as length(useImps), not the
-    #       original m? (even when passed as argument or stored in @external)?
-    argList$object <- baseFit
-    argList$omit.imps  <- setdiff(omit.imps, "no.se") # se="none" in baseFit
-
-    BASE <- do.call(mi2lavaan, argList)
-  } else BASE <- NULL
-
-
-  lavaan::fitMeasures(FIT, fit.measures = fit.measures,
-                      baseline.model = BASE,
-                      fm.args = fm.args, output = output)
-}
 
