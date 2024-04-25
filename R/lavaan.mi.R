@@ -59,9 +59,8 @@
 ##' ## fit model to imputed data sets
 ##' fit <- cfa.mi(HS.model, data = HS20imps)
 ##'
-##' summary(fit, fit.measures = TRUE)
-##' summary(fit, ci = FALSE, fmi = TRUE, output = "data.frame")
-##' summary(fit, ci = FALSE, stand = TRUE, rsq = TRUE)
+##' summary(fit, fit.measures = TRUE, fmi = TRUE)
+##' summary(fit, standardized = "std.all", rsquare = TRUE)
 ##'
 ##' ## model fit. D3 includes information criteria
 ##' anova(fit)
