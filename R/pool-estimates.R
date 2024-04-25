@@ -52,6 +52,9 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley. \doi{10.1002/9780470316696}
 ##'
+##' @seealso
+##' [standardizedSolution.mi()] to obtain inferential statistics for pooled
+##' standardized parameter estimates.
 ##'
 ##' @examples
 ##'
@@ -444,6 +447,52 @@ parameterEstimates.mi <- function(object,
 
 
 
+##' Standardized Pooled Parameter Estimates
+##'
+##' This function calculates pooled parameter estimates from a lavaan model
+##' fitted to multiple imputed data sets, then transforms the pooled estimates
+##' and their *SE*s using the delta method.
+##'
+##' @aliases standardizedSolution.mi standardizedsolution.mi
+##'
+##' @param object An object of class `lavaan.mi`
+##' @param omit.imps `character` indicating criteria for excluding imputations
+##'        from pooled results. See [lavaan.mi-class] for argument details.
+##' @param \dots Arguments passed to [lavaan::standardizedSolution()].
+##'
+##' @return
+##' A `data.frame` containing standardized model parameters, analogous to
+##' [lavaan::standardizedSolution()].  Delta-method *SE*s and CIs rely on
+##' asymptotic theory, so only Wald *z* tests are available, analogous to
+##' setting `parameterEstimates.mi(fit, asymptotic = TRUE)`.
+##'
+##' @seealso
+##' [parameterEstimates.mi()] for pooling unstandardized parameter estimates,
+##' which can also add standardized point estimates to indicate effect size.
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##' @examples
+##'
+##' data(HS20imps) # import a list of 20 imputed data sets
+##'
+##' ## specify CFA model from lavaan's ?cfa help page
+##' HS.model <- '
+##'   visual  =~ x1 + x2 + x3
+##'   textual =~ x4 + x5 + x6
+##'   speed   =~ x7 + x8 + x9
+##' '
+##' ## fit model to 20 imputed data sets
+##' fit <- cfa.mi(HS.model, data = HS20imps)
+##'
+##' standardizedSolution.mi(fit) # default: type = "std.all"
+##'
+##' ## only standardize latent variables:
+##' standardizedSolution.mi(fit, type = "std.lv",
+##'                         output = "text") # display like summary()
+##'
+##' @export
 standardizedSolution.mi <- function(object,
                                     omit.imps = c("no.conv","no.se"), ...) {
   ## make fake lavaan object from pooled results
@@ -456,7 +505,5 @@ standardizedSolution.mi <- function(object,
   MC$omit.imps <- NULL
   eval(MC)
 }
-## define with(out) camelCase, for consistency with lavaan
-# standardizedsolution.mi <- standardizedSolution.mi
 
 

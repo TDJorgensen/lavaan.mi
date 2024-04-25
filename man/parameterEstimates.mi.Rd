@@ -96,6 +96,10 @@ Guilford.
 Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley. \doi{10.1002/9780470316696}
 }
+\seealso{
+\code{\link[=standardizedSolution.mi]{standardizedSolution.mi()}} to obtain inferential statistics for pooled
+standardized parameter estimates.
+}
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
 \email{TJorgensen314@gmail.com})
