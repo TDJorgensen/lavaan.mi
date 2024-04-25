@@ -42,6 +42,7 @@ between-imputation variance to total (pooled) sampling variance
 between-imputation variance to within-imputation variance
 }
 
+Thus, RIV = FMI / (1 \eqn{-} FMI) and FMI = RIV / (1 + RIV).
 Ignored when \code{se=FALSE}.}
 
 \item{asymptotic}{\code{logical}. When \code{FALSE}, pooled Wald tests will be \emph{t}

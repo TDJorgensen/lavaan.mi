@@ -4,13 +4,6 @@
 ### analogs of parameterEstimates() and standardizedSolution()
 
 
-#TODO: add FMI and RIV descriptions to help page:
-# messRIV <- paste("The RIV will exceed 1 whenever between-imputation",
-#                  "variance exceeds within-imputation variance",
-#                  "(when FMI(1) > 50%).\n\n")
-#      RIV == FMI / (1 - FMI)
-
-
 ##' Pooled Parameter Estimates
 ##'
 ##' This function pools parameter estimates from a lavaan model fitted to
@@ -29,6 +22,7 @@
 ##'   - the relative increase in variance (`$riv`), which is the ratio of
 ##'     between-imputation variance to within-imputation variance
 ##'
+##'   Thus, RIV = FMI / (1 \eqn{-} FMI) and FMI = RIV / (1 + RIV).
 ##'   Ignored when `se=FALSE`.
 ##' @param asymptotic `logical`. When `FALSE`, pooled Wald tests will be *t*
 ##'        statistics with associated degrees of freedom (*df*). When `TRUE`,
