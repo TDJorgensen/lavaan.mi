@@ -87,7 +87,7 @@ the appropriate summary statistics for any particular SEM (see Examples).
 }
 \examples{
 
-data(HS20imps)
+data(HS20imps) # import a list of 20 imputed data sets
 
 ## fit saturated model to imputations, pool those results
 impSubset1 <- lapply(HS20imps, "[", i = paste0("x", 1:9)) # only modeled variables

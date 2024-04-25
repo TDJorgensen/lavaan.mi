@@ -47,7 +47,7 @@ This functionality was originally provided via \code{runMI()} in the
 on the GitHub page for this package (find link in DESCRIPTION).
 }
 \examples{
-data(HS20imps)
+data(HS20imps) # import a list of 20 imputed data sets
 
 ## specify CFA model from lavaan's ?cfa help page
 HS.model <- '
@@ -104,7 +104,7 @@ lavTestWald.mi(mgfit.scalar, constraints = eq.means)
 
 
 ## ordered-categorical data
-data(binHS5imps)
+data(binHS5imps) # import a list of 5 imputed data sets
 
 ## fit model
 catout <- cfa.mi(HS.model, data = binHS5imps,

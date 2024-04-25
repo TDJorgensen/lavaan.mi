@@ -135,7 +135,7 @@ by pooling the complete-data score-test statistics across imputed data sets
 (i.e., "D2"; Li et al., 1991).
 }
 \examples{
-data(HS20imps)
+data(HS20imps) # import a list of 20 imputed data sets
 
 ## specify CFA model from lavaan's ?cfa help page
 HS.model <- '

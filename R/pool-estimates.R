@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 April 2024
+### Last updated: 25 April 2024
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -19,6 +19,66 @@
 ##'
 ##' @aliases parameterEstimates.mi parameterestimates.mi
 ##' @importFrom lavaan lavNames lavListInspect parTable
+##'
+##' @param object An object of class `lavaan.mi`
+##' @param se,zstat,pvalue,ci,level,standardized,cov.std,rsquare,remove.system.eq,remove.eq,remove.ineq,remove.def,remove.nonfree,remove.unused,output,header
+##'   See [lavaan::parameterEstimates()].
+##' @param fmi `logical` indicating whether to add 2 columns:
+##'   - the fraction of missing information (`$fmi`), which is the ratio of
+##'     between-imputation variance to total (pooled) sampling variance
+##'   - the relative increase in variance (`$riv`), which is the ratio of
+##'     between-imputation variance to within-imputation variance
+##'
+##'   Ignored when `se=FALSE`.
+##' @param asymptotic `logical`. When `FALSE`, pooled Wald tests will be *t*
+##'        statistics with associated degrees of freedom (*df*). When `TRUE`,
+##'        the *df* are assumed to be sufficiently large for a *t* statistic to
+##'        approximate a standard normal distribution, so it is printed as a *z*
+##'        statistic.
+##' @param scale.W `logical`. If `TRUE` (default), the `vcov`
+##'        method will calculate the pooled covariance matrix by scaling the
+##'        within-imputation component by the ARIV (see Enders, 2010, p. 235,
+##'        for definition and formula). Otherwise, the pooled matrix is
+##'        calculated as the weighted sum of the within-imputation and
+##'        between-imputation components (see Enders, 2010, ch. 8, for details).
+##' @param omit.imps `character` indicating criteria for excluding imputations
+##'        from pooled results. See [lavaan.mi-class] for argument details.
+##'
+##' @return
+##' A `data.frame`, analogous to [lavaan::parameterEstimates()], but estimates,
+##' *SE*s, and tests are pooled across imputations.
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##' @references
+##'   Enders, C. K. (2010). *Applied missing data analysis*. New York, NY:
+##'   Guilford.
+##'
+##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
+##'   New York, NY: Wiley. \doi{10.1002/9780470316696}
+##'
+##'
+##' @examples
+##'
+##' data(HS20imps) # import a list of 20 imputed data sets
+##'
+##' ## specify CFA model from lavaan's ?cfa help page
+##' HS.model <- '
+##'   visual  =~ x1 + x2 + x3
+##'   textual =~ x4 + x5 + x6
+##'   speed   =~ x7 + x8 + x9
+##' '
+##' ## fit model to 20 imputed data sets
+##' fit <- cfa.mi(HS.model, data = HS20imps)
+##'
+##' ## pooled estimates, with various optional features:
+##'
+##' parameterEstimates.mi(fit, asymptotic = TRUE, rsquare = TRUE)
+##' parameterEstimates.mi(fit, ci = FALSE, fmi = TRUE, output = "text")
+##' parameterEstimates.mi(fit, standardized = "std.all", se = FALSE)
+##'
+##' @export
 parameterEstimates.mi <- function(object,
                                   # select columns
                                   se = TRUE, zstat = se, pvalue = zstat,
@@ -27,16 +87,16 @@ parameterEstimates.mi <- function(object,
                                   # add rows
                                   rsquare = FALSE,
                                   # control
+                                  asymptotic = FALSE,
                                   scale.W = !asymptotic,
                                   omit.imps = c("no.conv","no.se"),
-                                  asymptotic = FALSE,
                                   # remove rows
                                   remove.system.eq = TRUE,
                                   remove.eq = TRUE,
                                   remove.ineq = TRUE,
                                   remove.def = FALSE,
                                   remove.nonfree = FALSE,
-                                  remove.step1 = TRUE,
+                                  # remove.step1 = TRUE, # Only for sam(). Make sam.mi()?
                                   remove.unused = FALSE,
                                   # output
                                   output = "data.frame",
@@ -63,6 +123,13 @@ parameterEstimates.mi <- function(object,
   PE <- parTable(object)
   free <- PE$free > 0L | PE$op == ":="
   STDs <- !(PE$op %in% c("==","<",">")) # which rows can be standardized
+  ## remove columns that are never returned
+  PE$id     <- NULL
+  PE$ustart <- NULL
+  PE$start  <- NULL
+  PE$plabel <- NULL
+  PE$est    <- NULL # replaced below
+  PE$se     <- NULL # replaced below
 
   PE$est <- coef_lavaan_mi(object, type = "all", omit.imps = omit.imps)
 
@@ -202,7 +269,7 @@ parameterEstimates.mi <- function(object,
     for (i in which(!sapply(colnames(PE),
                             function(x) x %in% c("lhs","op","rhs","block",
                                                  "level","group","est","exo")))) {
-      rsqPE[ , i] <- NA
+      rsqPE[ , i] <- ifelse(is.character(PE[,i]), "", NA_integer_)
     }
     ## maybe redundant, but might have extra columns
     environment(standardizedSolution.mi) <- environment()
@@ -215,7 +282,6 @@ parameterEstimates.mi <- function(object,
     isEndoSTD <- sapply(STD$lhs, function(x) x %in% endoNames)
     std.all <- STD$est.std[STD$lhs == STD$rhs & STD$op == "~~" & isEndoSTD]
     rsqPE$est <- ifelse(std.all < 0, NA, 1 - std.all) # negative variances
-    if (output == "text") rsqPE$label <- ""
     PE <- rbind(PE, rsqPE)
   }
 

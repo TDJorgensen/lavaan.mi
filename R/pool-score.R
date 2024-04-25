@@ -144,7 +144,7 @@
 ##' @seealso [lavaan::lavTestScore()]
 ##'
 ##' @examples
-##' data(HS20imps)
+##' data(HS20imps) # import a list of 20 imputed data sets
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
