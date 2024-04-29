@@ -23,6 +23,10 @@
 \S4method{summary}{lavaan.mi}(
   object,
   header = TRUE,
+  fit.measures = FALSE,
+  fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
+    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE,
+    cat.check.pd = TRUE),
   estimates = TRUE,
   ci = FALSE,
   standardized = FALSE,
@@ -33,8 +37,9 @@
   asymptotic = FALSE,
   scale.W = !asymptotic,
   omit.imps = c("no.conv", "no.se"),
-  remove.step1 = TRUE,
   remove.unused = TRUE,
+  modindices = FALSE,
+  nd = 3L,
   ...
 )
 
@@ -86,11 +91,15 @@
 \S4method{resid}{lavaan.mi}(object, type = c("raw", "cor"), omit.imps = c("no.conv", "no.se"))
 }
 \arguments{
-\item{object}{An object of class \code{lavaan.mi}}
+\item{object}{An object of class \linkS4class{lavaan.mi}}
 
-\item{fmi}{\code{logical} indicating whether to include the Fraction Missing
-Information (FMI) for parameter estimates in the \code{summary}
-output (see \strong{Value} section).}
+\item{header, fit.measures, fm.args, estimates, ci, standardized, cov.std, rsquare, remove.unused, modindices}{See description in the help page for \linkS4class{lavaan} class.}
+
+\item{fit.measures, baseline.model, fm.args}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
+
+\item{fmi}{\code{logical} indicating whether to add the Fraction Missing
+Information (FMI) and (average) relative increase in variance (ARIV)
+to the output.}
 
 \item{asymptotic}{\code{logical}. If \code{FALSE} (typically a default, but
 see \strong{Value} section for details using various methods), pooled
@@ -135,28 +144,21 @@ model).}
 subsequently to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}.}
 
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
-\code{nobs} method should return the total sample size or (if
+\code{nobs()} method should return the total sample size or (if
 \code{FALSE}) a vector of group sample sizes.}
 
 \item{type}{The meaning of this argument varies depending on which method it
 it used for. Find detailed descriptions in the \strong{Value} section
-under \code{coef}, \code{vcov}, and \code{residuals}.}
+under \code{coef()}, \code{vcov()}, and \code{residuals()}.}
 
-\item{labels}{\code{logical} indicating whether the \code{coef} output
+\item{labels}{\code{logical} indicating whether the \code{coef()} output
 should include parameter labels. Default is \code{TRUE}.}
-
-\item{fit.measures, baseline.model, fm.args}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.
-\code{summary(object, fit.measures = TRUE)} will print (but not
-return) a table of fit measures to the console.}
-
-\item{se, ci, level, standardized, rsquare, header, output}{See
-\code{\link[lavaan:parameterEstimates]{lavaan::parameterEstimates()}}. \code{output}
-can also be passed to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-See \linkS4class{lavaan}. Returns the pooled point estimates (i.e.,
-averaged across imputed data sets; see Rubin, 1987).}
+See argument description on the help page for \linkS4class{lavaan} class.
+Returns the pooled point estimates (i.e., averaged across imputed data
+sets; see Rubin, 1987).}
 
 \item{vcov}{\code{signature(object = "lavaan.mi", scale.W = TRUE, omit.imps = c("no.conv","no.se"), type = c("pooled","between","within","ariv"))}:  By default, returns the
 pooled covariance matrix of parameter estimates (\code{type = "pooled"}),
@@ -188,7 +190,8 @@ of the difference(s) in fit between nested models passed via \code{...}.
 This is just a wrapper around \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, where you can
 find details about additional arguments.}
 
-\item{fitMeasures}{\code{signature(object = "lavaan.mi", fit.measures = "all", baseline.model = NULL, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.close.h0 = 0.05, rmsea.notclose.h0 = 0.08, cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"), ...)}: See lavaan's  \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for details.
+\item{fitMeasures}{\code{signature(object = "lavaan.mi", fit.measures = "all", baseline.model = NULL, h1.model = NULL, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"), ...)}:
+See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for details.
 Pass additional arguments to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
 
@@ -196,25 +199,12 @@ Pass additional arguments to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} via \
 convergence rates and estimation problems (if applicable) across imputed
 data sets.}
 
-\item{summary}{\code{signature(object = "lavaan.mi", se = TRUE, ci = FALSE, level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08), ...)}:
-see \code{\link[lavaan:parameterEstimates]{lavaan::parameterEstimates()}} for details.
-By default, \code{summary} returns pooled point and \emph{SE}
-estimates, along with \emph{t} test statistics and their associated
-\emph{df} and \emph{p} values. If \code{ci = TRUE}, confidence intervals
-are returned with the specified confidence \code{level} (default 95\\% CI).
-If \code{asymptotic = TRUE}, \emph{z} instead of \emph{t} tests are
-returned. \code{standardized} solution(s) can also be requested by name
-(\code{"std.lv"} or \code{"std.all"}) or both are returned with \code{TRUE}.
-\emph{R}-squared for endogenous variables can be requested, as well as the
-Fraction Missing Information (FMI) for parameter estimates. By default, the
-output will appear like \code{lavaan}'s \code{summary} output, but if
-\code{output == "data.frame"}, the returned \code{data.frame} will resemble
-the \code{parameterEstimates} output. The \code{scale.W} argument is
-passed to \code{vcov} (see description above).
-Setting \code{fit.measures=TRUE} will additionally print fit measures to
-the console, but they will not be returned; additional arguments may be
-passed via \code{...} to \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} and
-subsequently to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}.}
+\item{summary}{\code{signature(object = "lavaan.mi", header = TRUE, fit.measures = FALSE,fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), estimates = TRUE, ci = FALSE, standardized = FALSE, std = standardized, cov.std = TRUE, rsquare = FALSE, fmi = FALSE, asymptotic = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), remove.unused = TRUE, modindices = FALSE, nd = 3L, ...)}:
+Analogous to \code{summary()} for \code{lavaan-class} objects.
+By default, \code{summary} returns output from \code{\link[=parameterEstimates.mi]{parameterEstimates.mi()}},
+with some cursory information in the header.
+Setting \code{fit.measures=TRUE} will additionally run \code{fitMeasures()}, and
+setting \code{modindices=TRUE} will additionally run \code{\link[=modificationIndices.mi]{modificationIndices.mi()}}.}
 }
 \description{
 This class extends the \linkS4class{lavaanList} class, created by

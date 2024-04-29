@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 15 April 2024
+### Last updated: 29 April 2024
 ### pool fit indices
 ### define fitMeasures() method for lavaan.mi
 
@@ -95,8 +95,8 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
   argList$standard.test <- fm.args$standard.test # passed to pairwiseLRT() via ...
   argList$scaled.test   <- fm.args$scaled.test   # passed to pairwiseLRT() via ...
   argList$chi2    <- poolChiSq
-  argList$rmr <- FALSE
-  #TODO: argList$rmr <- any(grepl(pattern = "rmr", x = tolower(fit.measures)))
+  argList$rmr <- ( fit.measures[1] %in% c("all","default")   ||
+                   any(grepl(pattern = "rmr", x = tolower(fit.measures))) )
 
   FIT <- do.call(mi2lavaan, argList)
 
@@ -106,7 +106,7 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
   checkEach <- sapply(incremental, function(i) {
     any(grepl(pattern = i, x = tolower(fit.measures)))
   })
-  if (any(checkEach) || fit.measures[1] == "all") {
+  if (any(checkEach) || fit.measures[1] %in% c("all","default")) {
 
     if (inherits(baseline.model, "lavaan.mi")) {
       baseFit <- baseline.model
@@ -159,11 +159,28 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
     BASE <- do.call(mi2lavaan, argList)
   } else BASE <- NULL
 
-  #TODO: same for h1.model
+
+  #FIXME: This will NOT yield a pooled chisq-difference test.
+  #       It will calculate the difference between 2 pooled chisq stats.
+  ## custom h1.model (if necessary)
+  # if (inherits(h1.model, "lavaan.mi")) {
+  #   h1Fit <- h1.model
+  # } else if (inherits(object@external$h1.model, "lavaan.mi")) {
+  #   h1Fit <- object@external$h1.model
+  # } else h1Fit <- NULL
+  #
+  # if (is.null(h1Fit)) {
+  #   H1 <- NULL
+  # } else {
+  #   argList$object <- h1Fit
+  #   argList$omit.imps  <- omit.imps # in case it was changed for BASE
+  #   H1 <- do.call(mi2lavaan, argList)
+  # }
 
 
   lavaan::fitMeasures(FIT, fit.measures = fit.measures,
-                      baseline.model = BASE, h1.model = H1,
+                      baseline.model = BASE,
+                      h1.model = NULL, #FIXME: Possible? Necessary?
                       fm.args = fm.args, output = output)
 }
 

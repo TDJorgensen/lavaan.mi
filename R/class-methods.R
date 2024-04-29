@@ -51,13 +51,15 @@
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
 ##' @slot baselineList See [lavaanList-class]
 ##'
-##' @param se,ci,level,standardized,rsquare,header,output See
-##'        [lavaan::parameterEstimates()]. `output`
-##'        can also be passed to [lavaan::fitMeasures()].
-##' @param object An object of class `lavaan.mi`
-##' @param fmi `logical` indicating whether to include the Fraction Missing
-##'        Information (FMI) for parameter estimates in the `summary`
-##'        output (see **Value** section).
+##' @param object An object of class [lavaan.mi-class]
+##' @param header,fit.measures,fm.args,estimates,ci,standardized,cov.std,rsquare,remove.unused,modindices
+##'        See description in the help page for [lavaan-class] class.
+##' @param fit.measures,baseline.model,fm.args See [lavaan::fitMeasures()].
+##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
+##'        subsequently to [lavaan::lavTestLRT()].
+##' @param fmi `logical` indicating whether to add the Fraction Missing
+##'        Information (FMI) and (average) relative increase in variance (ARIV)
+##'        to the output.
 ##' @param asymptotic `logical`. If `FALSE` (typically a default, but
 ##'        see **Value** section for details using various methods), pooled
 ##'        tests (of fit or pooled estimates) will be *F* or *t*
@@ -94,26 +96,22 @@
 ##'        apply their own custom omission criteria (or simulations can use
 ##'        different numbers of imputations without redundantly refitting the
 ##'        model).
-##' @param labels `logical` indicating whether the `coef` output
+##' @param labels `logical` indicating whether the `coef()` output
 ##'        should include parameter labels. Default is `TRUE`.
 ##' @param total `logical` (default: `TRUE`) indicating whether the
-##'        `nobs` method should return the total sample size or (if
+##'        `nobs()` method should return the total sample size or (if
 ##'        `FALSE`) a vector of group sample sizes.
 ##' @param type The meaning of this argument varies depending on which method it
 ##'        it used for. Find detailed descriptions in the **Value** section
-##'        under `coef`, `vcov`, and `residuals`.
-##' @param fit.measures,baseline.model,fm.args See [lavaan::fitMeasures()].
-##'        `summary(object, fit.measures = TRUE)` will print (but not
-##'        return) a table of fit measures to the console.
-##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
-##'        subsequently to [lavaan::lavTestLRT()].
+##'        under `coef()`, `vcov()`, and `residuals()`.
 ##'
 ##' @return
 ##'
 ##' \item{coef}{`signature(object = "lavaan.mi", type = "free",
 ##'   labels = TRUE, omit.imps = c("no.conv","no.se"))`:
-##'   See [lavaan-class]. Returns the pooled point estimates (i.e.,
-##'   averaged across imputed data sets; see Rubin, 1987).}
+##'   See argument description on the help page for [lavaan-class] class.
+##'   Returns the pooled point estimates (i.e., averaged across imputed data
+##'   sets; see Rubin, 1987).}
 ##'
 ##' \item{vcov}{`signature(object = "lavaan.mi", scale.W = TRUE,
 ##'   omit.imps = c("no.conv","no.se"),
@@ -150,11 +148,12 @@
 ##'   find details about additional arguments.}
 ##'
 ##' \item{fitMeasures}{`signature(object = "lavaan.mi",
-##'   fit.measures = "all", baseline.model = NULL,
-##'   fm.args = list(standard.test = "default", scaled.test = "default",
-##'   rmsea.ci.level = 0.90, rmsea.close.h0 = 0.05, rmsea.notclose.h0 = 0.08,
-##'   cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"),
-##'   ...)`: See lavaan's  [lavaan::fitMeasures()] for details.
+##'     fit.measures = "all", baseline.model = NULL, h1.model = NULL,
+##'     fm.args = list(standard.test = "default", scaled.test = "default",
+##'     rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
+##'     rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE),
+##'     output = "vector", omit.imps = c("no.conv","no.se"), ...)`:
+##'   See [lavaan::fitMeasures()] for details.
 ##'   Pass additional arguments to [lavTestLRT.mi()] via `...`.}
 ##' \item{fitmeasures}{alias for `fitMeasures`.}
 ##'
@@ -162,31 +161,19 @@
 ##'   convergence rates and estimation problems (if applicable) across imputed
 ##'   data sets.}
 ##'
-##' \item{summary}{`signature(object = "lavaan.mi", se = TRUE, ci = FALSE,
-##'   level = .95, standardized = FALSE, rsquare = FALSE, fmi = FALSE,
-##'   scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
-##'   asymptotic = FALSE, header = TRUE, output = "text", fit.measures = FALSE,
-##'   fm.args = list(standard.test = "default", scaled.test = "default",
-##'                  rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
-##'                  rmsea.h0.notclosefit = 0.08), ...)`:
-##'  see [lavaan::parameterEstimates()] for details.
-##'  By default, `summary` returns pooled point and *SE*
-##'  estimates, along with *t* test statistics and their associated
-##'  *df* and *p* values. If `ci = TRUE`, confidence intervals
-##'  are returned with the specified confidence `level` (default 95\% CI).
-##'  If `asymptotic = TRUE`, *z* instead of *t* tests are
-##'  returned. `standardized` solution(s) can also be requested by name
-##'  (`"std.lv"` or `"std.all"`) or both are returned with `TRUE`.
-##'  *R*-squared for endogenous variables can be requested, as well as the
-##'  Fraction Missing Information (FMI) for parameter estimates. By default, the
-##'  output will appear like `lavaan`'s `summary` output, but if
-##'  `output == "data.frame"`, the returned `data.frame` will resemble
-##'  the `parameterEstimates` output. The `scale.W` argument is
-##'  passed to `vcov` (see description above).
-##'  Setting `fit.measures=TRUE` will additionally print fit measures to
-##'  the console, but they will not be returned; additional arguments may be
-##'  passed via `...` to [lavaan::fitMeasures()] and
-##'  subsequently to [lavTestLRT.mi()].}
+##' \item{summary}{`signature(object = "lavaan.mi", header = TRUE,
+##'    fit.measures = FALSE,fm.args = list(standard.test = "default",
+##'    scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05,
+##'    rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE),
+##'    estimates = TRUE, ci = FALSE, standardized = FALSE, std = standardized,
+##'    cov.std = TRUE, rsquare = FALSE, fmi = FALSE, asymptotic = FALSE,
+##'    scale.W = !asymptotic, omit.imps = c("no.conv","no.se"),
+##'    remove.unused = TRUE, modindices = FALSE, nd = 3L, ...)`:
+##'  Analogous to `summary()` for `lavaan-class` objects.
+##'  By default, `summary` returns output from [parameterEstimates.mi()],
+##'  with some cursory information in the header.
+##'  Setting `fit.measures=TRUE` will additionally run `fitMeasures()`, and
+##'  setting `modindices=TRUE` will additionally run [modificationIndices.mi()].}
 ##'
 ##' @section Objects from the Class: See the [lavaan.mi()] function
 ##'   for details. Wrapper functions include [cfa.mi()],
@@ -217,7 +204,7 @@ setClass("lavaan.mi", contains = "lavaanList",
 
 
 ## show() basic info at the top of summary()
-lavaan_mi_short_summary <- function(object) {
+lavaan_mi_short_summary <- function(object, return.string = FALSE) {
   nData <- object@meta$ndat
 
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -232,24 +219,40 @@ lavaan_mi_short_summary <- function(object) {
   Heywood.lv <- sapply(object@convergence, "[[", "Heywood.lv")
   Heywood.lv[is.na(Heywood.lv)] <- FALSE
 
-  cat('lavaan.mi object based on ', nData, ' imputed data sets. \n',
-      'See class?lavaan.mi help page for available methods. \n\n',
-      'Convergence information:\n', 'The model converged on ',
-      nConverged, ' imputed data sets \n\n', sep = "")
+  ## assemble a message to print
+  MESSAGE <- paste0('lavaan.mi object fit to ', nData,
+                    ' imputed data sets using:\n',
+                    ' - lavaan    (', object@version[1],
+                    ')\n - lavaan.mi (', object@version[2],')\n',
+                    'See class?lavaan.mi help page for available methods. \n\n',
+                    'Convergence information:\n', 'The model converged on ',
+                    nConverged, ' imputed data sets.\n')
 
-  if (!all(SE)) cat('Standard errors could not be computed for data set(s)',
-                    paste(which(!SE), collapse = ", "), '\nTry fitting the',
-                    'model to the individual data set(s) to diagnose',
-                    'problems. If they cannot be fixed, try inspecting the',
-                    'imputations. It may be necessary to reimpute the data',
-                    'with some restrictions imposed. \n\n')
+  if (all(SE)) {
+    MESSAGE <- c(MESSAGE,
+                 'Standard errors were available for all imputations.\n')
+  } else {
+    MESSAGE <- c(MESSAGE,
+                 paste('Standard errors could not be computed for data set(s)',
+                       paste(which(!SE), collapse = ", "), '\nTry fitting the',
+                       'model to the individual data set(s) to diagnose',
+                       'problems. If they cannot be fixed, try inspecting the',
+                       'imputations. It may be necessary to reimpute the data',
+                       'with some restrictions imposed.\n'))
+  }
 
-  if (any(Heywood.ov | Heywood.lv))
-    cat('Heywood cases detected for data set(s)',
-        paste(which(Heywood.ov | Heywood.lv), collapse = ", "),
-        '\nThese are not necessarily a cause for concern, unless a pooled',
-        'estimate is also a Heywood case. \n\n')
+  if (any(Heywood.ov | Heywood.lv)) {
+    MESSAGE <- c(MESSAGE,
+                 paste('Heywood cases detected for data set(s)',
+                       paste(which(Heywood.ov | Heywood.lv), collapse = ", "),
+                       '\nThese are not necessarily a cause for concern, unless',
+                       'a pooled estimate is also a Heywood case.\n\n'))
+  }
 
+  #TODO: add test stat? (like lavaan-class prints)
+
+  if (return.string) return(paste(MESSAGE, collapse = ""))
+  ## else
   object
 }
 ##' @name lavaan.mi-class
@@ -257,28 +260,27 @@ lavaan_mi_short_summary <- function(object) {
 ##' @importFrom methods show
 ##' @export
 setMethod("show", "lavaan.mi", function(object) {
-
+  MESSAGE <- lavaan_mi_short_summary(object, return.string = TRUE)
+  cat(MESSAGE)
   object
 })
-#TODO: add test stat, like lavaan-class prints
 
 
 
 ## analog to lavaan:::lav_object_summary(), which creates a list of
 ## components to appear in the summary() output.  Creating a similar
 ## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
-lavaan_mi_object_summary <- function(object, header = TRUE,
-                                     fit.measures = FALSE,
-                                     fm.args =
-                                       list(
-                                         standard.test = "default",
-                                         scaled.test = "default",
-                                         rmsea.ci.level = 0.90,
-                                         rmsea.h0.closefit = 0.05,
-                                         rmsea.h0.notclosefit = 0.08,
-                                         robust = TRUE,
-                                         cat.check.pd = TRUE
-                                       ),
+lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
+                                     asymptotic = FALSE, scale.W = !asymptotic,
+                                     #TODO: add pool.test=
+                                     header = TRUE, fit.measures = FALSE,
+                                     fm.args = list(standard.test   = "default",
+                                                    scaled.test     = "default",
+                                                    rmsea.ci.level       = 0.90,
+                                                    rmsea.h0.closefit    = 0.05,
+                                                    rmsea.h0.notclosefit = 0.08,
+                                                    robust               = TRUE,
+                                                    cat.check.pd         = TRUE),
                                      estimates = TRUE,
                                      ci = FALSE,
                                      fmi = FALSE,
@@ -305,33 +307,157 @@ lavaan_mi_object_summary <- function(object, header = TRUE,
   }
 
   if (header) {
-    #TODO: Avoid this optim shit, just copy show() method
+    ## custom "top" for lavaan.mi objects:
+    res$top_of_lavaanmi <- lavaan_mi_short_summary(object, return.string = TRUE)
+    ## the rest below is copied from lavaan:::lav_object_summary()
 
-    res$header <- list(
-      lavaan.version = object@version,
-      sam.approach = FALSE,
+    # 2. summarize optim info (including estimator)
+    res$optim <- list(
+      estimator = object@Options$estimator,
+      estimator.args = object@Options$estimator.args,
       optim.method = object@Options$optim.method,
-      optim.iterations = object@optim$iterations,
-      optim.converged = object@optim$converged
+      npar = object@Model@nx.free,
+      eq.constraints = object@Model@eq.constraints,
+      nrow.ceq.jac = nrow(object@Model@ceq.JAC),
+      nrow.cin.jac = nrow(object@Model@cin.JAC),
+      nrow.con.jac = nrow(object@Model@con.jac),
+      con.jac.rank = qr(object@Model@con.jac)$rank
     )
+
+    # 4. summarize lavdata (copy lavaan's internal function)
+    lav_data_summary_short <- function(lavdata) {
+
+      # two or three columns (depends on nobs/norig)
+      threecolumn <- FALSE
+      for (g in 1:lavdata@ngroups) {
+        if (lavdata@nobs[[g]] != lavdata@norig[[g]]) {
+          threecolumn <- TRUE
+          break
+        }
+      }
+
+      # clustered data?
+      clustered <- FALSE
+      if (.hasSlot(lavdata, "cluster") && # in case we have an old obj
+          length(lavdata@cluster) > 0L) {
+        clustered <- TRUE
+      }
+
+      # multilevel data?
+      multilevel <- FALSE
+      if (.hasSlot(lavdata, "nlevels") && # in case we have an old obj
+          lavdata@nlevels > 1L) {
+        multilevel <- TRUE
+      }
+
+      # extract summary information
+      datasummary <- list(
+        ngroups = lavdata@ngroups,
+        nobs = unlist(lavdata@nobs)
+      )
+
+      # norig?
+      if (threecolumn) {
+        datasummary$norig <- unlist(lavdata@norig)
+      }
+
+      # multiple groups?
+      if (lavdata@ngroups > 1L) {
+        datasummary$group.label <- lavdata@group.label
+      }
+
+      # sampling weights?
+      if ((.hasSlot(lavdata, "weights")) && # in case we have an old object
+          (!is.null(lavdata@weights[[1L]]))) {
+        datasummary$sampling.weights <- lavdata@sampling.weights
+      }
+
+      # clustered/multilevel data?
+      if (clustered) {
+        if (multilevel) {
+          datasummary$nlevels <- lavdata@nlevels
+        }
+        datasummary$cluster <- lavdata@cluster
+
+        if (lavdata@ngroups == 1L) {
+          datasummary$nclusters <- unlist(lavdata@Lp[[1]]$nclusters)
+        } else {
+          tmp <- vector("list", length = lavdata@ngroups)
+          for (g in seq_len(lavdata@ngroups)) {
+            tmp[[g]] <- unlist(lavdata@Lp[[g]]$nclusters)
+          }
+          datasummary$nclusters <- tmp
+        }
+      }
+
+      # missing data?
+      if (!is.null(lavdata@Mp[[1L]])) {
+        datasummary$npatterns <- sapply(lavdata@Mp, "[[", "npatterns")
+        if (multilevel && !is.null(lavdata@Mp[[1L]]$Zp)) {
+          datasummary$npatterns2 <- sapply(lapply(
+            lavdata@Mp,
+            "[[", "Zp"
+          ), "[[", "npatterns")
+        }
+      }
+
+      datasummary
+    }
+
+    res$data <- lav_data_summary_short(lavdata = object@Data)
+
+    ## lavaan prints the test here, but pooling takes time.
+    ## Instead, conditionally add pooled test with(out) fit.measures
+  }
+  if (fit.measures) {
+    res$fit <- mi_fit_indices_via_lavaan(object, fm.args = fm.args,
+                                         omit.imps = omit.imps,
+                                         fit.measures = "default")
+  } else {
+    ## just the pooled test(s)
+    chiSqTests <- c("chisq","df","pvalue",   "chisq.scaling.factor",
+                    "chisq.scaled","df.scaled","pvalue.scaled")
+    res$fit <- mi_fit_indices_via_lavaan(object, fm.args = fm.args,
+                                         fit.measures = chiSqTests)
+    attr(res$fit, "add.h0") <- TRUE
   }
 
+  if (estimates) {
+    PE <- parameterEstimates.mi(object, omit.imps = omit.imps,
+                                asymptotic = asymptotic, scale.W = scale.W,
+                                ci = ci, standardized = standardized,
+                                rsquare = rsquare, fmi = fmi, cov.std = cov.std,
+                                remove.eq = FALSE, remove.system.eq = TRUE,
+                                remove.ineq = FALSE, remove.def = FALSE,
+                                remove.nonfree = FALSE,
+                                remove.unused = remove.unused,
+                                output = "text", header = TRUE)
+    res$pe <- as.data.frame(PE)
+  }
+
+  if (modindices) {
+    MI <- modificationIndices.mi(object, omit.imps = omit.imps,
+                                 #TODO: add pool.test=
+                                 standardized = TRUE, cov.std = cov.std)
+    res$mi <- MI
+  }
+
+  ## return lavaan.summary S3-class object for lavaan's print method
+  class(res) <- c("lavaan.summary", "list")
   res
 }
 ##' @importFrom stats pt qt pnorm qnorm
 ##' @importFrom lavaan lavListInspect parTable lavNames
 ##' @importFrom methods getMethod
 summary_lavaan_mi <- function(object, header = TRUE,
-                              # fit.measures = FALSE,
-                              # fm.args =
-                              #   list(
-                              #     standard.test        = "default",
-                              #     scaled.test          = "default",
-                              #     rmsea.ci.level       = 0.90,
-                              #     rmsea.h0.closefit    = 0.05,
-                              #     rmsea.h0.notclosefit = 0.08
-                              #     robust               = TRUE,
-                              #     cat.check.pd         = TRUE),
+                              fit.measures = FALSE,
+                              fm.args = list(standard.test        = "default",
+                                             scaled.test          = "default",
+                                             rmsea.ci.level       = 0.90,
+                                             rmsea.h0.closefit    = 0.05,
+                                             rmsea.h0.notclosefit = 0.08,
+                                             robust               = TRUE,
+                                             cat.check.pd         = TRUE),
                               estimates = TRUE,
                               ci = FALSE, #level = .95,
                               ## standardization
@@ -342,41 +468,21 @@ summary_lavaan_mi <- function(object, header = TRUE,
                               scale.W = !asymptotic,
                               omit.imps = c("no.conv","no.se"),
                               ## remove rows?
-                              remove.step1 = TRUE,
                               remove.unused = TRUE,
-                              # modindices = FALSE,
+                              modindices = FALSE, nd = 3L,
                               ...) {
-  PE <- parameterEstimates.mi(object = object,
-                              ci = ci, standardized = standardized,
-                              rsquare = rsquare, fmi = fmi,
-                              cov.std = cov.std,
-                              remove.eq = FALSE, remove.system.eq = TRUE,
-                              remove.ineq = FALSE, remove.def = FALSE,
-                              remove.nonfree = FALSE,
-                              remove.step1 = remove.step1,
-                              remove.unused = remove.unused,
-                              output = "text",
-                              header = TRUE)
 
-  #TODO: move this to a print method for an object class this function returns
-  #      (like lav_object_summary() does)
-  # if (output == "text") {
-  #   getMethod("show", "lavaan.mi")(object)
-  #   cat(messPool)
-  # }
-
-
-  # if (fit.measures) {
-  #   indices <- c("chisq","df","pvalue","cfi","tli","rmsea","srmr")
-  #   FITS <- suppressWarnings(fitMeasures_mi(object, output = "text",
-  #                                           fit.measures = indices,
-  #                                           fm.args = fm.args, ...))
-  #   try(print(FITS, add.h0 = TRUE), silent = TRUE)
-  # }
-
-  #TODO: add score-test option: if (modindices) {}
-
-  PE
+  SUM <- lavaan_mi_object_summary(object = object, omit.imps = omit.imps,
+                                  asymptotic = asymptotic, scale.W = scale.W,
+                                  header = header,
+                                  fit.measures = fit.measures, fm.args = fm.args,
+                                  estimates = estimates, ci = ci, fmi = fmi,
+                                  std = std, standardized = standardized,
+                                  cov.std = cov.std, rsquare = rsquare,
+                                  remove.unused = remove.unused,
+                                  modindices = modindices)
+  attr(SUM, "nd") <- nd # save as attribute for lavaan's print method
+  SUM
 }
 ##' @name lavaan.mi-class
 ##' @aliases summary,lavaan.mi-method
