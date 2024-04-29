@@ -133,7 +133,13 @@ lavaan.mi <- function(model, data, ...) {
   if (is.null(dots$cmd)) dots$cmd <- "lavaan"
 
   ## check model
-  MOD <- lavParseModelString(model)
+  if (is.character(model)) {
+    MOD <- lavParseModelString(model)
+  } else if (is.list(model)) {
+    ## assume it is a parameter table
+    MOD <- model
+  }
+
   ## Don't waste time on EFA, suggest (pre)pooling saturated model
   if (any(MOD$efa != "")) {
     stop("efa()* blocks detected in model= syntax. (Un)rotated factors cannot ",
@@ -251,8 +257,8 @@ lavaan.mi <- function(model, data, ...) {
                                       list(PT = fit@funList[[i]]$satPT))
   ## assign class and add new slots
   fit <- as(fit, "lavaan.mi")
-  names(fit@version) <- "lavaan"
-  fit@version <- c(fit@version, lavaan.mi = as.character(packageVersion("lavaan.mi")))
+  fit@version <- c(lavaan    = packageDescription("lavaan"   , fields = "Version"),
+                   lavaan.mi = packageDescription("lavaan.mi", fields = "Version"))
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
   fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")
