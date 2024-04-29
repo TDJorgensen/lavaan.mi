@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 24 April 2024
+### Last updated: 29 April 2024
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -178,7 +178,7 @@ modindices.mi <- function(object,
   for (i in useImps) {
     LIST <- object@miList[[i]][myCols]
     nR <- try(nrow(LIST), silent = TRUE)
-    if (inherits(nR) == "try-error" || is.null(nR)) {
+    if (inherits(nR, "try-error") || is.null(nR)) {
       if (i == max(useImps)) {
         stop("No modification indices could be computed for any imputations.")
       } else next
