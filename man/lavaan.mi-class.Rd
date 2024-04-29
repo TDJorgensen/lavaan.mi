@@ -249,6 +249,9 @@ non-positive-definite.}
 \linkS4class{lavaanList}, but \code{\link[=lavaan.mi]{lavaan.mi()}} only populates a
 subset of the \code{list} slots, two of them with custom information:}
 
+\item{\code{version}}{Named \code{character} vector indicating the \code{lavaan} and
+\code{lavaan.mi} version numbers.}
+
 \item{\code{DataList}}{The \code{list} of imputed data sets}
 
 \item{\code{SampleStatsList}}{List of output from

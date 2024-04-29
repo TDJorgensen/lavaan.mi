@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 April 2024
+### Last updated: 29 April 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -251,6 +251,8 @@ lavaan.mi <- function(model, data, ...) {
                                       list(PT = fit@funList[[i]]$satPT))
   ## assign class and add new slots
   fit <- as(fit, "lavaan.mi")
+  names(fit@version) <- "lavaan"
+  fit@version <- c(fit@version, lavaan.mi = as.character(packageVersion("lavaan.mi")))
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
   fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")

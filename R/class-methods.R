@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 April 2024
+### Last updated: 29 April 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -38,6 +38,8 @@
 ##' @slot lavaanList_slots All remaining slots are from
 ##'   [lavaanList-class], but [lavaan.mi()] only populates a
 ##'   subset of the `list` slots, two of them with custom information:
+##' @slot version Named `character` vector indicating the `lavaan` and
+##'   `lavaan.mi` version numbers.
 ##' @slot DataList The `list` of imputed data sets
 ##' @slot SampleStatsList List of output from
 ##'   `lavInspect(fit, "sampstat")` applied to each fitted model.
@@ -214,12 +216,8 @@ setClass("lavaan.mi", contains = "lavaanList",
                    convergence = "list")) # also check SEs and Heywood cases
 
 
-
-##' @name lavaan.mi-class
-##' @aliases show,lavaan.mi-method
-##' @importFrom methods show
-##' @export
-setMethod("show", "lavaan.mi", function(object) {
+## show() basic info at the top of summary()
+lavaan_mi_short_summary <- function(object) {
   nData <- object@meta$ndat
 
   useImps <- sapply(object@convergence, "[[", i = "converged")
@@ -253,6 +251,14 @@ setMethod("show", "lavaan.mi", function(object) {
         'estimate is also a Heywood case. \n\n')
 
   object
+}
+##' @name lavaan.mi-class
+##' @aliases show,lavaan.mi-method
+##' @importFrom methods show
+##' @export
+setMethod("show", "lavaan.mi", function(object) {
+
+  object
 })
 #TODO: add test stat, like lavaan-class prints
 
@@ -261,8 +267,56 @@ setMethod("show", "lavaan.mi", function(object) {
 ## analog to lavaan:::lav_object_summary(), which creates a list of
 ## components to appear in the summary() output.  Creating a similar
 ## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
-lavaan_mi_object_summary <- function(object) {
+lavaan_mi_object_summary <- function(object, header = TRUE,
+                                     fit.measures = FALSE,
+                                     fm.args =
+                                       list(
+                                         standard.test = "default",
+                                         scaled.test = "default",
+                                         rmsea.ci.level = 0.90,
+                                         rmsea.h0.closefit = 0.05,
+                                         rmsea.h0.notclosefit = 0.08,
+                                         robust = TRUE,
+                                         cat.check.pd = TRUE
+                                       ),
+                                     estimates = TRUE,
+                                     ci = FALSE,
+                                     fmi = FALSE,
+                                     standardized = FALSE,
+                                     std = standardized,
+                                     remove.unused = TRUE,
+                                     cov.std = TRUE,
+                                     rsquare = FALSE,
+                                     modindices = FALSE) {
+  #TODO: Keep a close eye on changes in lavaan:::lav_object_summary().
+  #      The code below is basically copy/pasted, with
+  #      a few changes appropriate for lavaanList objects.
 
+  # return a list with the main ingredients
+  res <- list()
+
+  # this is to avoid partial matching of 'std' with std.nox
+  if (is.logical(std) && is.logical(standardized)) {
+    standardized <- std || standardized
+  } else {
+    # At least 1 is not logical. Retain only valid standardization options.
+    standardized <- intersect(union(tolower(std), tolower(standardized)),
+                              c("std.lv","std.all","std.nox"))
+  }
+
+  if (header) {
+    #TODO: Avoid this optim shit, just copy show() method
+
+    res$header <- list(
+      lavaan.version = object@version,
+      sam.approach = FALSE,
+      optim.method = object@Options$optim.method,
+      optim.iterations = object@optim$iterations,
+      optim.converged = object@optim$converged
+    )
+  }
+
+  res
 }
 ##' @importFrom stats pt qt pnorm qnorm
 ##' @importFrom lavaan lavListInspect parTable lavNames
