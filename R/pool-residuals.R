@@ -7,10 +7,11 @@
 ## Standard resid(uals) method
 ## ---------------------------
 
+#TODO: Delete this old one, after verifying it is no longer needed
 ##' @importFrom lavaan lavListInspect
 ##' @importFrom stats cov2cor resid residuals
-resid_lavaan_mi <- function(object, type = c("raw","cor"),
-                            omit.imps = c("no.conv","no.se")) {
+old_resid_lavaan_mi <- function(object, type = c("raw","cor"),
+                                omit.imps = c("no.conv","no.se")) {
   ## @SampleStatsList is (for each imputation) output from:
   ##    getSampStats <- function(obj) lavInspect(obj, "sampstat")
   ## Code below gets equivalent information from @h1List
@@ -135,11 +136,28 @@ resid_lavaan_mi <- function(object, type = c("raw","cor"),
 
   RES
 }
-##' @name lavaan.mi-class
+
+## the new method calls lavResiduals.mi(), like lavaan's method
+resid_lavaan_mi <- function(object, type = "raw",
+                            omit.imps = c("no.conv","no.se"), ...) {
+  type <- tolower(type[1])
+
+  out <- lavResiduals.mi(object = object, type = type, omit.imps = omit.imps,
+                         zstat = FALSE, summary = FALSE, output = "list",
+                         ## copied from lavaan's residuals() method
+                         add.type = TRUE,
+                         # after packages (eg jmv)
+                         # have adapted 0.6-3 style
+                         add.labels = TRUE, add.class = TRUE,
+                         drop.list.single.group = TRUE)
+  out
+}
+##' @name lavResiduals.mi
 ##' @aliases residuals,lavaan.mi-method
 ##' @export
 setMethod("residuals", "lavaan.mi", resid_lavaan_mi)
-##' @name lavaan.mi-class
+
+##' @name lavResiduals.mi
 ##' @aliases resid,lavaan.mi-method
 ##' @export
 setMethod("resid", "lavaan.mi", resid_lavaan_mi)
@@ -159,12 +177,27 @@ setMethod("resid", "lavaan.mi", resid_lavaan_mi)
 ##' @importFrom lavaan lavInspect
 ##'
 ##' @param object An object of class `lavaan.mi`
+##' @param type `character` indicating whether/how to standardize the covariance
+##'        residuals. If `type = "raw"`, the raw (= unscaled) difference between
+##'        the observed and expected (model-implied) summary statistics are
+##'        returned. The observed summary statistics are averaged across
+##'        imputations, and the model-implied statistics are calculated from
+##'        pooled parameter estimates (as returned by `fitted.values()`).
+##'        If `type = "cor"` or `"cor.bollen"`, the observed and
+##'        model-implied covariance matrices are first transformed to
+##'        correlation matrices (using [stats::cov2cor()]); then correlation
+##'        residuals are computed. If `type = "cor.bentler"`, both the observed
+##'        and model-implied covariance matrices are rescaled by dividing the
+##'        elements by the square roots of the corresponding variances of the
+##'        observed covariance matrix.
 ##' @param omit.imps `character` indicating criteria for excluding imputations
 ##'        from pooled results. See [lavaan.mi-class] for argument details.
 ##' @param \dots Arguments passed to [lavaan::lavResiduals()].
 ##'
 ##' @return
 ##' A `list` of residuals and other information (see [lavaan::lavResiduals()]).
+##' The standard `residuals()` (and `resid()` alias) method simply calls
+##' `lavResiduals.mi(..., zstat=FALSE, summary=FALSE)`.
 ##'
 ##' @seealso
 ##' [lavaan::lavResiduals()] for details about other arguments.

@@ -2,12 +2,32 @@
 % Please edit documentation in R/pool-residuals.R
 \name{lavResiduals.mi}
 \alias{lavResiduals.mi}
+\alias{residuals,lavaan.mi-method}
+\alias{resid,lavaan.mi-method}
 \title{Covariance and Correlation Residuals}
 \usage{
+\S4method{residuals}{lavaan.mi}(object, type = "raw", omit.imps = c("no.conv", "no.se"), ...)
+
+\S4method{resid}{lavaan.mi}(object, type = "raw", omit.imps = c("no.conv", "no.se"), ...)
+
 lavResiduals.mi(object, omit.imps = c("no.conv", "no.se"), ...)
 }
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}
+
+\item{type}{\code{character} indicating whether/how to standardize the covariance
+residuals. If \code{type = "raw"}, the raw (= unscaled) difference between
+the observed and expected (model-implied) summary statistics are
+returned. The observed summary statistics are averaged across
+imputations, and the model-implied statistics are calculated from
+pooled parameter estimates (as returned by \code{fitted.values()}).
+If \code{type = "cor"} or \code{"cor.bollen"}, the observed and
+model-implied covariance matrices are first transformed to
+correlation matrices (using \code{\link[stats:cor]{stats::cov2cor()}}); then correlation
+residuals are computed. If \code{type = "cor.bentler"}, both the observed
+and model-implied covariance matrices are rescaled by dividing the
+elements by the square roots of the corresponding variances of the
+observed covariance matrix.}
 
 \item{omit.imps}{\code{character} indicating criteria for excluding imputations
 from pooled results. See \linkS4class{lavaan.mi} for argument details.}
@@ -16,6 +36,8 @@ from pooled results. See \linkS4class{lavaan.mi} for argument details.}
 }
 \value{
 A \code{list} of residuals and other information (see \code{\link[lavaan:lavResiduals]{lavaan::lavResiduals()}}).
+The standard \code{residuals()} (and \code{resid()} alias) method simply calls
+\code{lavResiduals.mi(..., zstat=FALSE, summary=FALSE)}.
 }
 \description{
 This function calculates residuals for sample moments (e.g., means and

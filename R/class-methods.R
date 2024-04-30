@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 April 2024
+### Last updated: 30 April 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -16,7 +16,6 @@
 ##'   fitMeasures,lavaan.mi-method fitmeasures,lavaan.mi-method
 ##'   anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
 ##'   vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
-##'   residuals,lavaan.mi-method resid,lavaan.mi-method
 ##' @docType class
 ##'
 ##' @slot coefList `list` of estimated coefficients in matrix format (one
@@ -103,7 +102,7 @@
 ##'        `FALSE`) a vector of group sample sizes.
 ##' @param type The meaning of this argument varies depending on which method it
 ##'        it used for. Find detailed descriptions in the **Value** section
-##'        under `coef()`, `vcov()`, and `residuals()`.
+##'        under `coef()` and `vcov()`.
 ##'
 ##' @return
 ##'
@@ -126,16 +125,6 @@
 ##'   omit.imps = c("no.conv","no.se"))`: See corresponding [lavaan-class] method.
 ##'   Returns model-implied moments, evaluated at the pooled point estimates.}
 ##' \item{fitted}{alias for `fitted.values`}
-##'
-##' \item{residuals}{`signature(object = "lavaan.mi",
-##'   type = c("raw","cor"), omit.imps = c("no.conv","no.se"))`:
-##'   See [lavaan-class]. By default (`type = "raw"`), returns
-##'   the difference between the model-implied moments from `fitted.values`
-##'   and the pooled observed moments (i.e., averaged across imputed data sets).
-##'   Standardized residuals are also available, using Bollen's
-##'   (`type = "cor"` or `"cor.bollen"`) or Bentler's
-##'   (`type = "cor.bentler"`) formulas.}
-##' \item{resid}{alias for `residuals`}
 ##'
 ##' \item{nobs}{`signature(object = "lavaan.mi", total = TRUE)`: either
 ##'   the total (default) sample size or a vector of group sample sizes
@@ -806,7 +795,8 @@ setMethod("fitted", "lavaan.mi", fitted_lavaan_mi)
 setMethod("fitted.values", "lavaan.mi", fitted_lavaan_mi)
 
 
-## utility function called within resid_lavaan_mi() and mi2lavaan()
+## utility function called within mi2lavaan()
+## and formerly within resid_lavaan_mi()
 pool_h1 <- function(object, momentsNblocks = TRUE, # the way users see it
                     ## momentsNblocks = FALSE is how lavaan stores it
                     omit.imps = c("no.conv","no.se")) {
@@ -839,14 +829,14 @@ pool_h1 <- function(object, momentsNblocks = TRUE, # the way users see it
       target <- Reduce("+", momentList) / m
       #TODO: unnecessary calculation if standardized and nm %in% c("th","slopes")
 
-      ## only for fitted() and resid() methods
+      ## only for fitted() method
       if (momentsNblocks  &&  nm %in% c("th","res.th")) {
         ## remove numeric -means from thresholds
         target <- as.numeric(target)[ th.idx[[b]] ]
       }
 
       if (momentsNblocks) {
-        OBS[[b]][[nm]] <- target # used by resid_lavaan_mi()
+        OBS[[b]][[nm]] <- target # formerly used by (old_)resid_lavaan_mi()
       } else {
         OBS[[nm]][[b]] <- target # used by mi2lavaan()
       }
