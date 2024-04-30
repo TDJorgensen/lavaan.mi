@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 31 March 2024
+### Last updated: 30 April 2024
 ### pool covariance/correlation residuals
 ### define resid() method and lavResiduals.mi()
 
@@ -150,9 +150,71 @@ setMethod("resid", "lavaan.mi", resid_lavaan_mi)
 ## Analog for lavResiduals()
 ## ---------------------------
 
+##' Covariance and Correlation Residuals
+##'
+##' This function calculates residuals for sample moments (e.g., means and
+##' (co)variances, means) from a lavaan model fitted to multiple imputed data
+##' sets, along with summary and inferential statistics about the residuals.
+##'
+##' @importFrom lavaan lavInspect
+##'
+##' @param object An object of class `lavaan.mi`
+##' @param omit.imps `character` indicating criteria for excluding imputations
+##'        from pooled results. See [lavaan.mi-class] for argument details.
+##' @param \dots Arguments passed to [lavaan::lavResiduals()].
+##'
+##' @return
+##' A `list` of residuals and other information (see [lavaan::lavResiduals()]).
+##'
+##' @seealso
+##' [lavaan::lavResiduals()] for details about other arguments.
+##'
+##' @author Terrence D. Jorgensen (University of Amsterdam;
+##'   \email{TJorgensen314@@gmail.com})
+##'
+##' @examples
+##'
+##' data(HS20imps) # import a list of 20 imputed data sets
+##'
+##' ## specify CFA model from lavaan's ?cfa help page
+##' HS.model <- '
+##'   visual  =~ x1 + x2 + x3
+##'   textual =~ x4 + x5 + x6
+##'   speed   =~ x7 + x8 + x9
+##' '
+##' ## fit model to 20 imputed data sets
+##' fit <- cfa.mi(HS.model, data = HS20imps)
+##'
+##' ## default type = "cor.bentler" (standardized covariance residuals)
+##' lavResiduals.mi(fit, zstat = FALSE)
+##' ## SRMR is in the $summary
+##'
+##' ## correlation residuals
+##' lavResiduals.mi(fit, zstat = FALSE, type = "cor")
+##' ## CRMR is in the $summary
+##'
+##' ## raw covariance residuals
+##' lavResiduals.mi(fit, type = "raw") # zstat=TRUE by default
+##' ## RMR is in the $summary
+##' ## "normalized" residuals are in $cov.z
+##'
+##' @export
+lavResiduals.mi <- function(object,
+                            omit.imps = c("no.conv","no.se"), ...) {
+  ## lavResiduals() doesn't work with PML
+  if (lavInspect(object, "options")$estimator == "PML") {
+    stop("lavResiduals() is currently unavailable when using PML estimation.")
+  }
 
-lavResiduals.mi <- function(object) {
-  #TODO: don't allow for PML
+  ## make fake lavaan object from pooled results
+  FIT <- mi2lavaan(object, resid = TRUE, omit.imps = omit.imps)
+
+  ## pass it to lavaan::lavResiduals()
+  MC <- match.call()
+  MC[[1]] <- quote(lavaan::lavResiduals)
+  MC$object <- FIT
+  MC$omit.imps <- NULL
+  eval(MC)
 }
 
 
