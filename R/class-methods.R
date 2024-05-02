@@ -51,7 +51,7 @@
 ##' @slot baselineList See [lavaanList-class]
 ##'
 ##' @param object An object of class [lavaan.mi-class]
-##' @param header,fit.measures,fm.args,estimates,ci,standardized,cov.std,rsquare,remove.unused,modindices
+##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices
 ##'        See description in the help page for [lavaan-class] class.
 ##' @param fit.measures,baseline.model,fm.args See [lavaan::fitMeasures()].
 ##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
@@ -308,6 +308,7 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
     )
 
     # 4. summarize lavdata (copy lavaan's internal function)
+    ##' @importFrom methods .hasSlot
     lav_data_summary_short <- function(lavdata) {
 
       # two or three columns (depends on nobs/norig)

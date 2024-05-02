@@ -257,8 +257,8 @@ lavaan.mi <- function(model, data, ...) {
                                       list(PT = fit@funList[[i]]$satPT))
   ## assign class and add new slots
   fit <- as(fit, "lavaan.mi")
-  fit@version <- c(lavaan    = packageDescription("lavaan"   , fields = "Version"),
-                   lavaan.mi = packageDescription("lavaan.mi", fields = "Version"))
+  fit@version <- sapply(c("lavaan","lavaan.mi"),
+                        utils::packageDescription, fields = "Version")
   fit@coefList <- lapply(fit@funList, "[[", i = "coefMats")
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
   fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")

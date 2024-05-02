@@ -61,7 +61,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
                             robust            = TRUE,
                             cat.check.pd      = TRUE)
     if (!is.null(DOTS$fm.args)) {
-      fm.args <- modifyList(default.fm.args, DOTS$fm.args)
+      fm.args <- utils::modifyList(default.fm.args, DOTS$fm.args)
     } else {
       fm.args <- default.fm.args
     }
@@ -142,16 +142,16 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     SAT <- pool_h1(object, momentsNblocks = FALSE, omit.imps = omit.imps)
 
     ## Update @SampleStats slot
-    sameNames <- intersect(names(SAT), slotNames(FIT@SampleStats))
-    for (nn in sameNames) slot(FIT@SampleStats, nn) <- SAT[[nn]]
+    sameNames <- intersect(names(SAT), methods::slotNames(FIT@SampleStats))
+    for (nn in sameNames) methods::slot(FIT@SampleStats, nn) <- SAT[[nn]]
 
     ## Update @h1$impled (same info as @SampleStats)
     sameNames1 <- intersect(names(SAT), names(FIT@h1$implied))
     for (nn in sameNames1) FIT@h1$implied[[nn]] <- SAT[[nn]]
 
     ## Update @implied slot (analogous info from structured model)
-    sameNames0 <- intersect(names(SAT), slotNames(FIT@implied))
-    for (nn in sameNames0) slot(FIT@implied, nn) <- SAT[[nn]]
+    sameNames0 <- intersect(names(SAT), methods::slotNames(FIT@implied))
+    for (nn in sameNames0) methods::slot(FIT@implied, nn) <- SAT[[nn]]
 
     ## group.w is not part of @SampleStats, so add the pooled one
     if (!is.null(FIT@implied$group.w[[1]])) {
