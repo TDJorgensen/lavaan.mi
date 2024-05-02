@@ -51,9 +51,11 @@
 ##' @slot baselineList See [lavaanList-class]
 ##'
 ##' @param object An object of class [lavaan.mi-class]
-##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices
-##'        See description in the help page for [lavaan-class] class.
-##' @param fit.measures,baseline.model,fm.args See [lavaan::fitMeasures()].
+##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices,nd,output
+##'        See descriptions of `summary()` arguments in the help page for
+##'        [lavaan-class] class. Also see [lavaan::fitMeasures()] for arguments
+##'        `fit.measures` and `fm.args`.
+##' @param baseline.model,h1.model See [lavaan::fitMeasures()].
 ##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
 ##'        subsequently to [lavaan::lavTestLRT()].
 ##' @param fmi `logical` indicating whether to add the Fraction Missing
@@ -677,11 +679,17 @@ fitted_lavaan_mi <- function(object, momentsNblocks = TRUE, # the way users see 
 ##' @name lavaan.mi-class
 ##' @aliases fitted,lavaan.mi-method
 ##' @export
-setMethod("fitted", "lavaan.mi", fitted_lavaan_mi)
+setMethod("fitted", "lavaan.mi",
+          function(object, omit.imps = c("no.conv","no.se")) {
+  fitted_lavaan_mi(object, momentsNblocks = TRUE, omit.imps = omit.imps)
+})
 ##' @name lavaan.mi-class
 ##' @aliases fitted.values,lavaan.mi-method
 ##' @export
-setMethod("fitted.values", "lavaan.mi", fitted_lavaan_mi)
+setMethod("fitted.values", "lavaan.mi",
+          function(object, omit.imps = c("no.conv","no.se")) {
+  fitted_lavaan_mi(object, momentsNblocks = TRUE, omit.imps = omit.imps)
+})
 
 
 ## utility function called within mi2lavaan()

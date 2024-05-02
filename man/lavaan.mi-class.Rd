@@ -50,9 +50,9 @@
   omit.imps = c("no.conv", "no.se")
 )
 
-\S4method{fitted}{lavaan.mi}(object, momentsNblocks = TRUE, omit.imps = c("no.conv", "no.se"))
+\S4method{fitted}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
-\S4method{fitted.values}{lavaan.mi}(object, momentsNblocks = TRUE, omit.imps = c("no.conv", "no.se"))
+\S4method{fitted.values}{lavaan.mi}(object, omit.imps = c("no.conv", "no.se"))
 
 \S4method{fitMeasures}{lavaan.mi}(
   object,
@@ -83,9 +83,9 @@
 \arguments{
 \item{object}{An object of class \linkS4class{lavaan.mi}}
 
-\item{header, fit.measures, fm.args, estimates, ci, standardized, cov.std, rsquare, remove.unused, modindices}{See description in the help page for \linkS4class{lavaan} class.}
-
-\item{fit.measures, baseline.model, fm.args}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
+\item{header, fit.measures, fm.args, estimates, ci, standardized, std, cov.std, rsquare, remove.unused, modindices, nd, output}{See descriptions of \code{summary()} arguments in the help page for
+\linkS4class{lavaan} class. Also see \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for arguments
+\code{fit.measures} and \code{fm.args}.}
 
 \item{fmi}{\code{logical} indicating whether to add the Fraction Missing
 Information (FMI) and (average) relative increase in variance (ARIV)
@@ -143,6 +143,8 @@ under \code{coef()} and \code{vcov()}.}
 
 \item{labels}{\code{logical} indicating whether the \code{coef()} output
 should include parameter labels. Default is \code{TRUE}.}
+
+\item{baseline.model, h1.model}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
