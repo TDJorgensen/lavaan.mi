@@ -7,7 +7,6 @@
 \alias{summary,lavaan.mi-method}
 \alias{fitMeasures,lavaan.mi-method}
 \alias{fitmeasures,lavaan.mi-method}
-\alias{anova,lavaan.mi-method}
 \alias{nobs,lavaan.mi-method}
 \alias{coef,lavaan.mi-method}
 \alias{vcov,lavaan.mi-method}
@@ -50,8 +49,6 @@
   scale.W = TRUE,
   omit.imps = c("no.conv", "no.se")
 )
-
-\S4method{anova}{lavaan.mi}(object, ...)
 
 \S4method{fitted}{lavaan.mi}(object, momentsNblocks = TRUE, omit.imps = c("no.conv", "no.se"))
 
@@ -167,12 +164,6 @@ Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{nobs}{\code{signature(object = "lavaan.mi", total = TRUE)}: either
 the total (default) sample size or a vector of group sample sizes
 (\code{total = FALSE}).}
-
-\item{anova}{\code{signature(object = "lavaan.mi", ...)}:
-Returns a test of model fit for a single model (\code{object}) or test(s)
-of the difference(s) in fit between nested models passed via \code{...}.
-This is just a wrapper around \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, where you can
-find details about additional arguments.}
 
 \item{fitMeasures}{\code{signature(object = "lavaan.mi", fit.measures = "all", baseline.model = NULL, h1.model = NULL, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"), ...)}:
 See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for details.

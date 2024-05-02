@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 24 April 2024
+### Last updated: 1 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -35,13 +35,12 @@
 ##'
 #FIXME: this is no longer true, right?
 ##' Note that the `anova` method (see [lavaan.mi-class])
-##' simply calls `lavTestLRT(..., asANOVA = TRUE)`.
+##' simply calls `lavTestLRT.mi(..., asANOVA = TRUE)`.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavTestLRT
 ##'
-##' @param object,h1 An object of class [lavaan.mi-class].
-##'   `object` should be nested within (more constrained than) `h1`.
+##' @param object An object of class [lavaan.mi-class]
 ##' @param ... Additional objects of class [lavaan.mi-class], as
 ##'   well as arguments passed to [lavaan::lavTestLRT()] when
 ##'   `test = "D2"` and `pool.robust = TRUE`.
@@ -64,17 +63,18 @@
 ##'           described in Li, Meng, Raghunathan, & Rubin (1991).
 ##'   }
 ##'   Find additional details in Enders (2010, chapter 8).
-##'
-##' @param standard.test `character` indicating which standard test
-##'   statistic to pool with the `test="D2"` method. The default is
-##'   `"standard"` but can also be one of Browne's residual-based
-##'   statistics, listed on [lavaan::lavTest()].
-##' @param scaled.test `character` indicating which robust/scaled test
-##'   statistic to pool with the `test="D2"` method when
-##'   `pool.robust=TRUE`. The default is the first robust test listed in
-##'   `lavInspect(object, "options")$test`, but could be any listed on
-##'   [lavaan::lavTest()] that were requested when `object`
-##'   (and `h1`) were fitted.
+
+#FIXME: Remove these 2 (passed via ...)
+## @param standard.test `character` indicating which standard test
+##   statistic to pool with the `test="D2"` method. The default is
+##   `"standard"` but can also be one of Browne's residual-based
+##   statistics, listed on [lavaan::lavTest()].
+## @param scaled.test `character` indicating which robust/scaled test
+##   statistic to pool with the `test="D2"` method when
+##   `pool.robust=TRUE`. The default is the first robust test listed in
+##   `lavInspect(object, "options")$test`, but could be any listed on
+##   [lavaan::lavTest()] that were requested when `object` was fitted.
+
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
@@ -102,20 +102,27 @@
 ##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##'
 ##' @return
-##'   A vector containing the LRT statistic (either an `F` or \eqn{\chi^2}
-##'   statistic, depending on the `asymptotic` argument), its degrees of
-##'   freedom (numerator and denominator, if `asymptotic = FALSE`), its
-##'   *p* value, and 2 missing-data diagnostics: the relative increase
-##'   in variance (RIV, or average for multiparameter tests: ARIV) and the
-##'   fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
-##'   will also include the average (across imputations) scaling factor and
-##'   (if relevant) shift parameter(s), unless `pool.robust = TRUE`.
+##'   This is just a wrapper around [lavTestLRT.mi()], where you can
+##'   find details about additional arguments.
+##'
+##'   - When `asANOVA=TRUE`, returns an object of class [stats::anova] with a
+##'     a test of model fit for a single model (`object`) or test(s) of the
+##'     difference(s) in fit between nested models passed via `...` (either an
+##'     `F` or \eqn{\chi^2} statistic, depending on the `asymptotic` argument),
+##'     its degrees of freedom, its *p* value, and 2 missing-data diagnostics:
+##'     the relative increase in variance (RIV = FMI / (1 \eqn{-} FMI)) and the
+##'     fraction of missing information (FMI = RIV / (1 + RIV)).
+##'   - When `asANOVA=TRUE`, returns a vector containing the LRT statistic for
+##'     a single model or comparison of a single pair of models, or a
+##'     `data.frame` of multiple model comparisons. Robust statistics will also
+##'     include the average (across imputations) scaling factor and
+##'     (if relevant) shift parameter(s), unless `pool.robust = TRUE`.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
 ##'   \email{TJorgensen314@@gmail.com})
 ##'
-##'   Based on source code for [lavaan::lavTestLRT()] by Yves Rosseel
+##'   Based on source code for [lavaan::lavTestLRT()] by Yves Rosseel.
 ##'
 ##' @references
 ##'   Asparouhov, T., & Muthen, B. (2010). *Chi-square statistics
@@ -146,7 +153,9 @@
 ##'   Rubin, D. B. (1987). *Multiple imputation for nonresponse in surveys*.
 ##'   New York, NY: Wiley. \doi{10.1002/9780470316696}
 ##'
-##' @seealso [lavaan::lavTestLRT()], [semTools::compareFit()]
+##' @seealso [lavaan::lavTestLRT()] for arguments that can be passed via \dots,
+##' and use [lavaan::fitMeasures()] to obtain fit indices calculated from pooled
+##' test statistics.
 ##'
 ##' @examples
 ##' data(HS20imps) # import a list of 20 imputed data sets
@@ -330,6 +339,118 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
 
   out
 }
+
+
+## ---------------------------
+## anova() method is a wrapper
+## ---------------------------
+
+##' @name lavTestLRT.mi
+##' @aliases anova,lavaan.mi-method
+##' @export
+setMethod("anova", "lavaan.mi",
+          ## TDJ borrowed from lavaan's anova method:
+function(object, ...) {
+  # NOTE: if we add additional arguments, it is not the same generic
+  # anova() function anymore, and match.call will be screwed up
+
+  # NOTE: we need to extract the names of the models from match.call here,
+  #       otherwise, we loose them in the call stack
+
+  mcall <- match.call(expand.dots = TRUE)
+  dots <- list(...)
+
+  # catch SB.classic and SB.H0
+  #SB.classic <- TRUE; SB.H0 <- FALSE
+
+  #arg.names <- names(dots)
+  #arg.idx <- which(nchar(arg.names) > 0L)
+  #if(length(arg.idx) > 0L) {
+  #    if(!is.null(dots$SB.classic))
+  #        SB.classic <- dots$SB.classic
+  #    if(!is.null(dots$SB.H0))
+  #        SB.H0 <- dots$SB.H0
+  #    dots <- dots[-arg.idx]
+  #}
+
+  modp <- if (length(dots)) sapply(dots, inherits, "lavaan.mi") else logical(0)
+  mods <- c(list(object), dots[modp])
+  NAMES <- sapply(as.list(mcall)[c(FALSE, TRUE, modp)], deparse)
+
+  # use do.call to handle changed dots
+  #ans <- do.call("lavTestLRT", c(list(object = object,
+  #               SB.classic = SB.classic, SB.H0 = SB.H0,
+  #               model.names = NAMES), dots))
+
+  #ans
+  lavTestLRT.mi(object = object, ..., modnames = NAMES)
+})
+
+
+
+#FIXME: delete anova_lavaan_mi (not needed)
+##' @importFrom stats anova
+##' @importFrom lavaan lavListInspect lavTestLRT
+anova_lavaan_mi <- function(object, ...) {
+  ## save model names
+  objname <- deparse(substitute(object))
+  dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
+
+  ## check class
+  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
+  ## check for additional arguments
+  dots <- list(...)
+  if (length(dots)) {
+    ## separate lavaan.mi objects from other lavTestLRT.mi() arguments
+    idx.mi <- which(sapply(dots, inherits, what = "lavaan.mi"))
+    if (length(idx.mi)) {
+      mods <- dots[idx.mi]
+      dots <- dots[-idx.mi]
+      ## save names for mods, so compareFit() doesn't break
+      modnames <- dotnames[idx.mi]
+      nonames <- which(names(mods) == "")
+      names(mods)[nonames] <- modnames[nonames]
+    } else {
+      mods <- NULL
+      modnames <- NULL
+    }
+    LRT.names <- intersect(names(dots),
+                           union(names(formals(lavTestLRT)),
+                                 names(formals(lavTestLRT.mi))))
+    dots <- if (length(LRT.names)) dots[LRT.names] else NULL
+    if (!is.null(dots$h1)) {
+      #FIXME: this shouldn't be necessary: mods <- c(mods, list(h1 = dots$h1))
+      dots$h1 <- NULL
+    }
+  } else mods <- NULL
+
+  ## run semTools::compareFit if length(idx.mi) > 1L
+  if (length(mods) == 0L) {
+    argList <- c(list(object = object), dots)
+    results <- do.call(lavTestLRT.mi, argList)
+  } else if (length(mods) == 1L) {
+    argList <- c(list(object = object, h1 = mods[[1]]), dots)
+    results <- do.call(lavTestLRT.mi, argList)
+  } else if (length(mods) > 1L) {
+    ## is semTools::compareFit available?
+    if (!requireNamespace("semTools", quietly = TRUE)) {
+      stop('The semTools package is required to simultaneously compare ',
+           'multiple lavaan.mi models using a the anova() method. Without ',
+           'semTools, a single pair of models can be compared using ',
+           'lavTestLRT.mi()')
+    }
+    if (!"package:semTools" %in% search()) attachNamespace("semTools")
+    modList <- c(list(object), mods)
+    names(modList) <- c(objname, modnames)
+    argList <- c(modList, list(argsLRT = dots, indices = FALSE))
+    results <- do.call(semTools::compareFit, argList)@nested
+    class(results) <- c("lavaan.data.frame","data.frame")
+    attr(results, "header") <- "Nested Model Comparisons:"
+  }
+
+  results
+}
+
 
 
 ## ----------------

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 April 2024
+### Last updated: 1 May 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -12,10 +12,10 @@
 ##'
 ##' @name lavaan.mi-class
 ##' @importClassesFrom lavaan lavaanList
-##' @aliases lavaan.mi-class show,lavaan.mi-method summary,lavaan.mi-method
-##'   fitMeasures,lavaan.mi-method fitmeasures,lavaan.mi-method
-##'   anova,lavaan.mi-method nobs,lavaan.mi-method coef,lavaan.mi-method
-##'   vcov,lavaan.mi-method fitted,lavaan.mi-method fitted.values,lavaan.mi-method
+##' @aliases lavaan.mi-class  show,lavaan.mi-method  summary,lavaan.mi-method
+##'   fitMeasures,lavaan.mi-method  fitmeasures,lavaan.mi-method
+##'   nobs,lavaan.mi-method  coef,lavaan.mi-method  vcov,lavaan.mi-method
+##'   fitted,lavaan.mi-method  fitted.values,lavaan.mi-method
 ##' @docType class
 ##'
 ##' @slot coefList `list` of estimated coefficients in matrix format (one
@@ -129,12 +129,6 @@
 ##' \item{nobs}{`signature(object = "lavaan.mi", total = TRUE)`: either
 ##'   the total (default) sample size or a vector of group sample sizes
 ##'   (`total = FALSE`).}
-##'
-##' \item{anova}{`signature(object = "lavaan.mi", ...)`:
-##'   Returns a test of model fit for a single model (`object`) or test(s)
-##'   of the difference(s) in fit between nested models passed via `...`.
-##'   This is just a wrapper around [lavTestLRT.mi()], where you can
-##'   find details about additional arguments.}
 ##'
 ##' \item{fitMeasures}{`signature(object = "lavaan.mi",
 ##'     fit.measures = "all", baseline.model = NULL, h1.model = NULL,
@@ -580,112 +574,6 @@ vcov_lavaan_mi <- function(object, type = c("pooled","between","within","ariv"),
 ##' @aliases vcov,lavaan.mi-method
 ##' @export
 setMethod("vcov", "lavaan.mi", vcov_lavaan_mi)
-
-
-
-#FIXME: delete anova_lavaan_mi (not needed)
-##' @importFrom stats anova
-##' @importFrom lavaan lavListInspect lavTestLRT
-anova_lavaan_mi <- function(object, ...) {
-  ## save model names
-  objname <- deparse(substitute(object))
-  dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
-
-  ## check class
-  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
-  ## check for additional arguments
-  dots <- list(...)
-  if (length(dots)) {
-    ## separate lavaan.mi objects from other lavTestLRT.mi() arguments
-    idx.mi <- which(sapply(dots, inherits, what = "lavaan.mi"))
-    if (length(idx.mi)) {
-      mods <- dots[idx.mi]
-      dots <- dots[-idx.mi]
-      ## save names for mods, so compareFit() doesn't break
-      modnames <- dotnames[idx.mi]
-      nonames <- which(names(mods) == "")
-      names(mods)[nonames] <- modnames[nonames]
-    } else {
-      mods <- NULL
-      modnames <- NULL
-    }
-    LRT.names <- intersect(names(dots),
-                           union(names(formals(lavTestLRT)),
-                                 names(formals(lavTestLRT.mi))))
-    dots <- if (length(LRT.names)) dots[LRT.names] else NULL
-    if (!is.null(dots$h1)) {
-      #FIXME: this shouldn't be necessary: mods <- c(mods, list(h1 = dots$h1))
-      dots$h1 <- NULL
-    }
-  } else mods <- NULL
-
-  ## run semTools::compareFit if length(idx.mi) > 1L
-  if (length(mods) == 0L) {
-    argList <- c(list(object = object), dots)
-    results <- do.call(lavTestLRT.mi, argList)
-  } else if (length(mods) == 1L) {
-    argList <- c(list(object = object, h1 = mods[[1]]), dots)
-    results <- do.call(lavTestLRT.mi, argList)
-  } else if (length(mods) > 1L) {
-    ## is semTools::compareFit available?
-    if (!requireNamespace("semTools", quietly = TRUE)) {
-      stop('The semTools package is required to simultaneously compare ',
-           'multiple lavaan.mi models using a the anova() method. Without ',
-           'semTools, a single pair of models can be compared using ',
-           'lavTestLRT.mi()')
-    }
-    if (!"package:semTools" %in% search()) attachNamespace("semTools")
-    modList <- c(list(object), mods)
-    names(modList) <- c(objname, modnames)
-    argList <- c(modList, list(argsLRT = dots, indices = FALSE))
-    results <- do.call(semTools::compareFit, argList)@nested
-    class(results) <- c("lavaan.data.frame","data.frame")
-    attr(results, "header") <- "Nested Model Comparisons:"
-  }
-
-  results
-}
-
-##' @name lavaan.mi-class
-##' @aliases anova,lavaan.mi-method
-##' @export
-setMethod("anova", "lavaan.mi",
-          ## TDJ borrowed from lavaan's anova method:
-function(object, ...) {
-  # NOTE: if we add additional arguments, it is not the same generic
-  # anova() function anymore, and match.call will be screwed up
-
-  # NOTE: we need to extract the names of the models from match.call here,
-  #       otherwise, we loose them in the call stack
-
-  mcall <- match.call(expand.dots = TRUE)
-  dots <- list(...)
-
-  # catch SB.classic and SB.H0
-  #SB.classic <- TRUE; SB.H0 <- FALSE
-
-  #arg.names <- names(dots)
-  #arg.idx <- which(nchar(arg.names) > 0L)
-  #if(length(arg.idx) > 0L) {
-  #    if(!is.null(dots$SB.classic))
-  #        SB.classic <- dots$SB.classic
-  #    if(!is.null(dots$SB.H0))
-  #        SB.H0 <- dots$SB.H0
-  #    dots <- dots[-arg.idx]
-  #}
-
-  modp <- if (length(dots)) sapply(dots, inherits, "lavaan.mi") else logical(0)
-  mods <- c(list(object), dots[modp])
-  NAMES <- sapply(as.list(mcall)[c(FALSE, TRUE, modp)], deparse)
-
-  # use do.call to handle changed dots
-  #ans <- do.call("lavTestLRT", c(list(object = object,
-  #               SB.classic = SB.classic, SB.H0 = SB.H0,
-  #               model.names = NAMES), dots))
-
-  #ans
-  lavTestLRT.mi(object = object, ..., modnames = NAMES)
-})
 
 
 

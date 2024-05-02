@@ -2,6 +2,7 @@
 % Please edit documentation in R/pool-LRT.R
 \name{lavTestLRT.mi}
 \alias{lavTestLRT.mi}
+\alias{anova,lavaan.mi-method}
 \title{Likelihood Ratio Test for Multiple Imputations}
 \usage{
 lavTestLRT.mi(
@@ -14,10 +15,11 @@ lavTestLRT.mi(
   asymptotic = FALSE,
   pool.robust = FALSE
 )
+
+\S4method{anova}{lavaan.mi}(object, ...)
 }
 \arguments{
-\item{object, h1}{An object of class \linkS4class{lavaan.mi}.
-\code{object} should be nested within (more constrained than) \code{h1}.}
+\item{object}{An object of class \linkS4class{lavaan.mi}}
 
 \item{...}{Additional objects of class \linkS4class{lavaan.mi}, as
 well as arguments passed to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} when
@@ -72,28 +74,24 @@ statistic is pooled, whereas \code{pool.robust = FALSE} will pool
 the naive test statistic (or difference statistic) and apply the average
 scale/shift parameter to it. The harmonic mean is applied to the scaling
 factor, whereas the arithmetic mean is applied to the shift parameter.}
-
-\item{standard.test}{\code{character} indicating which standard test
-statistic to pool with the \code{test="D2"} method. The default is
-\code{"standard"} but can also be one of Browne's residual-based
-statistics, listed on \code{\link[lavaan:lavTest]{lavaan::lavTest()}}.}
-
-\item{scaled.test}{\code{character} indicating which robust/scaled test
-statistic to pool with the \code{test="D2"} method when
-\code{pool.robust=TRUE}. The default is the first robust test listed in
-\code{lavInspect(object, "options")$test}, but could be any listed on
-\code{\link[lavaan:lavTest]{lavaan::lavTest()}} that were requested when \code{object}
-(and \code{h1}) were fitted.}
 }
 \value{
-A vector containing the LRT statistic (either an \code{F} or \eqn{\chi^2}
-statistic, depending on the \code{asymptotic} argument), its degrees of
-freedom (numerator and denominator, if \code{asymptotic = FALSE}), its
-\emph{p} value, and 2 missing-data diagnostics: the relative increase
-in variance (RIV, or average for multiparameter tests: ARIV) and the
-fraction missing information (FMI = ARIV / (1 + ARIV)). Robust statistics
-will also include the average (across imputations) scaling factor and
+This is just a wrapper around \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, where you can
+find details about additional arguments.
+\itemize{
+\item When \code{asANOVA=TRUE}, returns an object of class \link[stats:anova]{stats::anova} with a
+a test of model fit for a single model (\code{object}) or test(s) of the
+difference(s) in fit between nested models passed via \code{...} (either an
+\code{F} or \eqn{\chi^2} statistic, depending on the \code{asymptotic} argument),
+its degrees of freedom, its \emph{p} value, and 2 missing-data diagnostics:
+the relative increase in variance (RIV = FMI / (1 \eqn{-} FMI)) and the
+fraction of missing information (FMI = RIV / (1 + RIV)).
+\item When \code{asANOVA=TRUE}, returns a vector containing the LRT statistic for
+a single model or comparison of a single pair of models, or a
+\code{data.frame} of multiple model comparisons. Robust statistics will also
+include the average (across imputations) scaling factor and
 (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+}
 }
 \description{
 Likelihood ratio test (LRT) for lavaan models fitted to multiple imputed
@@ -117,7 +115,7 @@ that \code{test} was set to \code{"D2"}.
 (see Asparouhov & Muthen, 2010).
 
 Note that the \code{anova} method (see \linkS4class{lavaan.mi})
-simply calls \code{lavTestLRT(..., asANOVA = TRUE)}.
+simply calls \code{lavTestLRT.mi(..., asANOVA = TRUE)}.
 }
 \examples{
 data(HS20imps) # import a list of 20 imputed data sets
@@ -186,11 +184,13 @@ Rubin, D. B. (1987). \emph{Multiple imputation for nonresponse in surveys}.
 New York, NY: Wiley. \doi{10.1002/9780470316696}
 }
 \seealso{
-\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}, \code{\link[semTools:compareFit]{semTools::compareFit()}}
+\code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} for arguments that can be passed via \dots,
+and use \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} to obtain fit indices calculated from pooled
+test statistics.
 }
 \author{
 Terrence D. Jorgensen (University of Amsterdam;
 \email{TJorgensen314@gmail.com})
 
-Based on source code for \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} by Yves Rosseel
+Based on source code for \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} by Yves Rosseel.
 }
