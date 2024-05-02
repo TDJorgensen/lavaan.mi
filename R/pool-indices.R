@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 April 2024
+### Last updated: 3 May 2024
 ### pool fit indices
 ### define fitMeasures() method for lavaan.mi
 
@@ -38,22 +38,22 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
   } else dots <- list(asymptotic = TRUE)
 
   ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
-  test <- dots$test
-  if (is.null(test)) {
-    test <- "d4"
-  } else test <- tolower(test[1])
-  if (tolower(test) %in% c("cm","chan.meng","new.lrt","d4")) test <- "D4"
-  if (tolower(test) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) test <- "D3"
-  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-  if (test %in% c("D3","D4") && !lavoptions$estimator %in% c("ML","PML","FML")) {
+  pool.method <- dots$pool.method
+  if (is.null(pool.method)) {
+    pool.method <- "d4"
+  } else pool.method <- tolower(pool.method[1])
+  if (tolower(pool.method) %in% c("cm","chan.meng","new.lrt","d4")) pool.method <- "D4"
+  if (tolower(pool.method) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) pool.method <- "D3"
+  if (tolower(pool.method) %in% c("lmrr","li.et.al","pooled.wald","d2")) pool.method <- "D2"
+  if (pool.method %in% c("D3","D4") && !lavoptions$estimator %in% c("ML","PML","FML")) {
     message('"D3" and "D4" only available using maximum likelihood estimation. ',
-            'Changed test to "D2".')
-    test <- "D2"
+            'Changed to pool.method = "D2".')
+    pool.method <- "D2"
   }
 
   ## check for robust
   test.names <- lavoptions$test
-  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
+  #FIXME: lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
   if (length(test.names) > 1L) {
     ## remove standard and any bootstrapped tests
     rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
@@ -80,13 +80,13 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
 
   scaleshift <- any(test.names == "scaled.shifted")
 
-  if (pool.robust && test %in% c("D3","D4")) {
-    message('pool.robust = TRUE is only applicable when test = "D2". ',
-            'Changed test to "D2".')
-    test <- "D2"
+  if (pool.robust && pool.method %in% c("D3","D4")) {
+    message('pool.robust = TRUE is only applicable when pool.method = "D2". ',
+            'Changed to pool.method = "D2".')
+    pool.method <- "D2"
   }
 
-  dots$test <- test
+  dots$pool.method <- pool.method
 
   ## mi2lavaan(...) arguments passed to lavTestLRT.mi() to pool the test stat
   argList <- list(object = object, omit.imps = omit.imps)
@@ -234,17 +234,17 @@ fitMeasures_mi <- function(object, fit.measures = "all",
     } else dots <- list(asymptotic = TRUE)
 
     ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
-    test <- dots$test
-    if (is.null(test)) {
-      test <- "d4"
-    } else test <- tolower(test[1])
-    if (tolower(test) %in% c("cm","chan.meng","new.lrt","d4")) test <- "D4"
-    if (tolower(test) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) test <- "D3"
-    if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-    if (test %in% c("D3","D4") && !grepl(pattern = "ML", x = lavoptions$estimator)) {
+    pool.method <- dots$pool.method
+    if (is.null(pool.method)) {
+      pool.method <- "d4"
+    } else pool.method <- tolower(pool.method[1])
+    if (tolower(pool.method) %in% c("cm","chan.meng","new.lrt","d4")) pool.method <- "D4"
+    if (tolower(pool.method) %in% c("mr","meng.rubin","old.lrt","mplus","d3")) pool.method <- "D3"
+    if (tolower(pool.method) %in% c("lmrr","li.et.al","pooled.wald","d2")) pool.method <- "D2"
+    if (pool.method %in% c("D3","D4") && !grepl(pattern = "ML", x = lavoptions$estimator)) {
       message('"D3" and "D4" only available using maximum likelihood estimation. ',
-              'Changed test to "D2".')
-      test <- "D2"
+              'Changed to pool.method = "D2".')
+      pool.method <- "D2"
     }
 
     ## check for robust
@@ -276,22 +276,22 @@ fitMeasures_mi <- function(object, fit.measures = "all",
 
     scaleshift <- any(test.names == "scaled.shifted")
     # if (scaleshift) {
-    #   if (test %in% c("D3","D4")) {
+    #   if (pool.method %in% c("D3","D4")) {
     #     message("If test = 'scaled.shifted' (estimator = 'WLSMV' or 'MLMV'), ",
     #             "model evaluation is only available by (re)setting ",
-    #             "test = 'D2'.\nControl more options by passing arguments to ",
+    #             "pool.method = 'D2'.\nControl more options by passing arguments to ",
     #             "lavTestLRT() via the '...' argument.\n")
-    #     test <- 'D2'
+    #     pool.method <- 'D2'
     #   }
     # }
 
-    if (pool.robust && test %in% c("D3","D4")) {
-      message('pool.robust = TRUE is only applicable when test = "D2". ',
-              'Changed test to "D2".')
-      test <- "D2"
+    if (pool.robust && pool.method %in% c("D3","D4")) {
+      message('pool.robust = TRUE is only applicable when pool.method = "D2". ',
+              'Changed to pool.method = "D2".')
+      pool.method <- "D2"
     }
 
-    dots$test <- test
+    dots$pool.method <- pool.method
 
 
     ## pooled test statistic(s)
@@ -313,7 +313,7 @@ fitMeasures_mi <- function(object, fit.measures = "all",
         baseFit <- object@external$baseline.model
 
         ## MUST fit PTb for D3 or D4 likelihoods, but for D2 use @baselineList
-      } else if (test == "D2") {
+      } else if (pool.method == "D2") {
         ## length(baseImps) == m, not just length(useImps)
         baseImps <- object@meta$baseline.ok
         if (!all(baseImps[useImps])) warning('The default independence model ',

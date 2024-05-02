@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 1 May 2024
+### Last updated: 3 May 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -257,7 +257,7 @@ setMethod("show", "lavaan.mi", function(object) {
 ## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
 lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
                                      asymptotic = FALSE, scale.W = !asymptotic,
-                                     #TODO: add pool.test=
+                                     #TODO: add pool.method=
                                      header = TRUE, fit.measures = FALSE,
                                      fm.args = list(standard.test   = "default",
                                                     scaled.test     = "default",
@@ -423,7 +423,7 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
 
   if (modindices) {
     MI <- modificationIndices.mi(object, omit.imps = omit.imps,
-                                 #TODO: add pool.test=
+                                 #TODO: add pool.method=
                                  standardized = TRUE, cov.std = cov.std)
     res$mi <- MI
   }

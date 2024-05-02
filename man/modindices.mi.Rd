@@ -8,7 +8,7 @@
 \usage{
 modindices.mi(
   object,
-  test = c("D2", "D1"),
+  pool.method = c("D2", "D1"),
   omit.imps = c("no.conv", "no.se"),
   standardized = TRUE,
   cov.std = TRUE,
@@ -26,7 +26,7 @@ modindices.mi(
 
 modificationIndices.mi(
   object,
-  test = c("D2", "D1"),
+  pool.method = c("D2", "D1"),
   omit.imps = c("no.conv", "no.se"),
   standardized = TRUE,
   cov.std = TRUE,
@@ -45,7 +45,7 @@ modificationIndices.mi(
 \arguments{
 \item{object}{An object of class \linkS4class{lavaan.mi}}
 
-\item{test}{\code{character} indicating which pooling method to use.
+\item{pool.method}{\code{character} indicating which pooling method to use.
 \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
 Wald-like test for pooling the gradient and information, which are then
 used to calculate score-test statistics in the usual manner. \code{"D2"}
@@ -74,7 +74,7 @@ column (\verb{$sepc.all}), standardization is based on both the variances
 of both (continuous) observed and latent variables. (Residual) covariances
 are standardized using (residual) variances.}
 
-\item{cov.std}{\code{logical}. \code{TRUE} if \code{test == "D2"}.
+\item{cov.std}{\code{logical}. \code{TRUE} if \code{pool.method == "D2"}.
 If \code{TRUE} (default), the (residual)
 observed covariances are scaled by the square-root of the diagonal elements
 of the \eqn{\Theta} matrix, and the (residual) latent covariances are
@@ -134,8 +134,8 @@ Raghunathan, & Rubin (1991)---or by pooling the complete-data score-test
 statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 }
 \note{
-When \code{test = "D2"}, each (S)EPC will be pooled by taking its
-average across imputations. When \code{test = "D1"}, EPCs will be
+When \code{pool.method = "D2"}, each (S)EPC will be pooled by taking its
+average across imputations. When \code{pool.method = "D1"}, EPCs will be
 calculated in the standard way using the pooled gradient and information,
 and SEPCs will be calculated by standardizing the EPCs using model-implied
 (residual) variances.
@@ -156,7 +156,7 @@ modindices.mi(fit) # default: Li et al.'s (1991) "D2" method
 
 ## Li et al.'s (1991) "D1" method,
 ## adapted for score tests by Mansolf et al. (2020)
-modindices.mi(fit, test = "D1")
+modindices.mi(fit, pool.method = "D1")
 
 
 }
@@ -182,7 +182,7 @@ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
 Based on source code for \code{\link[lavaan:modificationIndices]{lavaan::modindices()}} by Yves Rosseel
 
-\code{test = "D1"} method proposed by
+\code{pool.method = "D1"} method proposed by
 Maxwell Mansolf (University of California, Los Angeles;
 \email{mamansolf@gmail.com})
 }

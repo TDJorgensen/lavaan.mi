@@ -1,11 +1,10 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 May 2024
+### Last updated: 3 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
-#FIXME: test= argument now conflicts with new lavTestLRT(test=) argument.
-#       Make a lrtArgs=list() argument to pass on, or check for which scale
-#       parameter to use.
+#FIXME: Make a lrtArgs=list() argument to pass new lavTestLRT(test=) argument,
+#       or check for which scale parameter to use.
 
 
 ## -------------
@@ -28,9 +27,9 @@
 ##' }
 ##' When `"D2"` is not explicitly requested in situations it is the only
 ##' applicable method, (e.g., DWLS for categorical outcomes), users are notified
-##' that `test` was set to `"D2"`.
+##' that `pool.method` was set to `"D2"`.
 ##'
-##' `test = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
+##' `pool.method = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
 ##' (see Asparouhov & Muthen, 2010).
 ##'
 #FIXME: this is no longer true, right?
@@ -43,14 +42,14 @@
 ##' @param object An object of class [lavaan.mi-class]
 ##' @param ... Additional objects of class [lavaan.mi-class], as
 ##'   well as arguments passed to [lavaan::lavTestLRT()] when
-##'   `test = "D2"` and `pool.robust = TRUE`.
+##'   `pool.method = "D2"` and `pool.robust = TRUE`.
 ##' @param modnames Optional `character` of model names to use as row names
 ##'   in the resulting matrix of results (when more than 2 models are compared)
 ##' @param asANOVA `logical` indicating whether to return an object of
 ##'   class `"anova"`.  If `FALSE`, a numeric vector is returned for
 ##'   one (pair of) model(s), or a `data.frame` is returned for multiple
 ##'   pairs of models.
-##' @param test `character` indicating which pooling method to use.
+##' @param pool.method `character` indicating which pooling method to use.
 ##'   \itemize{
 ##'     \item `"D4"`, `"new.LRT"`, `"cm"`, or `"chan.meng"`
 ##'           requests the method described by Chan & Meng (2022).
@@ -66,11 +65,11 @@
 
 #FIXME: Remove these 2 (passed via ...)
 ## @param standard.test `character` indicating which standard test
-##   statistic to pool with the `test="D2"` method. The default is
+##   statistic to pool with the `pool.method="D2"` method. The default is
 ##   `"standard"` but can also be one of Browne's residual-based
 ##   statistics, listed on [lavaan::lavTest()].
 ## @param scaled.test `character` indicating which robust/scaled test
-##   statistic to pool with the `test="D2"` method when
+##   statistic to pool with the `pool.method="D2"` method when
 ##   `pool.robust=TRUE`. The default is the first robust test listed in
 ##   `lavInspect(object, "options")$test`, but could be any listed on
 ##   [lavaan::lavTest()] that were requested when `object` was fitted.
@@ -94,7 +93,7 @@
 ##'   `df1` on the assumption that its `df2` is sufficiently large
 ##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
 ##'   with `df1`.
-##' @param pool.robust `logical`. Ignored unless `test = "D2"` and a
+##' @param pool.robust `logical`. Ignored unless `pool.method = "D2"` and a
 ##'   robust test was requested. If `pool.robust = TRUE`, the robust test
 ##'   statistic is pooled, whereas `pool.robust = FALSE` will pool
 ##'   the naive test statistic (or difference statistic) and apply the average
@@ -162,9 +161,9 @@
 ##'
 ##' ## specify CFA model from lavaan's ?cfa help page
 ##' HS.model <- '
-##'   visual  =~ x1 + b1*x2 + x3
-##'   textual =~ x4 + b2*x5 + x6
-##'   speed   =~ x7 + b3*x8 + x9
+##'   visual  =~ x1 + x2 + x3
+##'   textual =~ x4 + x5 + x6
+##'   speed   =~ x7 + x8 + x9
 ##' '
 ##'
 ##' fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
@@ -188,14 +187,14 @@
 ##' lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
 ##'
 ##' ## Using D2, you can either robustify the pooled naive statistic ...
-##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2")
+##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2")
 ##' ## ... or pool the robust chi-squared statistic
-##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2",
+##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2",
 ##'               pool.robust = TRUE)
 ##'
 ##' @export
 lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
-                          test = c("D4","D3","D2"),
+                          pool.method = c("D4","D3","D2"),
                           omit.imps = c("no.conv","no.se"),
                           asymptotic = FALSE, pool.robust = FALSE) {
   ## save model names
@@ -249,7 +248,7 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
   ## compare 1 or multiple pairs?
   if (length(mods) < 2L) {
     argList <- c(list(object = object), dots,
-                 list(test = test, omit.imps = omit.imps,
+                 list(pool.method = pool.method, omit.imps = omit.imps,
                       asymptotic = asymptotic, pool.robust = pool.robust))
     if (length(mods) == 1L)      argList$h1            <- mods[[1]]
     if (!is.null(standard.test)) argList$standard.test <- standard.test
@@ -305,7 +304,7 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
     modList <- c(list(object), mods)
     names(modList) <- c(objname, modnames)
     argList <- c(modList, argsLRT = list(dots),
-                 list(test = test, omit.imps = omit.imps,
+                 list(pool.method = pool.method, omit.imps = omit.imps,
                       asymptotic = asymptotic, pool.robust = pool.robust))
     if (!is.null(standard.test)) argList$standard.test <- standard.test
     if (!is.null(  scaled.test)) argList$scaled.test   <- scaled.test
@@ -313,8 +312,9 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
 
     if (asANOVA) {
       ## get each model's pooled naive chi-squared
-      outList <- lapply(modList, pairwiseLRT, asymptotic = TRUE, test = test,
-                        omit.imps = omit.imps, pool.robust = pool.robust)
+      outList <- lapply(modList, pairwiseLRT, asymptotic = TRUE,
+                        pool.method = pool.method, pool.robust = pool.robust,
+                        omit.imps = omit.imps)
       ## extract pooled test and degrees of freedom
       x2List <- sapply(outList, "[", i = "chisq")
       dfList <- sapply(outList, "[", i = "df")
@@ -568,7 +568,7 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
     DF <- mean(sapply(object@testList[useImps], function(x) x[[test]]$df  ))
     w  <-      sapply(object@testList[useImps], function(x) x[[test]]$stat)
   } else {
-    ## this will not get run if !pool.robust because logic catches that first
+    ## this will not get run if pool.robust because logic catches that first
     DF0 <- mean(sapply(object@testList[useImps], function(x) x[[standard.test]]$df))
     DF1 <- mean(sapply(    h1@testList[useImps], function(x) x[[standard.test]]$df))
     DF <- DF0 - DF1
@@ -915,7 +915,7 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
 ## Pools the LRT for 1 model or when comparing a single pair of models.
 ## (formerly lavTestLRT.mi)
 ##' @importFrom lavaan lavListInspect lavTestLRT
-pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
+pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
                         omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
                         standard.test = "standard", scaled.test = "default",
                         pool.robust = FALSE, ...) {
@@ -976,18 +976,18 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
   if (length(keepArgs)) dots <- dots[keepArgs]
 
   ## check test-pooling options, for backward compatibility?
-  test <- tolower(test[1])
-  if (test == "mplus") {
-    test <- "D3"
+  pool.method <- tolower(pool.method[1])
+  if (pool.method == "mplus") {
+    pool.method <- "D3"
     asymptotic <- TRUE
   }
-  if (tolower(test) %in% c("cm","chan.meng","new.lrt","d4")) test <- "D4"
-  if (tolower(test) %in% c("mr","meng.rubin","old.lrt","d3")) test <- "D3"
-  if (tolower(test) %in% c("lmrr","li.et.al","pooled.wald","d2")) test <- "D2"
-  if (test %in% c("D3","D4") && !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
+  if (tolower(pool.method) %in% c("cm","chan.meng","new.lrt","d4"))      pool.method <- "D4"
+  if (tolower(pool.method) %in% c("mr","meng.rubin","old.lrt","d3"))     pool.method <- "D3"
+  if (tolower(pool.method) %in% c("lmrr","li.et.al","pooled.wald","d2")) pool.method <- "D2"
+  if (pool.method %in% c("D3","D4") && !lavListInspect(object, "options")$estimator %in% c("ML","PML","FML")) {
     message('"D3" and "D4" only available using maximum likelihood estimation. ',
-            'Changed test to "D2".')
-    test <- "D2"
+            'Changed to pool.method = "D2".')
+    pool.method <- "D2"
   }
 
   ## check for robust
@@ -1041,10 +1041,10 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
     asymptotic <- TRUE
   }
 
-  if (pool.robust && test %in% c("D3","D4")) {
-    message('pool.robust = TRUE is only applicable when test = "D2". ',
-            'Changed test to "D2".')
-    test <- "D2"
+  if (pool.robust && pool.method %in% c("D3","D4")) {
+    message('pool.robust = TRUE is only applicable when pool.method = "D2".\n',
+            'Changed to pool.method = "D2".')
+    pool.method <- "D2"
   }
 
   ## calculate pooled test:
@@ -1058,14 +1058,14 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
                          asymptotic = asymptotic, pool.robust = TRUE,
                          standard.test = standard.test, scaled.test = scaled.test)
     out <- c(out.naive, out.robust)
-  } else if (test == "D2") {
+  } else if (pool.method == "D2") {
     out <- D2.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
                   pool.robust = pool.robust,
                   standard.test = standard.test, scaled.test = scaled.test)
-  } else if (test == "D3") {
+  } else if (pool.method == "D3") {
     out <- D3.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
                   omit.imps = omit.imps)
-  } else if (test == "D4") {
+  } else if (pool.method == "D4") {
     out <- D4.LRT(object, h1 = h1, useImps = useImps, asymptotic = asymptotic,
                   omit.imps = omit.imps)
   }
@@ -1104,8 +1104,8 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
     #         'statistic across ', m, ' imputations for which the model ',
     #         'converged, then applying the average (across imputations) scaling',
     #         ' factor', extraWarn, ' to that pooled value. \n',
-    #         'To instead pool the robust test statistics, set test = "D2" and ',
-    #         'pool.robust = TRUE. \n')
+    #         'To instead pool the robust test statistics, set pool.method = "D2"',
+    #         ' and pool.robust = TRUE. \n')
   }
 
   class(out) <- c("lavaan.vector","numeric")
@@ -1114,7 +1114,7 @@ pairwiseLRT <- function(object, h1 = NULL, test = c("D4","D3","D2"),
 
 ## Iterates over > 2 models to apply pairwiseLRT() sequentially
 ## (borrowed from semTools::compareFit, code for @nested)
-multipleLRT <- function(..., argsLRT = list(), test = c("D4","D3","D2"),
+multipleLRT <- function(..., argsLRT = list(), pool.method = c("D4","D3","D2"),
                         omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
                         standard.test = "standard", scaled.test = "default",
                         pool.robust = FALSE) {
@@ -1155,7 +1155,7 @@ multipleLRT <- function(..., argsLRT = list(), test = c("D4","D3","D2"),
     tempDiff <- do.call(pairwiseLRT,
                         c(list(object        = fitA,
                                h1            = fitB,
-                               test          = test,
+                               pool.method   = pool.method,
                                omit.imps     = omit.imps,
                                asymptotic    = asymptotic,
                                pool.robust   = pool.robust,

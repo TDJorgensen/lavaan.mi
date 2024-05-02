@@ -8,7 +8,7 @@ lavTestScore.mi(
   object,
   add = NULL,
   release = NULL,
-  test = c("D2", "D1"),
+  pool.method = c("D2", "D1"),
   scale.W = !asymptotic,
   omit.imps = c("no.conv", "no.se"),
   asymptotic = is.null(add),
@@ -33,7 +33,7 @@ fixed-to-zero) parameters for which the score test must be computed.}
 constraints that should be released. The indices correspond to the order of
 the equality constraints as they appear in the parameter table.}
 
-\item{test}{\code{character} indicating which pooling method to use.
+\item{pool.method}{\code{character} indicating which pooling method to use.
 \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
 Wald-like test for pooling the gradient and information, which are then
 used to calculate score-test statistics in the usual manner. \code{"D2"}
@@ -47,7 +47,7 @@ within-imputation and between-imputation components. Otherwise, the pooled
 information is calculated by scaling the within-imputation component by
 the average relative increase in variance (ARIV; Enders, 2010, p. 235),
 which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
-\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
+\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{pool.method = "D2"}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
@@ -150,7 +150,7 @@ fit <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
 lavTestScore.mi(fit, cumulative = TRUE)
 ## Li et al.'s (1991) "D1" method,
 ## adapted for score tests by Mansolf et al. (2020)
-lavTestScore.mi(fit, test = "D1")
+lavTestScore.mi(fit, pool.method = "D1")
 
 ## Mode 2: Score test for adding currently fixed-to-zero parameters
 lavTestScore.mi(fit, add = 'x7 ~~ x8 + x9')
@@ -183,7 +183,7 @@ Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
 Based on source code for \code{\link[lavaan:lavTestScore]{lavaan::lavTestScore()}} by Yves Rosseel
 
-\code{test = "D1"} method proposed by
+\code{pool.method = "D1"} method proposed by
 Maxwell Mansolf (University of California, Los Angeles;
 \email{mamansolf@gmail.com})
 }

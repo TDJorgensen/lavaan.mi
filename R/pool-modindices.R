@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 May 2024
+### Last updated: 3 May 2024
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -20,7 +20,7 @@
 ##' @importFrom stats cov pchisq qchisq
 ##'
 ##' @param object An object of class [lavaan.mi-class]
-##' @param test `character` indicating which pooling method to use.
+##' @param pool.method `character` indicating which pooling method to use.
 ##'  `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'  Wald-like test for pooling the gradient and information, which are then
 ##'  used to calculate score-test statistics in the usual manner. `"D2"`
@@ -46,7 +46,7 @@
 ##'   column (`$sepc.all`), standardization is based on both the variances
 ##'   of both (continuous) observed and latent variables. (Residual) covariances
 ##'   are standardized using (residual) variances.
-##' @param cov.std `logical`. `TRUE` if `test == "D2"`.
+##' @param cov.std `logical`. `TRUE` if `pool.method == "D2"`.
 ##'   If `TRUE` (default), the (residual)
 ##'   observed covariances are scaled by the square-root of the diagonal elements
 ##'   of the \eqn{\Theta} matrix, and the (residual) latent covariances are
@@ -82,8 +82,8 @@
 ##' @param op `character` string. Filter the output by selecting only those
 ##'   rows with operator `op`.
 ##'
-##' @note When `test = "D2"`, each (S)EPC will be pooled by taking its
-##'   average across imputations. When `test = "D1"`, EPCs will be
+##' @note When `pool.method = "D2"`, each (S)EPC will be pooled by taking its
+##'   average across imputations. When `pool.method = "D1"`, EPCs will be
 ##'   calculated in the standard way using the pooled gradient and information,
 ##'   and SEPCs will be calculated by standardizing the EPCs using model-implied
 ##'   (residual) variances.
@@ -95,7 +95,7 @@
 ##'
 ##'   Based on source code for [lavaan::modindices()] by Yves Rosseel
 ##'
-##' `test = "D1"` method proposed by
+##' `pool.method = "D1"` method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
 ##'   \email{mamansolf@@gmail.com})
 ##'
@@ -131,12 +131,12 @@
 ##'
 ##' ## Li et al.'s (1991) "D1" method,
 ##' ## adapted for score tests by Mansolf et al. (2020)
-##' modindices.mi(fit, test = "D1")
+##' modindices.mi(fit, pool.method = "D1")
 ##'
 ##'
 ##' @export
 modindices.mi <- function(object,
-                          test = c("D2","D1"),
+                          pool.method = c("D2","D1"),
                           omit.imps = c("no.conv","no.se"),
 
                           standardized = TRUE,
@@ -158,7 +158,7 @@ modindices.mi <- function(object,
   ## this also checks the class:
   useImps <- imps2use(object = object, omit.imps = omit.imps)
 
-  test <- tolower(test[1])
+  pool.method <- tolower(pool.method[1])
   N <- lavListInspect(object, "ntotal")
   #FIXME: if (lavoptions$mimic == "EQS") N <- N - 1 # not in lavaan, why?
 
@@ -191,7 +191,7 @@ modindices.mi <- function(object,
 
 
   ## D2 pooling method
-  if (test == "d2") {
+  if (pool.method == "d2") {
     chiList <- lapply(object@miList[useImps], "[[", i = "mi")
     ## imputations in columns, parameters in rows
     pooledList <- apply(do.call(cbind, chiList), 1, function(x) {
@@ -220,7 +220,7 @@ modindices.mi <- function(object,
 
     scoreOut <- lavTestScore.mi(object, add = cbind(LIST, user = 10L,
                                                     free = 1, start = 0),
-                                test = "d1", omit.imps = omit.imps,
+                                pool.method = "d1", omit.imps = omit.imps,
                                 epc = TRUE, scale.W = FALSE, asymptotic = TRUE,
                                 information = information)$uni
     LIST$mi <- scoreOut$X2

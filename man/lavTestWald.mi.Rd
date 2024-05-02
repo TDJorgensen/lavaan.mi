@@ -7,7 +7,7 @@
 lavTestWald.mi(
   object,
   constraints = NULL,
-  test = c("D1", "D2"),
+  pool.method = c("D1", "D2"),
   asymptotic = FALSE,
   scale.W = !asymptotic,
   omit.imps = c("no.conv", "no.se"),
@@ -22,7 +22,7 @@ lavTestWald.mi(
 quotes) containing one or more equality constraints.
 See examples for more details}
 
-\item{test}{\code{character} indicating which pooling method to use.
+\item{pool.method}{\code{character} indicating which pooling method to use.
 \code{"D1"} or \code{"Rubin"} (default) indicates Rubin's (1987) rules
 will be applied to the point estimates and the asymptotic covariance
 matrix of model parameters, and those pooled values will be used to
@@ -47,7 +47,7 @@ Otherwise, the pooled asymptotic covariance matrix of model parameters is
 calculated by scaling the within-imputation component by the
 average relative increase in variance (ARIV; see Enders, 2010, p. 235),
 which is \emph{only} consistent when requesting the \emph{F} test (i.e.,
-\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{test = "D2"}.}
+\code{asymptotic = FALSE}.  Ignored (irrelevant) if \code{pool.method = "D2"}.}
 
 \item{omit.imps}{\code{character} vector specifying criteria for omitting
 imputations from pooled results.  Can include any of
@@ -109,8 +109,8 @@ fit <- cfa.mi(HS.model, data = HS20imps)
 ## version of the Wald z statistic from the summary() output, or the
 ## 'F' version of the t statistic from the summary() output, depending
 ## whether asymptotic = TRUE or FALSE
-lavTestWald.mi(fit, constraints = "b1 == 0")      # default D1 statistic
-lavTestWald.mi(fit, constraints = "b1 == 0", test = "D2") # D2 statistic
+lavTestWald.mi(fit, constraints = "b1 == 0")             # default D1 statistic
+lavTestWald.mi(fit, constraints = "b1 == 0", pool.method = "D2") # D2 statistic
 
 ## The real advantage is simultaneously testing several equality
 ## constraints, or testing more complex constraints:

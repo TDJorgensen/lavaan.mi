@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 1 May 2024
+### Last updated: 3 May 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -34,7 +34,7 @@
 ##' @param release Vector of `integer`s. The indices of the *equality*
 ##'  constraints that should be released. The indices correspond to the order of
 ##'  the equality constraints as they appear in the parameter table.
-##' @param test `character` indicating which pooling method to use.
+##' @param pool.method `character` indicating which pooling method to use.
 ##'   `"D1"` requests Mansolf, Jorgensen, & Enders' (2020) proposed
 ##'   Wald-like test for pooling the gradient and information, which are then
 ##'   used to calculate score-test statistics in the usual manner. `"D2"`
@@ -47,7 +47,7 @@
 ##'   information is calculated by scaling the within-imputation component by
 ##'   the average relative increase in variance (ARIV; Enders, 2010, p. 235),
 ##'   which is *only* consistent when requesting the *F* test (i.e.,
-##'   `asymptotic = FALSE`.  Ignored (irrelevant) if `test = "D2"`.
+##'   `asymptotic = FALSE`.  Ignored (irrelevant) if `pool.method = "D2"`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
@@ -119,7 +119,7 @@
 ##'
 ##'   Based on source code for [lavaan::lavTestScore()] by Yves Rosseel
 ##'
-##' `test = "D1"` method proposed by
+##' `pool.method = "D1"` method proposed by
 ##'   Maxwell Mansolf (University of California, Los Angeles;
 ##'   \email{mamansolf@@gmail.com})
 ##'
@@ -159,7 +159,7 @@
 ##' lavTestScore.mi(fit, cumulative = TRUE)
 ##' ## Li et al.'s (1991) "D1" method,
 ##' ## adapted for score tests by Mansolf et al. (2020)
-##' lavTestScore.mi(fit, test = "D1")
+##' lavTestScore.mi(fit, pool.method = "D1")
 ##'
 ##' ## Mode 2: Score test for adding currently fixed-to-zero parameters
 ##' lavTestScore.mi(fit, add = 'x7 ~~ x8 + x9')
@@ -167,7 +167,7 @@
 ##'
 ##' @export
 lavTestScore.mi <- function(object, add = NULL, release = NULL,
-                            test = c("D2","D1"), scale.W = !asymptotic,
+                            pool.method = c("D2","D1"), scale.W = !asymptotic,
                             omit.imps = c("no.conv","no.se"),
                             asymptotic = is.null(add), # as F or chi-squared
                             univariate = TRUE, cumulative = FALSE,
@@ -179,8 +179,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
   lavoptions <- object@Options
 
-  test <- toupper(test[1])
-  if (!test %in% c("D2","D1")) stop('Invalid choice of "test" argument.')
+  pool.method <- toupper(pool.method[1])
+  if (!pool.method %in% c("D2","D1")) stop('Invalid choice of "pool.method" argument.')
 
   ## check if model has converged
   if (m == 0L) stop("No models converged. Score tests unavailable.")
@@ -204,7 +204,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   oldCall <- object@lavListCall
   #oldCall$model <- parTable(object) # FIXME: necessary?
 
-  if (test == "D2") {
+  if (pool.method == "D2") {
     if (!is.null(oldCall$parallel)) {
       if (oldCall$parallel == "snow") {
         oldCall$parallel <- "no"
@@ -335,7 +335,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     return(OUT)
-  } # else test == "D1", making 'scale.W=' relevant
+  } # else pool.method == "D1", making 'scale.W=' relevant
 
   ## number of free parameters (regardless of whether they are constrained)
   npar <- object@Model@nx.free

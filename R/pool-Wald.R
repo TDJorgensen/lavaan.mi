@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 24 April 2024
+### Last updated: 3 May 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -28,7 +28,7 @@
 ##' @param constraints A `character` string (typically between single
 ##'   quotes) containing one or more equality constraints.
 ##'   See examples for more details
-##' @param test `character` indicating which pooling method to use.
+##' @param pool.method `character` indicating which pooling method to use.
 ##'   `"D1"` or `"Rubin"` (default) indicates Rubin's (1987) rules
 ##'   will be applied to the point estimates and the asymptotic covariance
 ##'   matrix of model parameters, and those pooled values will be used to
@@ -51,7 +51,7 @@
 ##'   calculated by scaling the within-imputation component by the
 ##'   average relative increase in variance (ARIV; see Enders, 2010, p. 235),
 ##'   which is *only* consistent when requesting the *F* test (i.e.,
-##'   `asymptotic = FALSE`.  Ignored (irrelevant) if `test = "D2"`.
+##'   `asymptotic = FALSE`.  Ignored (irrelevant) if `pool.method = "D2"`.
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
 ##'   `c("no.conv", "no.se", "no.npd")`, the first 2 of which are the
@@ -114,8 +114,8 @@
 ##' ## version of the Wald z statistic from the summary() output, or the
 ##' ## 'F' version of the t statistic from the summary() output, depending
 ##' ## whether asymptotic = TRUE or FALSE
-##' lavTestWald.mi(fit, constraints = "b1 == 0")      # default D1 statistic
-##' lavTestWald.mi(fit, constraints = "b1 == 0", test = "D2") # D2 statistic
+##' lavTestWald.mi(fit, constraints = "b1 == 0")             # default D1 statistic
+##' lavTestWald.mi(fit, constraints = "b1 == 0", pool.method = "D2") # D2 statistic
 ##'
 ##' ## The real advantage is simultaneously testing several equality
 ##' ## constraints, or testing more complex constraints:
@@ -128,7 +128,7 @@
 ##'
 ##'
 ##' @export
-lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
+lavTestWald.mi <- function(object, constraints = NULL, pool.method = c("D1","D2"),
                            asymptotic = FALSE, scale.W = !asymptotic,
                            omit.imps = c("no.conv","no.se"),
                            verbose = FALSE, warn = TRUE) {
@@ -136,15 +136,15 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
   useImps <- imps2use(object = object, omit.imps = omit.imps)
   m <- length(useImps)
 
-  test <- tolower(test[1])
-  if (test %in% c("d2", "lmrr", "li.et.al")) test <- "D2"
-  if (test %in% c("d1", "rubin")) test <- "D1"
-  if (!test %in% c("D1","D2")) stop('Invalid choice of "test" argument.')
+  pool.method <- tolower(pool.method[1])
+  if (pool.method %in% c("d2", "lmrr", "li.et.al")) pool.method <- "D2"
+  if (pool.method %in% c("d1", "rubin")) pool.method <- "D1"
+  if (!pool.method %in% c("D1","D2")) stop('Invalid choice of "pool.method" argument.')
 
   message('\nWald test calculated using se = "',
           lavListInspect(object, "options")$se, '"\n')
 
-  if (test == "D2") {
+  if (pool.method == "D2") {
 
     oldCall <- object@lavListCall
 
@@ -172,14 +172,14 @@ lavTestWald.mi <- function(object, constraints = NULL, test = c("D1","D2"),
 
     ## template to fill in pooled values
 
-    ## at a minimum, pool the total score test
+    ## at a minimum, pool the total Wald pool.method
     chiList <- sapply(FIT@funList[ intersect(useImps, which(!noStats)) ],
                       "[[", i = 1)
     DF <- FIT@funList[[ intersect(useImps, which(!noStats))[1] ]][[2]]
     out <- calculate.D2(chiList, DF = DF, asymptotic)
     class(out) <- c("lavaan.vector","numeric")
     return(out)
-  } # else test == "D1", making 'scale.W=' relevant
+  } # else pool.method == "D1", making 'scale.W=' relevant
 
 
   ## "borrowed" lavTestWald()

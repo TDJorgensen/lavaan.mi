@@ -10,7 +10,7 @@ lavTestLRT.mi(
   ...,
   modnames = NULL,
   asANOVA = TRUE,
-  test = c("D4", "D3", "D2"),
+  pool.method = c("D4", "D3", "D2"),
   omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE,
   pool.robust = FALSE
@@ -23,7 +23,7 @@ lavTestLRT.mi(
 
 \item{...}{Additional objects of class \linkS4class{lavaan.mi}, as
 well as arguments passed to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} when
-\code{test = "D2"} and \code{pool.robust = TRUE}.}
+\code{pool.method = "D2"} and \code{pool.robust = TRUE}.}
 
 \item{modnames}{Optional \code{character} of model names to use as row names
 in the resulting matrix of results (when more than 2 models are compared)}
@@ -33,7 +33,7 @@ class \code{"anova"}.  If \code{FALSE}, a numeric vector is returned for
 one (pair of) model(s), or a \code{data.frame} is returned for multiple
 pairs of models.}
 
-\item{test}{\code{character} indicating which pooling method to use.
+\item{pool.method}{\code{character} indicating which pooling method to use.
 \itemize{
 \item \code{"D4"}, \code{"new.LRT"}, \code{"cm"}, or \code{"chan.meng"}
 requests the method described by Chan & Meng (2022).
@@ -68,7 +68,7 @@ If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
 enough that the statistic will be asymptotically \eqn{\chi^2} distributed
 with \code{df1}.}
 
-\item{pool.robust}{\code{logical}. Ignored unless \code{test = "D2"} and a
+\item{pool.robust}{\code{logical}. Ignored unless \code{pool.method = "D2"} and a
 robust test was requested. If \code{pool.robust = TRUE}, the robust test
 statistic is pooled, whereas \code{pool.robust = FALSE} will pool
 the naive test statistic (or difference statistic) and apply the average
@@ -109,9 +109,9 @@ Grund et al. (2023), resolves problems with \code{"D3"}.
 }
 When \code{"D2"} is not explicitly requested in situations it is the only
 applicable method, (e.g., DWLS for categorical outcomes), users are notified
-that \code{test} was set to \code{"D2"}.
+that \code{pool.method} was set to \code{"D2"}.
 
-\code{test = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
+\code{pool.method = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
 
 Note that the \code{anova} method (see \linkS4class{lavaan.mi})
@@ -122,9 +122,9 @@ data(HS20imps) # import a list of 20 imputed data sets
 
 ## specify CFA model from lavaan's ?cfa help page
 HS.model <- '
-  visual  =~ x1 + b1*x2 + x3
-  textual =~ x4 + b2*x5 + x6
-  speed   =~ x7 + b3*x8 + x9
+  visual  =~ x1 + x2 + x3
+  textual =~ x4 + x5 + x6
+  speed   =~ x7 + x8 + x9
 '
 
 fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
@@ -148,9 +148,9 @@ fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
 lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
 
 ## Using D2, you can either robustify the pooled naive statistic ...
-lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2")
+lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2")
 ## ... or pool the robust chi-squared statistic
-lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, test = "D2",
+lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2",
               pool.robust = TRUE)
 
 }

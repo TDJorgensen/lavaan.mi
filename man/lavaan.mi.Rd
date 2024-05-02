@@ -67,7 +67,7 @@ anova(fit)
 ## equivalently:
 lavTestLRT.mi(fit)
 ## request D2
-anova(fit, test = "D2")
+anova(fit, pool.method = "D2")
 ## request fit indices
 fitMeasures(fit)
 
@@ -114,9 +114,9 @@ catout <- cfa.mi(HS.model, data = binHS5imps,
                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
                  })
 summary(catout)
-lavTestLRT.mi(catout, test = "D2", pool.robust = TRUE)
+lavTestLRT.mi(catout, pool.method = "D2", pool.robust = TRUE)
 fitMeasures(catout, fit.measures = c("rmsea","srmr","cfi"),
-            test = "D2", pool.robust = TRUE)
+            pool.method = "D2", pool.robust = TRUE)
 
 ## extract custom output
 sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
