@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 29 April 2024
+### Last updated: 1 May 2024
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -125,10 +125,13 @@
 ##'   speed   =~ x7 + x8 + x9
 ##' '
 ##'
-##' out <- cfa.mi(HS.model, data = HS20imps)
+##' fit <- cfa.mi(HS.model, data = HS20imps)
 ##'
-##' modindices.mi(out) # default: Li et al.'s (1991) "D2" method
-##' modindices.mi(out, test = "D1") # Li et al.'s (1991) "D1" method
+##' modindices.mi(fit) # default: Li et al.'s (1991) "D2" method
+##'
+##' ## Li et al.'s (1991) "D1" method,
+##' ## adapted for score tests by Mansolf et al. (2020)
+##' modindices.mi(fit, test = "D1")
 ##'
 ##'
 ##' @export
@@ -229,8 +232,7 @@ modindices.mi <- function(object,
     if (standardized) {
       ## Need full parameter table for lavaan::standardizedSolution()
       ## Merge parameterEstimates() with modindices()
-      oldPE <- summary_lavaan_mi(object, se = FALSE, omit.imps = omit.imps,
-                                 output = "data.frame")
+      oldPE <- parameterEstimates.mi(object, se = FALSE, omit.imps = omit.imps)
       PE <- lavaan::lav_partable_merge(oldPE, cbind(LIST, est = 0),
                                        remove.duplicated = TRUE, warn = FALSE)
       ## merge EPCs, using parameter labels (unavailable for estimates)

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 24 April 2024
+### Last updated: 1 May 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -151,17 +151,18 @@
 ##'   speed =~ c(L1, L1)*x7 + c(L1, L1)*x8 + c(L1, L1)*x9
 ##' '
 ##'
-##' out <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
+##' fit <- cfa.mi(HS.model, data = HS20imps, group = "school", std.lv = TRUE)
 ##'
 ##' ## Mode 1: Score test for releasing equality constraints
 ##'
 ##' ## default test: Li et al.'s (1991) "D2" method
-##' lavTestScore.mi(out, cumulative = TRUE)
-##' ## Li et al.'s (1991) "D1" method
-##' lavTestScore.mi(out, test = "D1")
+##' lavTestScore.mi(fit, cumulative = TRUE)
+##' ## Li et al.'s (1991) "D1" method,
+##' ## adapted for score tests by Mansolf et al. (2020)
+##' lavTestScore.mi(fit, test = "D1")
 ##'
 ##' ## Mode 2: Score test for adding currently fixed-to-zero parameters
-##' lavTestScore.mi(out, add = 'x7 ~~ x8 + x9')
+##' lavTestScore.mi(fit, add = 'x7 ~~ x8 + x9')
 ##'
 ##'
 ##' @export
@@ -343,7 +344,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
   if (lavoptions$mimic == "EQS") N <- N - 1
 
   # Mode 1: ADDING new parameters
-  if (!is.null(add) && nchar(add) > 0L) {
+  if (!is.null(add) && all(nchar(add) > 0L)) {
     ## turn off SNOW cluster (can't past arguments)
     if (!is.null(oldCall$parallel)) {
       if (oldCall$parallel == "snow") {
@@ -730,7 +731,7 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     if (ngroups > 1L) myCols <- c(myCols, "block","group")
     if (nlevels > 1L) myCols <- c(myCols, "block","level")
     myCols <- c(unique(myCols), "free","exo","label","plabel")
-    LIST <- if (!is.null(add) && nchar(add) > 0L) {
+    LIST <- if (!is.null(add) && all(nchar(add) > 0L)) {
       PT[ , myCols]
     } else parTable(object)[ , myCols]
 
