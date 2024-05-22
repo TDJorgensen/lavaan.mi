@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 May 2024
+### Last updated: 22 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -698,7 +698,7 @@ D3.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   ## calculate average relative increase in variance
   a <- DF*(m - 1)
   ariv <- ((m + 1) / a) * (LRT_bar - LRT_con)
-  test.stat <- LRT_con / (DF*(1 + ariv))
+  test.stat <- ifelse(DF == 0, yes = 0, no = LRT_con / (DF*(1 + ariv)) )
   if (is.na(test.stat)) stop('D3 test statistic could not be calculated. ',
                              'Try the D2 pooling method.') #FIXME: check whether model-implied Sigma is NPD
   if (test.stat < 0) {
@@ -789,7 +789,7 @@ D4.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   ## calculate average relative increase in variance (Grund eq. 9)
   a <- DF*(m - 1)
   ariv <- max(0, ((m + 1) / a) * (LRT_mean - LRT_stacked))
-  test.stat <- LRT_stacked / (DF*(1 + ariv)) # Grund eq. 8
+  test.stat <- ifelse(DF == 0, yes = 0, no = LRT_stacked / (DF*(1 + ariv)) ) # Grund eq. 8
 
   if (asymptotic) {
     out <- c("chisq" = test.stat * DF, df = DF,
@@ -873,7 +873,7 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
                               function(x)  x[[ test.names[1] ]][["scaling.factor"]]))
       } else c1 <- mean(sapply(h1@testList[useImps],
                                function(x) x[[ test.names[1] ]][["scaling.factor"]]))
-      delta_c <- (d0*c0 - d1*c1) / (d0 - d1)
+      delta_c <- ifelse( (d0-d1) == 0, 0, no = (d0*c0 - d1*c1) / (d0 - d1) )
       shift   <- 0
     }
 
@@ -1071,23 +1071,23 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
   }
 
   ## If test statistic is negative, return without any indices or robustness
-  if (asymptotic) {
-    if (out[["chisq"]] == 0) {
-      message('Negative pooled test statistic was set to zero, so fit will ',
-              'appear to be arbitrarily perfect. ',
-              if (robust) 'Robust corrections uninformative, not returned.',
-              '\n')
-      class(out) <- c("lavaan.vector","numeric")
-      return(out)
-    }
-  } else {
-    if (out[["F"]] == 0) {
-      message('Negative pooled test statistic was set to zero, so fit will ',
-              'appear to be arbitrarily perfect.\n')
-      class(out) <- c("lavaan.vector","numeric")
-      return(out)
-    }
-  }
+  # if (asymptotic) {
+  #   if (out[["chisq"]] == 0) {
+  #     message('Negative pooled test statistic was set to zero, so fit will ',
+  #             'appear to be arbitrarily perfect. ',
+  #             if (robust) 'Robust corrections uninformative, not returned.',
+  #             '\n')
+  #     class(out) <- c("lavaan.vector","numeric")
+  #     return(out)
+  #   }
+  # } else {
+  #   if (out[["F"]] == 0) {
+  #     message('Negative pooled test statistic was set to zero, so fit will ',
+  #             'appear to be arbitrarily perfect.\n')
+  #     class(out) <- c("lavaan.vector","numeric")
+  #     return(out)
+  #   }
+  # }
 
   ## If robust statistics were not pooled above, robustify naive statistics
   if (robust & !pool.robust) {
