@@ -389,7 +389,7 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
                          conditional.x      = FALSE,
                          estimator          = ifelse(categorical, "DWLS","ML"),
                          se                 = "robust.sem",
-                         test               = "Browne.residual.adf")
+                         test               = "Browne.residual.adf") #FIXME: set to "scaled.shifted" after more verification
   ## set class and return
   class(out) <- c("lavMoments", "list")
   out
