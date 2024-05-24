@@ -5,17 +5,17 @@
 
 
 ##' @importFrom lavaan lavTestLRT lavListInspect
-mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
-                                      baseline.model = NULL, h1.model = NULL,
-                                      fm.args = list(standard.test        = "default",
-                                                     scaled.test          = "default",
-                                                     rmsea.ci.level       = 0.90,
-                                                     rmsea.h0.closefit    = 0.05,
-                                                     rmsea.h0.notclosefit = 0.08,
-                                                     robust               = 0.08,
-                                                     cat.check.pd         = TRUE),
-                                      output = "vector", omit.imps = c("no.conv","no.se"),
-                                      ...) {
+fitMeasures_mi <- function(object, fit.measures = "all",
+                           baseline.model = NULL, h1.model = NULL,
+                           fm.args = list(standard.test        = "default",
+                                          scaled.test          = "default",
+                                          rmsea.ci.level       = 0.90,
+                                          rmsea.h0.closefit    = 0.05,
+                                          rmsea.h0.notclosefit = 0.08,
+                                          robust               = 0.08,
+                                          cat.check.pd         = TRUE),
+                           output = "vector", omit.imps = c("no.conv","no.se"),
+                           ...) {
   ## this also checks the class
   useImps <- imps2use(object = object, omit.imps = omit.imps)
 
@@ -184,12 +184,24 @@ mi_fit_indices_via_lavaan <- function(object, fit.measures = "all",
                       fm.args = fm.args, output = output)
 }
 
+##' @name lavaan.mi-class
+##' @aliases fitMeasures,lavaan.mi-method
+##' @importFrom lavaan fitMeasures
+##' @export
+setMethod("fitMeasures", "lavaan.mi", fitMeasures_mi)
+## lowercase 'm'
+##' @name lavaan.mi-class
+##' @aliases fitmeasures,lavaan.mi-method
+##' @importFrom lavaan fitmeasures
+##' @export
+setMethod("fitmeasures", "lavaan.mi", fitMeasures_mi)
+
 
 
 #FIXME: delete when this is no longer necessary
 ##' @importFrom lavaan lavNames lavListInspect
 ##' @importFrom stats pchisq uniroot
-fitMeasures_mi <- function(object, fit.measures = "all",
+fitMeas_manual <- function(object, fit.measures = "all",
                            baseline.model = NULL, h1.model = NULL,
                            fm.args = list(standard.test        = "default",
                                           scaled.test          = "default",
@@ -742,16 +754,5 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   }
   fits
 }
-##' @name lavaan.mi-class
-##' @aliases fitMeasures,lavaan.mi-method
-##' @importFrom lavaan fitMeasures
-##' @export
-setMethod("fitMeasures", "lavaan.mi", fitMeasures_mi)
-## lowercase 'm'
-##' @name lavaan.mi-class
-##' @aliases fitmeasures,lavaan.mi-method
-##' @importFrom lavaan fitmeasures
-##' @export
-setMethod("fitmeasures", "lavaan.mi", fitMeasures_mi)
 
 
