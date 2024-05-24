@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 30 April 2024
+### Last updated: 24 May 2024
 ### pool covariance/correlation residuals
 ### define resid() method and lavResiduals.mi()
 
@@ -140,17 +140,29 @@ old_resid_lavaan_mi <- function(object, type = c("raw","cor"),
 ## the new method calls lavResiduals.mi(), like lavaan's method
 resid_lavaan_mi <- function(object, type = "raw",
                             omit.imps = c("no.conv","no.se"), ...) {
-  type <- tolower(type[1])
+  ## lavResiduals() doesn't work with PML
+  if (lavInspect(object, "options")$estimator == "PML") {
+    stop("lavResiduals() is currently unavailable when using PML estimation.")
+  }
 
-  out <- lavResiduals.mi(object = object, type = type, omit.imps = omit.imps,
-                         zstat = FALSE, summary = FALSE, output = "list",
-                         ## copied from lavaan's residuals() method
-                         add.type = TRUE,
-                         # after packages (eg jmv)
-                         # have adapted 0.6-3 style
-                         add.labels = TRUE, add.class = TRUE,
-                         drop.list.single.group = TRUE)
-  out
+  ## make fake lavaan object from pooled results
+  FIT <- mi2lavaan(object, resid = TRUE, omit.imps = omit.imps)
+
+  ## pass it to lavaan::lavResiduals()
+  MC <- match.call()
+  MC[[1]] <- quote(lavaan::lavResiduals)
+  MC$object <- FIT
+  MC$omit.imps <- NULL
+  ## arguments set to mimic lavaan's resid() method
+  MC$zstat      <- FALSE
+  MC$summary    <- FALSE
+  MC$output     <- "list"
+  MC$add.type   <- TRUE
+  MC$add.labels <- TRUE
+  MC$add.class  <- TRUE
+  MC$drop.list.single.group <- TRUE
+
+  eval(MC)
 }
 ##' @name lavResiduals.mi
 ##' @aliases residuals,lavaan.mi-method

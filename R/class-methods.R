@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 May 2024
+### Last updated: 24 May 2024
 ### Class and Methods for lavaan.mi object
 
 

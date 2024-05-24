@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 23 April 2024
+### Last updated: 24 May 2024
 ### Create faux lavaan-class object in order to pass to
 ### - lavaan::fitMeasures() within fitMeasures_mi()
 ### - standardizedSolution() within standardizedSolution.mi()
