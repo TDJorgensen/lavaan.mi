@@ -46,7 +46,8 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     CALL1$model <- NULL
     if (!is.null(CALL1$cmd)) CALL1$cmd <- NULL
     CALL1$omit.imps <- omit.imps
-    CALL1$data <- lapply(object@DataList, function(x) x[lavNames(object)])
+    CALL1$data <- lapply(object@DataList,
+                         function(x) x[ c(lavNames(object), object@Data@group) ])
     FIT1 <- eval(as.call(CALL1))
   }
 
