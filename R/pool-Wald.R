@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 May 2024
+### Last updated: 24 May 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -168,7 +168,8 @@ lavTestWald.mi <- function(object, constraints = NULL, pool.method = c("D1","D2"
     FIT <- eval(as.call(oldCall))
     ## check if there are any results
     noStats <- sapply(FIT@funList, is.null)
-    if (all(noStats)) stop("No success using lavTestWald() on any imputations.")
+    if (all(noStats)) stop("No success using lavTestWald() on any imputations.",
+                           call. = FALSE)
 
     ## template to fill in pooled values
 

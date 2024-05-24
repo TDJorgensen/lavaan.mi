@@ -151,15 +151,16 @@ resid_lavaan_mi <- function(object, type = "raw",
   ## pass it to lavaan::lavResiduals()
   MC <- match.call()
   MC[[1]] <- quote(lavaan::lavResiduals)
-  MC$object <- FIT
+  MC$object    <- FIT
+  MC$type      <- type
   MC$omit.imps <- NULL
   ## arguments set to mimic lavaan's resid() method
-  MC$zstat      <- FALSE
-  MC$summary    <- FALSE
-  MC$output     <- "list"
-  MC$add.type   <- TRUE
-  MC$add.labels <- TRUE
-  MC$add.class  <- TRUE
+  MC$zstat                  <- FALSE
+  MC$summary                <- FALSE
+  MC$output                 <- "list"
+  MC$add.type               <- TRUE
+  MC$add.labels             <- TRUE
+  MC$add.class              <- TRUE
   MC$drop.list.single.group <- TRUE
 
   eval(MC)
