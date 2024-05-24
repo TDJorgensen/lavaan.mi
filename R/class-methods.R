@@ -396,15 +396,15 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
     ## Instead, conditionally add pooled test with(out) fit.measures
   }
   if (fit.measures) {
-    res$fit <- mi_fit_indices_via_lavaan(object, fm.args = fm.args,
-                                         omit.imps = omit.imps,
-                                         fit.measures = "default")
+    res$fit <- fitMeasures_mi(object, fm.args = fm.args,
+                              omit.imps = omit.imps,
+                              fit.measures = "default")
   } else {
     ## just the pooled test(s)
     chiSqTests <- c("chisq","df","pvalue",   "chisq.scaling.factor",
                     "chisq.scaled","df.scaled","pvalue.scaled")
-    res$fit <- mi_fit_indices_via_lavaan(object, fm.args = fm.args,
-                                         fit.measures = chiSqTests)
+    res$fit <- fitMeasures_mi(object, fm.args = fm.args,
+                              fit.measures = chiSqTests)
     attr(res$fit, "add.h0") <- TRUE
   }
 

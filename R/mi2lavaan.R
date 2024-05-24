@@ -99,7 +99,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
 
     ## pool model's test stats
     TEST <- lavTestLRT.mi(object, omit.imps = omit.imps,
-                          ...) # asANOVA = FALSE set in mi_fit_indices_via_lavaan()
+                          ...) # asANOVA = FALSE set in fitMeasures_mi()
     FIT@test$standard$stat.group <- NULL
     FIT@test$standard$stat       <- TEST[["chisq"]]
     FIT@test$standard$df         <- TEST[["df"]]
