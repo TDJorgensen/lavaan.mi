@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 22 May 2024
+### Last updated: 26 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -830,35 +830,22 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
                       harm = TRUE, # harmonic or arithmetic mean of scaling.factor
                       LRTargs = list(), # for D2.LRT() when h1 + shifted
                       standard.test = "standard", scaled.test = "default") {
-  test.names <- lavListInspect(object, "options")$test
-  # lavaan 0.6-5: for now, we only acknowledge the first non-standard @test
-  if (length(test.names) > 1L) {
-    ## remove standard and any bootstrapped tests
-    rm.idx <- which(test.names %in% c("standard","bootstrap","bollen.stine"))
-    if (length(rm.idx) > 0L) {
-      test.names <- test.names[-rm.idx]
-    }
-    ## only acknowledge the first scaled test statistic
-    if (length(test.names) > 1L) {
-      test.names <- test.names[1]
-    }
-  }
-  scaleshift <- any(test.names %in% "scaled.shifted")
+  scaleshift <- scaled.test == "scaled.shifted"
 
   if (baseline) {
     TEST <- lapply(object@baselineList[useImps], "[[", i = "test")
   } else TEST <- object@testList[useImps]
 
-  d0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["df"]]))
+  d0 <- mean(sapply(TEST, function(x) x[[scaled.test]][["df"]]))
   if (harm) {
-    c0 <- 1/ mean(1/sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
-  } else c0 <- mean(sapply(TEST, function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+    c0 <- 1/ mean(1/sapply(TEST, function(x) x[[scaled.test]][["scaling.factor"]]))
+  } else c0 <- mean(sapply(TEST, function(x) x[[scaled.test]][["scaling.factor"]]))
 
 
   if (!is.null(h1)) {
     ## MODEL COMPARISON
 
-    d1 <- mean(sapply(h1@testList[useImps], function(x) x[[ test.names[1] ]][["df"]]))
+    d1 <- mean(sapply(h1@testList[useImps], function(x) x[[scaled.test]][["df"]]))
     if (scaleshift) {
       ScSh <- D2.LRT(object = object, h1 = h1, useImps = useImps, asymptotic = TRUE,
                      return.scale.shift = TRUE, LRTargs = LRTargs,
@@ -870,9 +857,9 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
     } else {
       if (harm) {
         c1 <- 1/mean(1/sapply(h1@testList[useImps],
-                              function(x)  x[[ test.names[1] ]][["scaling.factor"]]))
+                              function(x)  x[[scaled.test]][["scaling.factor"]]))
       } else c1 <- mean(sapply(h1@testList[useImps],
-                               function(x) x[[ test.names[1] ]][["scaling.factor"]]))
+                               function(x) x[[scaled.test]][["scaling.factor"]]))
       delta_c <- ifelse( (d0-d1) == 0, 0, no = (d0*c0 - d1*c1) / (d0 - d1) )
       shift   <- 0
     }
@@ -894,7 +881,7 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
       ## add average shift parameter
       shift <- mean(sapply(TEST, function(x) {
         #FIXME: sum() no longer necessary, since lavaan returns 1 sum for MG-SEM
-        sum(x[[ test.names[1] ]][["shift.parameter"]])
+        sum(x[[scaled.test]][["shift.parameter"]])
       }))
       ChiSq["chisq.scaled"] <- ChiSq[["chisq.scaled"]] + shift
       ChiSq["pvalue.scaled"] <- pchisq(ChiSq[["chisq.scaled"]],
@@ -975,6 +962,21 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
   keepArgs <- intersect(names(dots), names(formals(lavTestLRT)))
   if (length(keepArgs)) dots <- dots[keepArgs]
 
+  ## check for lavTestLRT() arguments that imply standard.test= or scaled.test=
+  if ("type" %in% keepArgs) {
+    if (any(grepl(pattern = "browne", dots$type))) {
+      standard.test <- dots$type
+      pool.method <- "D2" #TODO: calculate from pooled moments?
+    }
+  }
+  if ("test" %in% keepArgs) {
+    if (dots$test[1] %in% c("satorra.bentler",
+                            "yuan.bentler", "yuan.bentler.mplus",
+                            "mean.var.adjusted", "scaled.shifted")) {
+      scaled.test <- dots$test[1]
+    }
+  }
+
   ## check test-pooling options, for backward compatibility?
   pool.method <- tolower(pool.method[1])
   if (pool.method == "mplus") {
@@ -1008,6 +1010,7 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
   # any non-standard test stats?
   robust <- FALSE
   if (length(test.names) > 1L) {
+    checkMVadj <- scaled.test == "default"
     ## remove standard and any bootstrapped tests
     rm.idx <- which(test.names %in% c("none","default","standard",
                                       "browne.residual.nt",
@@ -1027,12 +1030,26 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
                                    "yuan.bentler", "yuan.bentler.mplus",
                                    "mean.var.adjusted", "scaled.shifted"))[1]
       }
+      ## did user request lavTestLRT(scaled.shifted = FALSE)?
+      if (scaled.test == "scaled.shifted" && checkMVadj &&
+          "scaled.shifted" %in% keepArgs) {
+        if (!dots$scaled.shifted) scaled.test <- "mean.var.adjusted"
+      }
+
     } else if (length(test.names) == 1L) {
       scaled.test <- test.names
     } else scaled.test <- character(0)
 
     robust <- length(scaled.test) > 0L
   }
+  ## check alternative tests (method= or type=), which would imply !robust
+  if ("method" %in% keepArgs) {
+    if (dots$method == "standard") robust <- FALSE
+  }
+  if ("type" %in% keepArgs) {
+    if (any(grepl(pattern = "browne", dots$type))) robust <- FALSE
+  }
+
   if (!robust) pool.robust <- FALSE
 
   if (robust && !pool.robust && !asymptotic) {
