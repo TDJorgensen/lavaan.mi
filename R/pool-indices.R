@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 May 2024
+### Last updated: 28 May 2024
 ### pool fit indices
 ### define fitMeasures() method for lavaan.mi
 
@@ -34,8 +34,9 @@ fitMeasures_mi <- function(object, fit.measures = "all",
     LRT.names <- intersect(names(dots),
                            union(names(formals(lavTestLRT)),
                                  names(formals(lavTestLRT.mi))))
-    dots <- if (length(LRT.names)) dots[LRT.names] else list(asymptotic = TRUE)
-  } else dots <- list(asymptotic = TRUE)
+    if (length(LRT.names)) dots <- dots[LRT.names]
+  }
+  dots$asymptotic <- TRUE # ALWAYS for fit indices
 
   ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
   pool.method <- dots$pool.method
