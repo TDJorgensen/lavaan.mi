@@ -1,11 +1,11 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 April 2024
+### Last updated: 28 May 2024
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
 
 
-##' Fit a Saturated lavaan Model to Multiple Imputed Data Sets
+##' Fit a Saturated `lavaan` Model to Multiple Imputed Data Sets
 ##'
 ##' This function fits a saturated model to a list of imputed data sets, and
 ##' returns a list of pooled summary statistics to treat as data.
@@ -13,11 +13,11 @@
 ##'
 ##' @importFrom lavaan lavNames lavListInspect lavInspect parTable
 ##'
-##' @param data A a `list` of imputed data sets, or an object class from
+##' @param data A `list` of imputed data sets, or an object class from
 ##'   which imputed data can be extracted. Recognized classes are
-##'   `lavaan.mi` (stored in the `@@DataList` slot),
-##'   `amelia` (created by the Amelia package), or
-##'   `mids` (created by the mice package).
+##'   `lavaan.mi` (list of imputations stored in the `@@DataList` slot),
+##'   `amelia` (created by the `Amelia` package), or
+##'   `mids` (created by the `mice` package).
 ##' @param \dots
 ##'   Additional arguments passed to [lavaan::lavCor()] or to
 ##'   [lavaan.mi()].
@@ -77,7 +77,7 @@
 ##'   rows/columns from `$sample.cov`, it cannot be expected to drop the
 ##'   corresponding sampling variances of those eliminated (co)variances from
 ##'   `$NACOV`.  Thus, it is necessary to use `poolSat()` to obtain
-##'   the appropriate summary statistics for any particular SEM (see Examples).
+##'   the appropriate summary statistics for any particular SEM (see **Examples**).
 ##'
 ##' @seealso [lavaan.mi()] for traditional method (fit SEM to each imputation,
 ##'   pool results afterward).
@@ -116,32 +116,27 @@
 ##'
 ##' ## fit model to summary statistics in "prePooledData"
 ##' fit <- cfa(HS.model, data = prePooledData, std.lv = TRUE)
+##' ## By default, the "Scaled" column provides a "scaled.shifted" test
+##' ## statistic that maintains an approximately nominal Type I error rate.
+##' summary(fit, fit.measures = TRUE, standardized = "std.all")
+##' ## Note that this scaled statistic does NOT account for deviations from
+##' ## normality, because the default normal-theory standard errors were
+##' ## requested when running poolSat().  See below about non-normality.
 ##'
-##' ## In the summary() output, IGNORE the standard test statistic
-##' ## reported directly under the heading "Model Test User Model:".
-##' summary(fit)
-##' ## Instead, refer to "Browne's residual-based (ADF) test".
-##' ## Browne's (1984) test statistic better maintains the chosen Type I error rate.
-##'
-##' ## Browne's (1984) test statistic is also available via lavTest():
+##' ## Alternatively, "Browne's residual-based (ADF) test" is also available:
 ##' lavTest(fit, test = "browne.residual.adf", output = "text")
 ##'
-##' ## Browne's test statistic will not be reported by fitMeasures(), which only
-##' ## calculates fit indices using the standard (not Browne's) statistic.
-##' fitMeasures(fit, output = "text") # missing Browne, interpret with caution!
-##'
-##'
-##' ## optionally, save the saturated-model lavaan.mi object
+##' ## Optionally, save the saturated-model lavaan.mi object, which
+##' ## could be helpful for diagnosing convergence problems per imputation.
 ##' satFit <- poolSat(impSubset1, return.fit = TRUE)
-##' ## this could be helpful for diagnosing convergence problems per imputation
 ##'
 ##'
 ##' ## FITTING MODELS TO DIFFERENT (SUBSETS OF) VARIABLES
 ##'
-##' ## If you only want to analyze a subset of these variables, you will get
-##' ## an error:
-##' \dontrun{
+##' ## If you only want to analyze a subset of these variables,
 ##' mod.vis <- 'visual  =~ x1 + x2 + x3'
+##' ## you will get an error:
+##' \dontrun{
 ##' fit.vis <- cfa(mod.vis, data = prePooledData) # error
 ##' }
 ##'
@@ -156,39 +151,22 @@
 ##'
 ##' ## fit saturated MULIPLE-GROUP model to imputations
 ##' impSubset2 <- lapply(HS20imps, "[", i = c(paste0("x", 1:9), "school"))
-##' (prePooledData2 <- poolSat(impSubset2, group = "school", se = "robust.sem"))
-##' ## Nonnormality accounted for in this step by requesting robust
-##' ## standard errors.  These are used as weights in the next step:
+##' (prePooledData2 <- poolSat(impSubset2, group = "school",
+##'                            ## request standard errors that are ROBUST
+##'                            ## to violations of the normality assumption:
+##'                            se = "robust.sem"))
+##' ## Nonnormality-robust standard errors are implicitly incorporated into the
+##' ## pooled weight matrix (NACOV= argument), so they are
+##' ## AUTOMATICALLY applied when fitting the model:
 ##' fit.config <- cfa(HS.model, data = prePooledData2, group = "school",
 ##'                   std.lv = TRUE)
-##' ## standard errors and Browne's chi-squared test both robust to nonnormality
+##' ## standard errors and chi-squared test of fit both robust to nonnormality
 ##' summary(fit.config)
-##'
-##'
-##' ## COMPARING NESTED MODELS
-##'
-##' ## Browne's (1984) residual-based statistics have not been generalized to
-##' ## the case of nested-model comparisons.  Thus, the lavTestLRT() function
-##' ## does not provide such an option, but would instead provide a standard
-##' ## test that IGNORES between-imputation variance.
-##'
-##' ## fit more-constrained levels of measurement equivalence
-##' fit.metric <- cfa(HS.model, data = prePooledData2, group = "school",
-##'                   std.lv = TRUE, group.equal = "loadings")
-##' fit.scalar <- cfa(HS.model, data = prePooledData2, group = "school",
-##'                   std.lv = TRUE, group.equal = c("loadings","intercepts"))
-##'
-##' ## Cannot trust Type I error rate of standard LRT statistic
-##' ## because it IGNORES between-imputation variance
-##' lavTestLRT(fit.config, fit.metric, fit.scalar)
-##'
-##' ## Instead, request the chi-squared difference test using Browne's statistic
-##' lavTestLRT(fit.config, fit.metric, fit.scalar, type = "browne.residual.adf")
 ##'
 ##'
 ##' ## CATEGORICAL OUTCOMES
 ##'
-##' ## discretize imputed data
+##' ## discretize the imputed data, for an example of 3-category data
 ##' HS3cat <- lapply(impSubset1, function(x) {
 ##'   as.data.frame( lapply(x, cut, breaks = 3, labels = FALSE) )
 ##' })
@@ -196,11 +174,16 @@
 ##' (prePooledData3 <- poolSat(HS3cat, ordered = paste0("x", 1:9)))
 ##'
 ##' fitc <- cfa(HS.model, data = prePooledData3, std.lv = TRUE)
-##' summary(fitc) # again, only pay attention to Browne's ADF test
+##' summary(fitc)
 ##'
-##' ## Optionally, use unweighted least-squares estimation.
-##' ## Note that the robust SEs and Browne's test will still be used.
-##' fitcu <- cfa(HS.model, data = prePooledData3, std.lv = TRUE, estimator = "ULS")
+##' ## Optionally, use unweighted least-squares estimation.  However,
+##' ## you must first REMOVE the pooled weight matrix (WLS.V= argument)
+##' ## or replace it with an identity matrix of the same dimensions:
+##' prePooledData4 <- prePooledData3
+##' prePooledData4$WLS.V <- NULL
+##' ## or prePooledData4$WLS.V <- diag(nrow(prePooledData3$WLS.V))
+##' fitcu <- cfa(HS.model, data = prePooledData4, std.lv = TRUE, estimator = "ULS")
+##' ## Note that the SEs and test were still appropriately corrected:
 ##' summary(fitcu)
 ##'
 ##' @export
@@ -389,7 +372,7 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
                          conditional.x      = FALSE,
                          estimator          = ifelse(categorical, "DWLS","ML"),
                          se                 = "robust.sem",
-                         test               = "Browne.residual.adf") #FIXME: set to "scaled.shifted" after more verification
+                         test               = "scaled.shifted")
   ## set class and return
   class(out) <- c("lavMoments", "list")
   out
