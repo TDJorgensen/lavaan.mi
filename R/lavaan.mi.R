@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 May 2024
+### Last updated: 28 May 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -106,7 +106,7 @@
 ##' data(binHS5imps) # import a list of 5 imputed data sets
 ##'
 ##' ## fit model
-##' catout <- cfa.mi(HS.model, data = binHS5imps,
+##' catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
 ##'                  # use lavaanList(FUN=) argument to save zero-cell tables
 ##'                  # and obsolete "WRMR" fit index per imputation
 ##'                  FUN = function(fit) {

@@ -106,7 +106,7 @@ lavTestWald.mi(mgfit.scalar, constraints = eq.means)
 data(binHS5imps) # import a list of 5 imputed data sets
 
 ## fit model
-catout <- cfa.mi(HS.model, data = binHS5imps,
+catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
                  # use lavaanList(FUN=) argument to save zero-cell tables
                  # and obsolete "WRMR" fit index per imputation
                  FUN = function(fit) {

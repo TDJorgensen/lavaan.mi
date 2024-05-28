@@ -269,6 +269,8 @@ lavResiduals.mi <- function(object,
 ## utility function called within fitMeasures.mi()
 ## -----------------------------------------------
 
+#TODO: Delete this.
+#      Only called within old function: fitMeas_manual()
 ##' @importFrom lavaan lavListInspect lavNames
 getSRMR <- function(object, type = "cor.bentler", level = "within",
                     include.mean = TRUE, omit.imps = c("no.conv","no.se")) {
