@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 26 May 2024
+### Last updated: 28 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -460,6 +460,7 @@ anova_lavaan_mi <- function(object, ...) {
 
 ##' @importFrom lavaan lavListInspect parTable lavTestLRT
 D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
+                   harm = TRUE, # harmonic or arithmetic mean of scaling.factor
                    return.mean.chisq  = FALSE, # TRUE to ease D4
                    return.scale.shift = FALSE, # TRUE for shift in robustify()
                    standard.test = "standard", scaled.test = "default",
@@ -586,11 +587,37 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   out <- calculate.D2(w, DF, asymptotic)
   ## add .scaled suffix
   if (pool.robust) names(out) <- paste0(names(out), ".scaled")
-  ## for 1 model, add extra info (redundant if pool.robust)
-  if (is.null(h1) & !pool.robust) {
-    PT <- parTable(object)
-    out <- c(out, npar = max(PT$free) - sum(PT$op == "=="),
-             ntotal = lavListInspect(object, "ntotal"))
+  ## for 1 model, add extra info
+  if (is.null(h1)) {
+    if (pool.robust) {
+      ## for consistent fitMeasures() output, add average scaling factor
+      scaleList <- sapply(object@testList[useImps],
+                          function(x) x[[test]][["scaling.factor"]] )
+      if (test == "scaled.shifted") {
+        shiftList <- sapply(object@testList[useImps],
+                            function(x) x[[test]][["shift.parameter"]])
+      }
+
+      if (harm) {
+        sc <- c(chisq.scaling.factor = 1/mean(1/scaleList))
+        if (test == "scaled.shifted") {
+          sc["chisq.shift.parameter"] <- 1/mean(1/shiftList)
+        }
+
+      } else {
+        sc <- c(chisq.scaling.factor = mean(scaleList))
+        if (test == "scaled.shifted") {
+          sc["chisq.shift.parameter"] <- mean(shiftList)
+        }
+      }
+      out <- append(out, values = sc,
+                    after = which(names(out) == "pvalue.scaled"))
+    } else {
+      ## redundant if pool.robust, because concatenated with pooled naive stat
+      PT <- parTable(object)
+      out <- c(out, npar = max(PT$free) - sum(PT$op == "=="),
+               ntotal = lavListInspect(object, "ntotal"))
+    }
   }
 
   class(out) <- c("lavaan.vector","numeric")
