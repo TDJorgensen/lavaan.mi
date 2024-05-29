@@ -431,10 +431,12 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
     res$fit <- fitMeasures_mi(object, fm.args = fm.args,
                               omit.imps = omit.imps,
                               fit.measures = "default")
+    attr(res$fit, "add.h0") <- TRUE
   } else {
     ## just the pooled test(s)
-    chiSqTests <- c("chisq","df","pvalue",   "chisq.scaling.factor",
-                    "chisq.scaled","df.scaled","pvalue.scaled")
+    chiSqTests <- c("chisq","df","pvalue",
+                    "chisq.scaled","df.scaled","pvalue.scaled",
+                    "chisq.scaling.factor","chisq.shift.parameter")
     res$fit <- fitMeasures_mi(object, fm.args = fm.args,
                               fit.measures = chiSqTests)
     attr(res$fit, "add.h0") <- TRUE
