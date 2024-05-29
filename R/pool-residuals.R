@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 May 2024
+### Last updated: 29 May 2024
 ### pool covariance/correlation residuals
 ### define resid() method and lavResiduals.mi()
 
@@ -243,6 +243,12 @@ setMethod("resid", "lavaan.mi", resid_lavaan_mi)
 ##' lavResiduals.mi(fit, type = "raw") # zstat=TRUE by default
 ##' ## RMR is in the $summary
 ##' ## "normalized" residuals are in $cov.z
+##'
+##'
+##' ## The standard resid() and residuals() method simply call lavResiduals.mi()
+##' ## with arguments to display only the residuals ("raw" by default).
+##' resid(fit)
+##' residuals(fit, type = "cor.bollen") # same as type = "cor"
 ##'
 ##' @export
 lavResiduals.mi <- function(object,

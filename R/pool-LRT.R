@@ -1,10 +1,7 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 28 May 2024
+### Last updated: 29 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
-
-#FIXME: Make a lrtArgs=list() argument to pass new lavTestLRT(test=) argument,
-#       or check for which scale parameter to use.
 
 
 ## -------------
@@ -32,9 +29,7 @@
 ##' `pool.method = "Mplus"` implies `"D3"` and `asymptotic = TRUE`
 ##' (see Asparouhov & Muthen, 2010).
 ##'
-#FIXME: this is no longer true, right?
-##' Note that the `anova` method (see [lavaan.mi-class])
-##' simply calls `lavTestLRT.mi(..., asANOVA = TRUE)`.
+##' Note that the `anova()` method simply calls `lavTestLRT.mi()`.
 ##'
 ##' @aliases lavTestLRT.mi
 ##' @importFrom lavaan lavTestLRT
@@ -64,15 +59,8 @@
 ##'   Find additional details in Enders (2010, chapter 8).
 
 #FIXME: Remove these 2 (passed via ...)
-## @param standard.test `character` indicating which standard test
-##   statistic to pool with the `pool.method="D2"` method. The default is
-##   `"standard"` but can also be one of Browne's residual-based
-##   statistics, listed on [lavaan::lavTest()].
-## @param scaled.test `character` indicating which robust/scaled test
-##   statistic to pool with the `pool.method="D2"` method when
-##   `pool.robust=TRUE`. The default is the first robust test listed in
-##   `lavInspect(object, "options")$test`, but could be any listed on
-##   [lavaan::lavTest()] that were requested when `object` was fitted.
+## @param standard.test
+## @param scaled.test
 
 ##' @param omit.imps `character` vector specifying criteria for omitting
 ##'   imputations from pooled results.  Can include any of
@@ -101,8 +89,6 @@
 ##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##'
 ##' @return
-##'   This is just a wrapper around [lavTestLRT.mi()], where you can
-##'   find details about additional arguments.
 ##'
 ##'   - When `asANOVA=TRUE`, returns an object of class [stats::anova] with a
 ##'     a test of model fit for a single model (`object`) or test(s) of the
@@ -111,11 +97,13 @@
 ##'     its degrees of freedom, its *p* value, and 2 missing-data diagnostics:
 ##'     the relative increase in variance (RIV = FMI / (1 \eqn{-} FMI)) and the
 ##'     fraction of missing information (FMI = RIV / (1 + RIV)).
-##'   - When `asANOVA=TRUE`, returns a vector containing the LRT statistic for
+##'   - When `asANOVA=FALSE`, returns a vector containing the LRT statistic for
 ##'     a single model or comparison of a single pair of models, or a
 ##'     `data.frame` of multiple model comparisons. Robust statistics will also
 ##'     include the average (across imputations) scaling factor and
 ##'     (if relevant) shift parameter(s), unless `pool.robust = TRUE`.
+##'     When using `pool.method = "D3"` or `"D4"`, the vector for a single
+##'     model also includes its average log-likelihood and information criteria.
 ##'
 ##' @author
 ##'   Terrence D. Jorgensen (University of Amsterdam;
@@ -159,7 +147,7 @@
 ##' @examples
 ##' data(HS20imps) # import a list of 20 imputed data sets
 ##'
-##' ## specify CFA model from lavaan's ?cfa help page
+##' ## specify CFA model from ?lavaan::cfa help page
 ##' HS.model <- '
 ##'   visual  =~ x1 + x2 + x3
 ##'   textual =~ x4 + x5 + x6
@@ -181,16 +169,42 @@
 ##' fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
 ##'                orthogonal = TRUE)
 ##'
-##' ## By default, use D4.
+##' ## By default, pool.method = "D4".
 ##' ## Must request an asymptotic chi-squared statistic
 ##' ## in order to accommodate a robust correction.
 ##' lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
+##' ## or   anova(fit1, fit0, fitp, asymptotic = TRUE)
+##'
+##' ## Pass any argument to lavTestLRT()
+##' lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE,
+##'               method = "satorra.bentler.2010")
+##'
+##' ## For a single model, you can request a vector instead of an anova-class
+##' ## table in order to see naive information criteria (only using D3 or D4),
+##' ## which are calculated using the average log-likelihood across imputations.
+##' lavTestLRT.mi(fit1, asANOVA = FALSE)
+##'
+##'
+##'
+##' ## When using a least-squares (rather than maximum-likelihood) estimator,
+##' ## only the D2 method is available.  For example, ordered-categorical data:
+##' data(binHS5imps) # import a list of 5 imputed data sets
+##'
+##' ## fit model using default DWLS estimation
+##' fit1c <- cfa.mi(HS.model   , data = binHS5imps, ordered = TRUE)
+##' fit0c <- cfa.mi(HS.parallel, data = binHS5imps, ordered = TRUE,
+##'                 orthogonal = TRUE)
 ##'
 ##' ## Using D2, you can either robustify the pooled naive statistic ...
-##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2")
-##' ## ... or pool the robust chi-squared statistic
-##' lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2",
+##' lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2")
+##' ## ... or pool the robust chi-squared statistic (NOT recommended)
+##' lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2",
 ##'               pool.robust = TRUE)
+##'
+##' ## When calculating fit indices, you can pass lavTestLRT.mi() arguments:
+##' fitMeasures(fit1c, output = "text",
+##'             # lavTestLRT.mi() arguments:
+##'             pool.method = "D2", pool.robust = TRUE)
 ##'
 ##' @export
 lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,

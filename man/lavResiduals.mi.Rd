@@ -70,6 +70,12 @@ lavResiduals.mi(fit, type = "raw") # zstat=TRUE by default
 ## RMR is in the $summary
 ## "normalized" residuals are in $cov.z
 
+
+## The standard resid() and residuals() method simply call lavResiduals.mi()
+## with arguments to display only the residuals ("raw" by default).
+resid(fit)
+residuals(fit, type = "cor.bollen") # same as type = "cor"
+
 }
 \seealso{
 \code{\link[lavaan:lavResiduals]{lavaan::lavResiduals()}} for details about other arguments.

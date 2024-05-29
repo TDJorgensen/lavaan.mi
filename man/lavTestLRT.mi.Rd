@@ -76,8 +76,6 @@ scale/shift parameter to it. The harmonic mean is applied to the scaling
 factor, whereas the arithmetic mean is applied to the shift parameter.}
 }
 \value{
-This is just a wrapper around \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, where you can
-find details about additional arguments.
 \itemize{
 \item When \code{asANOVA=TRUE}, returns an object of class \link[stats:anova]{stats::anova} with a
 a test of model fit for a single model (\code{object}) or test(s) of the
@@ -86,11 +84,13 @@ difference(s) in fit between nested models passed via \code{...} (either an
 its degrees of freedom, its \emph{p} value, and 2 missing-data diagnostics:
 the relative increase in variance (RIV = FMI / (1 \eqn{-} FMI)) and the
 fraction of missing information (FMI = RIV / (1 + RIV)).
-\item When \code{asANOVA=TRUE}, returns a vector containing the LRT statistic for
+\item When \code{asANOVA=FALSE}, returns a vector containing the LRT statistic for
 a single model or comparison of a single pair of models, or a
 \code{data.frame} of multiple model comparisons. Robust statistics will also
 include the average (across imputations) scaling factor and
 (if relevant) shift parameter(s), unless \code{pool.robust = TRUE}.
+When using \code{pool.method = "D3"} or \code{"D4"}, the vector for a single
+model also includes its average log-likelihood and information criteria.
 }
 }
 \description{
@@ -114,13 +114,12 @@ that \code{pool.method} was set to \code{"D2"}.
 \code{pool.method = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
 
-Note that the \code{anova} method (see \linkS4class{lavaan.mi})
-simply calls \code{lavTestLRT.mi(..., asANOVA = TRUE)}.
+Note that the \code{anova()} method simply calls \code{lavTestLRT.mi()}.
 }
 \examples{
 data(HS20imps) # import a list of 20 imputed data sets
 
-## specify CFA model from lavaan's ?cfa help page
+## specify CFA model from ?lavaan::cfa help page
 HS.model <- '
   visual  =~ x1 + x2 + x3
   textual =~ x4 + x5 + x6
@@ -142,16 +141,42 @@ fitp <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm")
 fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
                orthogonal = TRUE)
 
-## By default, use D4.
+## By default, pool.method = "D4".
 ## Must request an asymptotic chi-squared statistic
 ## in order to accommodate a robust correction.
 lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
+## or   anova(fit1, fit0, fitp, asymptotic = TRUE)
+
+## Pass any argument to lavTestLRT()
+lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE,
+              method = "satorra.bentler.2010")
+
+## For a single model, you can request a vector instead of an anova-class
+## table in order to see naive information criteria (only using D3 or D4),
+## which are calculated using the average log-likelihood across imputations.
+lavTestLRT.mi(fit1, asANOVA = FALSE)
+
+
+
+## When using a least-squares (rather than maximum-likelihood) estimator,
+## only the D2 method is available.  For example, ordered-categorical data:
+data(binHS5imps) # import a list of 5 imputed data sets
+
+## fit model using default DWLS estimation
+fit1c <- cfa.mi(HS.model   , data = binHS5imps, ordered = TRUE)
+fit0c <- cfa.mi(HS.parallel, data = binHS5imps, ordered = TRUE,
+                orthogonal = TRUE)
 
 ## Using D2, you can either robustify the pooled naive statistic ...
-lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2")
-## ... or pool the robust chi-squared statistic
-lavTestLRT.mi(fit1, fit0, asymptotic = TRUE, pool.method = "D2",
+lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2")
+## ... or pool the robust chi-squared statistic (NOT recommended)
+lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2",
               pool.robust = TRUE)
+
+## When calculating fit indices, you can pass lavTestLRT.mi() arguments:
+fitMeasures(fit1c, output = "text",
+            # lavTestLRT.mi() arguments:
+            pool.method = "D2", pool.robust = TRUE)
 
 }
 \references{

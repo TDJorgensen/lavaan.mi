@@ -62,61 +62,24 @@
 ##' summary(fit, fit.measures = TRUE, fmi = TRUE)
 ##' summary(fit, standardized = "std.all", rsquare = TRUE)
 ##'
-##' ## model fit. D3 includes information criteria
-##' anova(fit)
-##' ## equivalently:
-##' lavTestLRT.mi(fit)
-##' ## request D2
-##' anova(fit, pool.method = "D2")
-##' ## request fit indices
-##' fitMeasures(fit)
 ##'
+##' ## You can pass other lavaanList() arguments, such as FUN=, which allows
+##' ## you to save any custom output from each imputation's fitted model.
 ##'
-##' ## fit multigroup model without invariance constraints
-##' mgfit.config <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm",
-##'                        group = "school")
-##' ## add invariance constraints, and use previous fit as "data"
-##' mgfit.metric <- cfa.mi(HS.model, data = mgfit.config, estimator = "mlm",
-##'                        group = "school", group.equal = "loadings")
-##' mgfit.scalar <- cfa.mi(HS.model, data = mgfit.config, estimator = "mlm",
-##'                        group = "school",
-##'                        group.equal = c("loadings","intercepts"))
-##'
-##' ## compare fit of 2 models to test metric invariance
-##' ## (scaled likelihood ratio test)
-##' lavTestLRT.mi(mgfit.config, mgfit.metric, mgfit.scalar, # or use anova()
-##'               method = "satorra.bentler.2010") # pass argument to lavTestLRT()
-##'
-##' ## correlation residuals to investigate local misfit
-##' resid(mgfit.scalar, type = "cor.bentler")
-##' ## modification indices for fixed parameters, to investigate local misfit
-##' modindices.mi(mgfit.scalar)
-##' ## or lavTestScore.mi for modification indices about equality constraints
-##' lavTestScore.mi(mgfit.scalar)
-##'
-##' ## Wald test of whether latent means are == (fix 3 means to zero in group 2)
-##' eq.means <- ' .p70. == 0
-##'               .p71. == 0
-##'               .p72. == 0 '
-##' lavTestWald.mi(mgfit.scalar, constraints = eq.means)
-##'
-##'
-##'
-##' ## ordered-categorical data
+##' ## An example with ordered-categorical data:
 ##' data(binHS5imps) # import a list of 5 imputed data sets
 ##'
-##' ## fit model
+##' ## Define a function to save a list with 2 custom outputs per imputation:
+##' ##  - zero-cell tables
+##' ##  - the obsolete "WRMR" fit index
+##' myCustomFunc <- function(object) {
+##'   list(wrmr      = lavaan::fitMeasures(object, "wrmr"),
+##'        zeroCells = lavaan::lavInspect(object, "zero.cell.tables"))
+##' }
+##' ## fit the model
 ##' catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
-##'                  # use lavaanList(FUN=) argument to save zero-cell tables
-##'                  # and obsolete "WRMR" fit index per imputation
-##'                  FUN = function(fit) {
-##'                    list(wrmr = lavaan::fitMeasures(fit, "wrmr"),
-##'                         zeroCells = lavaan::lavInspect(fit, "zero.cell.tables"))
-##'                  })
-##' summary(catout)
-##' lavTestLRT.mi(catout, pool.method = "D2", pool.robust = TRUE)
-##' fitMeasures(catout, fit.measures = c("rmsea","srmr","cfi"),
-##'             pool.method = "D2", pool.robust = TRUE)
+##'                  FUN = myCustomFunc)
+##' summary(catout) # the usual output
 ##'
 ##' ## extract custom output
 ##' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
