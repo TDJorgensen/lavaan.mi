@@ -45,8 +45,8 @@
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
 ##' @slot call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external
 ##'   By default, [lavaan.mi()] does not populate the remaining `@*List` slots
-##'   from the [lavaanList-class]. But they can be added to the call using the
-##'   `store.slots=` argument (passed to [lavaan::lavaanList()] via \dots).
+##'   from the [lavaanList-class] class. But they can be added to the call using
+##'   the `store.slots=` argument (passed to [lavaan::lavaanList()] via \dots).
 ##'
 ##' @param object An object of class [lavaan.mi-class]
 ##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices,nd,output
@@ -175,7 +175,41 @@
 ##'
 ##' @examples
 ##'
-##' ## See ?lavaan.mi help page
+##' data(HS20imps) # import a list of 20 imputed data sets
+##'
+##' ## specify CFA model from lavaan's ?cfa help page
+##' HS.model <- '
+##'   visual  =~ x1 + x2 + x3
+##'   textual =~ x4 + x5 + x6
+##'   speed   =~ x7 + x8 + x9
+##' '
+##'
+##' ## fit model to imputed data sets
+##' fit <- cfa.mi(HS.model, data = HS20imps)
+##'
+##' ## vector of pooled coefficients
+##' coef(fit)
+##' ## their pooled asymptotic covariance matrix
+##' vcov(fit)
+##' ## which is the weighted sum of within- and between-imputation components
+##' vcov(fit, type = "within")
+##' vcov(fit, type = "between")
+##'
+##' ## covariance matrix of observed variables,
+##' ## as implied by pooled estimates
+##' fitted(fit)
+##'
+##' ## custom null model for CFI
+##' HS.parallel <- '
+##'   visual  =~ x1 + 1*x2 + 1*x3
+##'   textual =~ x4 + 1*x5 + 1*x6
+##'   speed   =~ x7 + 1*x8 + 1*x9
+##' '
+##' fit0 <- cfa.mi(HS.parallel, data = HS20imps, orthogonal = TRUE)
+##' fitMeasures(fit, baseline.model = fit0, fit.measures = "default",
+##'             output = "text")
+##'
+##' ## See ?lavaan.mi help page for more examples
 ##'
 ##' @export
 setClass("lavaan.mi", contains = "lavaanList",
