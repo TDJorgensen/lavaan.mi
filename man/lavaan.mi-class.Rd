@@ -131,7 +131,10 @@ different numbers of imputations without redundantly refitting the
 model).}
 
 \item{...}{Additional arguments passed to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, or
-subsequently to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}.}
+subsequently to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}. This is how users can
+specify a \verb{pool.method=} for the model's \eqn{\chi^2} statistic
+(optionally used in any \verb{fit.measures=}), or set \code{pool.method="D1"}
+when \code{summary(modindices=TRUE)}.}
 
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
 \code{nobs()} method should return the total sample size or (if

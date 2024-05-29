@@ -55,7 +55,10 @@
 ##'        `fit.measures` and `fm.args`.
 ##' @param baseline.model,h1.model See [lavaan::fitMeasures()].
 ##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
-##'        subsequently to [lavaan::lavTestLRT()].
+##'        subsequently to [lavaan::lavTestLRT()]. This is how users can
+##'        specify a `pool.method=` for the model's \eqn{\chi^2} statistic
+##'        (optionally used in any `fit.measures=`), or set `pool.method="D1"`
+##'        when `summary(modindices=TRUE)`.
 ##' @param fmi `logical` indicating whether to add the Fraction Missing
 ##'        Information (FMI) and (average) relative increase in variance (ARIV)
 ##'        to the output.
@@ -289,7 +292,7 @@ setMethod("show", "lavaan.mi", function(object) {
 ## object allows lavaan.mi to capitalize on lavaan:::print.lavaan.summary()
 lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
                                      asymptotic = FALSE, scale.W = !asymptotic,
-                                     #TODO: add pool.method=
+                                     poolChiSq, poolModIdx, pool.robust = FALSE,
                                      header = TRUE, fit.measures = FALSE,
                                      fm.args = list(standard.test   = "default",
                                                     scaled.test     = "default",
@@ -428,17 +431,18 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
     ## Instead, conditionally add pooled test with(out) fit.measures
   }
   if (fit.measures) {
-    res$fit <- fitMeasures_mi(object, fm.args = fm.args,
-                              omit.imps = omit.imps,
-                              fit.measures = "default")
+    res$fit <- fitMeasures_mi(object, fm.args = fm.args, omit.imps = omit.imps,
+                              fit.measures = "default", pool.method = poolChiSq,
+                              pool.robust = pool.robust)
     attr(res$fit, "add.h0") <- TRUE
   } else {
     ## just the pooled test(s)
     chiSqTests <- c("chisq","df","pvalue",
                     "chisq.scaled","df.scaled","pvalue.scaled",
                     "chisq.scaling.factor","chisq.shift.parameter")
-    res$fit <- fitMeasures_mi(object, fm.args = fm.args,
-                              fit.measures = chiSqTests)
+    res$fit <- fitMeasures_mi(object, fm.args = fm.args, omit.imps = omit.imps,
+                              fit.measures = chiSqTests, pool.method = poolChiSq,
+                              pool.robust = pool.robust)
     attr(res$fit, "add.h0") <- TRUE
   }
 
@@ -457,7 +461,7 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
 
   if (modindices) {
     MI <- modificationIndices.mi(object, omit.imps = omit.imps,
-                                 #TODO: add pool.method=
+                                 pool.method = poolModIdx,
                                  standardized = TRUE, cov.std = cov.std)
     res$mi <- MI
   }
@@ -491,9 +495,31 @@ summary_lavaan_mi <- function(object, header = TRUE,
                               remove.unused = TRUE,
                               modindices = FALSE, nd = 3L,
                               ...) {
+  dots <- list(...)
+
+  if (is.null(dots$pool.robust)) dots$pool.robust <- FALSE
+
+  if (is.null(dots$pool.method)) {
+    ## not specified at all, so set existing defaults
+    poolChiSq  <- ifelse(lavListInspect(object, "categorical"),
+                         yes = "D2", no = "D4")
+    poolModIdx <- "D2"
+
+  } else if (toupper(dots$pool.method) == "D1") {
+    ## only applicable to modindices.mi(), so set default for LRT
+    poolModIdx <- "D1"
+    poolChiSq  <- ifelse(lavListInspect(object, "categorical"),
+                         yes = "D2", no = "D4")
+  } else {
+    poolModIdx <- "D2"
+    poolChiSq  <- dots$pool.method
+  }
 
   SUM <- lavaan_mi_object_summary(object = object, omit.imps = omit.imps,
                                   asymptotic = asymptotic, scale.W = scale.W,
+                                  poolChiSq   = poolChiSq,
+                                  poolModIdx  = poolModIdx,
+                                  pool.robust = dots$pool.robust,
                                   header = header,
                                   fit.measures = fit.measures, fm.args = fm.args,
                                   estimates = estimates, ci = ci, fmi = fmi,
