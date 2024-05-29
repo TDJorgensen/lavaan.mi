@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 May 2024
+### Last updated: 29 May 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -235,7 +235,8 @@ lavaan.mi <- function(model, data, ...) {
   ## fit model using lavaanList
   lavListCall <- c(list(quote(lavaan::lavaanList), model = model,
                         dataList = imputedData), dots)
-  lavListCall$store.slots <- c("partable","vcov","test","h1","baseline")
+  lavListCall$store.slots <- union(c("partable","vcov","test","h1","baseline"),
+                                   lavListCall$store.slots)
   lavListCall$FUN <- if (is.null(dots$FUN)) .getOutput. else function(obj) {
     temp1 <- .getOutput.(obj)
     temp2 <- dots$FUN(obj)

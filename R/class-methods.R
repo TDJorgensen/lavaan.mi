@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 May 2024
+### Last updated: 29 May 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -34,21 +34,19 @@
 ##'   latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the
 ##'   residual covariance matrix of observed variables (\eqn{\Theta}) is
 ##'   non-positive-definite.
-##' @slot lavaanList_slots All remaining slots are from
-##'   [lavaanList-class], but [lavaan.mi()] only populates a
-##'   subset of the `list` slots, two of them with custom information:
 ##' @slot version Named `character` vector indicating the `lavaan` and
 ##'   `lavaan.mi` version numbers.
 ##' @slot DataList The `list` of imputed data sets
 ##' @slot SampleStatsList List of output from
 ##'   `lavInspect(fit, "sampstat")` applied to each fitted model.
-##' @slot ParTableList See [lavaanList-class]
-##' @slot vcovList See [lavaanList-class]
-##' @slot testList See [lavaanList-class]
+##' @slot ParTableList,vcovList,testList,baselineList See [lavaanList-class]
 ##' @slot h1List See [lavaanList-class]. An additional element is
 ##'   added to the `list`: `$PT` is the "saturated" model's parameter
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
-##' @slot baselineList See [lavaanList-class]
+##' @slot call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external
+##'   By default, [lavaan.mi()] does not populate the remaining `@*List` slots
+##'   from the [lavaanList-class]. But they can be added to the call using the
+##'   `store.slots=` argument (passed to [lavaan::lavaanList()] via \dots).
 ##'
 ##' @param object An object of class [lavaan.mi-class]
 ##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices,nd,output

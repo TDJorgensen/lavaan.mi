@@ -212,10 +212,6 @@ latent variables (\eqn{\Psi}) is non-positive-definite, and (4) the
 residual covariance matrix of observed variables (\eqn{\Theta}) is
 non-positive-definite.}
 
-\item{\code{lavaanList_slots}}{All remaining slots are from
-\linkS4class{lavaanList}, but \code{\link[=lavaan.mi]{lavaan.mi()}} only populates a
-subset of the \code{list} slots, two of them with custom information:}
-
 \item{\code{version}}{Named \code{character} vector indicating the \code{lavaan} and
 \code{lavaan.mi} version numbers.}
 
@@ -224,17 +220,15 @@ subset of the \code{list} slots, two of them with custom information:}
 \item{\code{SampleStatsList}}{List of output from
 \code{lavInspect(fit, "sampstat")} applied to each fitted model.}
 
-\item{\code{ParTableList}}{See \linkS4class{lavaanList}}
-
-\item{\code{vcovList}}{See \linkS4class{lavaanList}}
-
-\item{\code{testList}}{See \linkS4class{lavaanList}}
+\item{\code{ParTableList,vcovList,testList,baselineList}}{See \linkS4class{lavaanList}}
 
 \item{\code{h1List}}{See \linkS4class{lavaanList}. An additional element is
 added to the \code{list}: \verb{$PT} is the "saturated" model's parameter
 table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestricted()}}.}
 
-\item{\code{baselineList}}{See \linkS4class{lavaanList}}
+\item{\code{call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external}}{By default, \code{\link[=lavaan.mi]{lavaan.mi()}} does not populate the remaining \verb{@*List} slots
+from the \linkS4class{lavaanList}. But they can be added to the call using the
+\verb{store.slots=} argument (passed to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} via \dots).}
 }}
 
 \section{Objects from the Class}{
