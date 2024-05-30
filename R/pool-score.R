@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 May 2024
+### Last updated: 30 May 2024
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -334,6 +334,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
       }
     }
 
+    ## add header
+    attr(OUT$test, "header") <- paste("Score statistics pooled using the",
+                                      pool.method,
+                                      "pooling method.\n\nTotal score test:")
     return(OUT)
   } # else pool.method == "D1", making 'scale.W=' relevant
 
@@ -603,7 +607,10 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
                        ariv = ARIV, fmi = ARIV / (1 + ARIV))
   }
   class(TEST) <- c("lavaan.data.frame", "data.frame")
-  attr(TEST, "header") <- "total score test:"
+  ## add header
+  attr(TEST, "header") <- paste("Score statistics pooled using the",
+                                pool.method,
+                                "pooling method.\n\nTotal score test:")
   OUT <- list(test = TEST)
 
   if (univariate) {

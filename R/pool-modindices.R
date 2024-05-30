@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 May 2024
+### Last updated: 30 May 2024
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -364,6 +364,8 @@ modindices.mi <- function(object,
   }
 
   # add header
+  attr(LIST, "header") <- paste("Modification indices pooled using the",
+                                pool.method, "pooling method")
   # TODO: small explanation of the columns in the header?
 #    attr(LIST, "header") <-
 # c("modification indices for newly added parameters only; to\n",

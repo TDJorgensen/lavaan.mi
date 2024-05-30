@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 24 May 2024
+### Last updated: 30 May 2024
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -179,6 +179,9 @@ lavTestWald.mi <- function(object, constraints = NULL, pool.method = c("D1","D2"
     DF <- FIT@funList[[ intersect(useImps, which(!noStats))[1] ]][[2]]
     out <- calculate.D2(chiList, DF = DF, asymptotic)
     class(out) <- c("lavaan.vector","numeric")
+    ## add header
+    attr(out, "header") <- paste("Wald statistic pooled using the",
+                                 pool.method, "pooling method")
     return(out)
   } # else pool.method == "D1", making 'scale.W=' relevant
 
@@ -258,6 +261,9 @@ lavTestWald.mi <- function(object, constraints = NULL, pool.method = c("D1","D2"
   }
 
   class(out) <- c("lavaan.vector","numeric")
+  ## add header
+  attr(out, "header") <- paste("Wald statistic pooled using the",
+                               pool.method, "pooling method")
   out
 }
 

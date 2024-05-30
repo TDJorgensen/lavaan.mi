@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 29 May 2024
+### Last updated: 30 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -1167,6 +1167,9 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
   }
 
   class(out) <- c("lavaan.vector","numeric")
+  ## add header
+  attr(out, "header") <- paste("Test statistic(s) pooled using the",
+                               pool.method, "pooling method")
   out
 }
 
