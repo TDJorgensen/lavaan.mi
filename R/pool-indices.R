@@ -178,11 +178,43 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   #   H1 <- do.call(mi2lavaan, argList)
   # }
 
+  ## extract names of pooled tests
+  standard.test <- FIT@external$mi2lavaan$standard.test
+  scaled.test   <- FIT@external$mi2lavaan$scaled.test
 
-  lavaan::fitMeasures(FIT, fit.measures = fit.measures,
-                      baseline.model = BASE,
-                      h1.model = NULL, #FIXME: Possible? Necessary?
-                      fm.args = fm.args, output = output)
+  ## calculate fit measures
+  OUT <- lavaan::fitMeasures(FIT, fit.measures = fit.measures,
+                             baseline.model = BASE,
+                             h1.model = NULL, #FIXME: Possible? Necessary?
+                             fm.args = fm.args, output = output)
+
+  scaled.flag   <- any(grepl("scaled", names(OUT)))
+
+  ## add header
+  HEADER <- paste0("Test statistic(s) pooled using the ", pool.method,
+                   " pooling method.\n  Pooled statistic: ",
+                   ifelse(pool.robust && pool.method == "D2",
+                          yes = dQuote(scaled.test), no = dQuote(standard.test)))
+  if (scaled.flag) {
+    ## indicate whether pool.robust
+    HEADER <- paste0(HEADER,
+                     ifelse(pool.method == "D2",
+                            yes = paste0("  (pool.robust=", pool.robust, ")"),
+                            no = ""))
+    if (!pool.robust) {
+      ## indicate the scaling method
+      HEADER <- paste0(HEADER, "\n  Method to robustify pooled statistic:  ",
+                       dQuote(scaled.test))
+    }
+  }
+  attr(OUT, "header") <- HEADER
+
+  ## give the header more attributes, ignored by lavaan:::print.lavaan.vector(),
+  ## but caught by lavaan:::print.lavaan.fitMeasures() for summary()
+  attr(attr(OUT, "header"), "standard.test") <- standard.test
+  attr(attr(OUT, "header"),   "scaled.test") <-   scaled.test
+
+  OUT
 }
 
 ##' @name lavaan.mi-class

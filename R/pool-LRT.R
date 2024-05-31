@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 30 May 2024
+### Last updated: 31 May 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -312,7 +312,7 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
       out$RIV <- c(NA, results["ariv"])
       out$FMI <- c(NA, results["fmi" ])
 
-    } else return(results)
+    } else out <- results
 
   } else {
     modList <- c(list(object), mods)
@@ -347,9 +347,44 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
       ## combine and add class
       out <- cbind(out, resPlus1)
       class(out) <- c("anova", "data.frame")
-    } else return(results)
+
+    } else out <- results
 
   }
+
+  ## extract names and methods ACTUALLY APPLIED to pool tests
+  standard.test <- attr(results, "standard.test")
+  scaled.test   <- attr(results,   "scaled.test")
+  pool.method   <- attr(results, "pool.method")
+  pool.robust   <- attr(results, "pool.robust")
+  scaled.flag   <- any(grepl("scaled", names(results)))
+  ## delete attributes from vector to avoid printing
+  if (!asANOVA) {
+    attr(out, "standard.test") <- NULL
+    attr(out,   "scaled.test") <- NULL
+    attr(out, "pool.method")   <- NULL
+    attr(out, "pool.robust")   <- NULL
+  }
+
+  ## add header
+  HEADER <- paste0("Test statistic(s) pooled using the ", pool.method,
+                   " pooling method.\n  Pooled statistic: ",
+                   ifelse(pool.robust && pool.method == "D2",
+                          yes = dQuote(scaled.test), no = dQuote(standard.test)))
+  if (scaled.flag) {
+    ## indicate whether pool.robust
+    HEADER <- paste0(HEADER,
+                     ifelse(pool.method == "D2",
+                            yes = paste0("  (pool.robust=", pool.robust, ")"),
+                            no = ""))
+    if (!pool.robust) {
+      ## indicate the scaling method
+      HEADER <- paste0(HEADER, "\n  Method to robustify pooled statistic:  ",
+                       dQuote(scaled.test))
+    }
+  }
+  if (asANOVA) HEADER <- paste0(HEADER, "\n")
+  attr(out, ifelse(asANOVA, "heading", "header")) <- HEADER
 
   out
 }
@@ -1167,9 +1202,12 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
   }
 
   class(out) <- c("lavaan.vector","numeric")
-  ## add header
-  attr(out, "header") <- paste("Test statistic(s) pooled using the",
-                               pool.method, "pooling method")
+  ## hide the actually used test names/methods in an attribute, for headers
+  attr(out, "standard.test") <- standard.test
+  attr(out,   "scaled.test") <-   scaled.test
+  attr(out, "pool.method")   <- pool.method
+  attr(out, "pool.robust")   <- pool.robust
+
   out
 }
 
@@ -1238,6 +1276,12 @@ multipleLRT <- function(..., argsLRT = list(), pool.method = c("D4","D3","D2"),
 
   out <- as.data.frame(do.call(rbind, fitDiff))
   class(out) <- c("lavaan.data.frame", "data.frame")
+  ## pass along the actually used test names in an attribute, for headers
+  attr(out, "standard.test") <- attr(tempDiff, "standard.test")
+  attr(out,   "scaled.test") <- attr(tempDiff,   "scaled.test")
+  attr(out, "pool.method")   <- attr(tempDiff, "pool.method")
+  attr(out, "pool.robust")   <- attr(tempDiff, "pool.robust")
+
   out
 }
 

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 May 2024
+### Last updated: 31 May 2024
 ### Class and Methods for lavaan.mi object
 
 
@@ -427,14 +427,13 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
 
     res$data <- lav_data_summary_short(lavdata = object@Data)
 
-    ## lavaan prints the test here, but pooling takes time.
-    ## Instead, conditionally add pooled test with(out) fit.measures
+    ## lavaan prints res$test here, but instead I conditionally add
+    ## the pooled test with(out) fit.measures
   }
   if (fit.measures) {
     res$fit <- fitMeasures_mi(object, fm.args = fm.args, omit.imps = omit.imps,
                               fit.measures = "default", pool.method = poolChiSq,
                               pool.robust = pool.robust)
-    attr(res$fit, "add.h0") <- TRUE
   } else {
     ## just the pooled test(s)
     chiSqTests <- c("chisq","df","pvalue",
@@ -443,8 +442,10 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
     res$fit <- fitMeasures_mi(object, fm.args = fm.args, omit.imps = omit.imps,
                               fit.measures = chiSqTests, pool.method = poolChiSq,
                               pool.robust = pool.robust)
-    attr(res$fit, "add.h0") <- TRUE
   }
+  attr(res$fit, "add.h0")      <- TRUE
+  attr(res$fit, "pool.method") <- poolChiSq
+  attr(res$fit, "pool.robust") <- pool.robust
 
   if (estimates) {
     PE <- parameterEstimates.mi(object, omit.imps = omit.imps,

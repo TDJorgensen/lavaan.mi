@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 May 2024
+### Last updated: 31 May 2024
 ### Create faux lavaan-class object in order to pass to
 ### - lavaan::fitMeasures() within fitMeasures_mi()
 ### - standardizedSolution() within standardizedSolution.mi()
@@ -72,7 +72,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     if (test.names[1] == "none") {
       stop("lavaan ERROR: fit measures not available if test = \"none\".")
     }
-    standard.test <- "standard"
+    standard.test <- "standard" #TODO: allow for "browne.residual.*"
     scaled.test   <- fm.args$scaled.test
     ## do we have a scaled test statistic? if so, which one?
     scaled.flag <- FALSE
@@ -88,7 +88,11 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
         scaled.test <- test.names[tmp.idx[1]]
       }
     }
+    ## store test names in FIT, to be found by fitMeasures_mi() for header
+    FIT@external$mi2lavaan <- list(standard.test = standard.test,
+                                   scaled.test   = scaled.test)
     ## remove additional (scaled) tests from list
+    #FIXME: keep $standard even if fm.args$standard.test == "browne.residual.*"
     if (scaled.flag) {
       if (length(object@testList[[ useImps[1] ]]) > 2L)
         for (imp in useImps) {
