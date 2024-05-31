@@ -118,6 +118,8 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
       FIT@test[[scaled.test]]$scaling.factor    <- TEST[["chisq.scaling.factor"]]
       if (scaled.test == "scaled.shifted") {
         FIT@test$scaled.shifted$shift.parameter <- TEST[["chisq.shift.parameter"]]
+        ## also need to pass it via fitMeasures() for summary() method
+        FIT@external$mi2lavaan$shift <- TEST[["chisq.shift.parameter"]]
       } else if (scaled.test == "mean.var.adjusted") {
         ## only necessary for rmsea.scaled
         FIT@test[[scaled.test]]$trace.UGamma <- mean(sapply(object@testList[useImps],
