@@ -6,7 +6,7 @@ Description: Extends the `lavaan` package for multiply imputed data.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
 		person(given = "Yves", family = "Rosseel", role = "ctb", email="Yves.Rosseel@UGent.be", comment = c(ORCID = "0000-0002-4129-4477"))
 		)
-Depends: R(>= 4.0), lavaan(>= 0.6-13), methods
+Depends: R(>= 4.0), lavaan(>= 0.6-18), methods
 Imports: stats, utils
 Suggests: Amelia, MASS, mice, parallel, semTools, testthat
 License: GPL (>= 2)
@@ -14,6 +14,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/TDJorgensen/lavaan.mi
 BugReports: https://github.com/TDJorgensen/lavaan.mi/issues
-Date/Publication: 2024-05-31
+Date/Publication: 2024-06-06
 RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
