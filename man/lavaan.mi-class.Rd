@@ -184,7 +184,7 @@ Analogous to \code{summary()} for \code{lavaan-class} objects.
 By default, \code{summary} returns output from \code{\link[=parameterEstimates.mi]{parameterEstimates.mi()}},
 with some cursory information in the header.
 Setting \code{fit.measures=TRUE} will additionally run \code{fitMeasures()}, and
-setting \code{modindices=TRUE} will additionally run \code{\link[=modificationIndices.mi]{modificationIndices.mi()}}.}
+setting \code{modindices=TRUE} will additionally run \code{\link[=modindices.mi]{modindices.mi()}}.}
 }
 \description{
 This class extends the \linkS4class{lavaanList} class, created by

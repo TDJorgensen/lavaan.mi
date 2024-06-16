@@ -159,7 +159,7 @@
 ##'  By default, `summary` returns output from [parameterEstimates.mi()],
 ##'  with some cursory information in the header.
 ##'  Setting `fit.measures=TRUE` will additionally run `fitMeasures()`, and
-##'  setting `modindices=TRUE` will additionally run [modificationIndices.mi()].}
+##'  setting `modindices=TRUE` will additionally run [modindices.mi()].}
 ##'
 ##' @section Objects from the Class: See the [lavaan.mi()] function
 ##'   for details. Wrapper functions include [cfa.mi()],
@@ -461,9 +461,8 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
   }
 
   if (modindices) {
-    MI <- modificationIndices.mi(object, omit.imps = omit.imps,
-                                 pool.method = poolModIdx,
-                                 standardized = TRUE, cov.std = cov.std)
+    MI <- modindices.mi(object, omit.imps = omit.imps, pool.method = poolModIdx,
+                        standardized = TRUE, cov.std = cov.std)
     res$mi <- MI
   }
 

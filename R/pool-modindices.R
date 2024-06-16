@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 30 May 2024
+### Last updated: 16 June 2024
 ### adaptation of lavaan::modindices() for lavaan.mi-class objects
 
 
@@ -15,7 +15,7 @@
 ##' statistics across imputed data sets (i.e., "D2"; Li et al., 1991).
 ##'
 ##' @name modindices.mi
-##' @aliases modificationIndices.mi modificationindices.mi modindices.mi
+##' @aliases modindices.mi modificationIndices.mi modificationindices.mi
 ##' @importFrom lavaan lavInspect lavListInspect lavNames
 ##' @importFrom stats cov pchisq qchisq
 ##'
@@ -377,6 +377,10 @@ modindices.mi <- function(object,
 
 ## alias
 ##' @rdname modindices.mi
-##' @aliases modindices.mi modificationIndices.mi modificationindices.mi
 ##' @export
 modificationIndices.mi <- modindices.mi
+
+## alias
+##' @rdname modindices.mi
+##' @export
+modificationindices.mi <- modindices.mi
