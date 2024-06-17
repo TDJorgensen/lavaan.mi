@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 April 2024
+### Last updated: 12 June 2024
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -454,8 +454,14 @@ parameterEstimates.mi <- function(object,
 ##' and their *SE*s using the delta method.
 ##'
 ##' @aliases standardizedSolution.mi standardizedsolution.mi
+##' @importFrom lavaan lavInspect
 ##'
 ##' @param object An object of class `lavaan.mi`
+##' @param return.vcov `logical` indicating whether to return only the pooled
+##'        asymptotic covariance matrix, `vcov(object)`, but transformed for
+##'        standardized parameters. This is a way to obtain a pooled analog of
+##'        `lavInspect(object, "vcov.std.all")` with a [lavaan-class] object,
+##'        and it is how the *SE*s are derived for standardized solutions.
 ##' @param omit.imps `character` indicating criteria for excluding imputations
 ##'        from pooled results. See [lavaan.mi-class] for argument details.
 ##' @param \dots Arguments passed to [lavaan::standardizedSolution()].
@@ -494,9 +500,29 @@ parameterEstimates.mi <- function(object,
 ##'
 ##' @export
 standardizedSolution.mi <- function(object,
+                                    return.vcov = FALSE, # for semTools::monteCarloCI()
                                     omit.imps = c("no.conv","no.se"), ...) {
   ## make fake lavaan object from pooled results
   FIT <- mi2lavaan(object, std = TRUE, omit.imps = omit.imps)
+
+  ## only the ACOV? e.g., for semTools::monteCarloCI()
+  if (return.vcov) {
+    ## as long as lavaan.mi package only requires lavaan >= 0.6-18
+    if ( packageDescription("lavaan", fields = "Version") < "0.6-19" ||
+        (packageDescription("lavaan", fields = "Version") > "0.6-19" &&
+         packageDescription("lavaan", fields = "Version") < "0.6-19.2148") ) {
+      stop("return.vcov=TRUE requires lavaan version >= 0.6-19 from CRAN, or ",
+           "development version >= 0.6-19.2148 from GitHub")
+    }
+
+    dots <- list()
+    if (is.null(dots$type)) {
+      type <- "std.all" # default
+    } else type <- dots$type # user specified
+
+    ACOV <- lavInspect(FIT, paste("vcov", type, sep = "."))
+    return(ACOV)
+  }
 
   ## pass it to lavaan::standardizedSolution()
   MC <- match.call()

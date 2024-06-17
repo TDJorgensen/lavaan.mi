@@ -5,10 +5,21 @@
 \alias{standardizedsolution.mi}
 \title{Standardized Pooled Parameter Estimates}
 \usage{
-standardizedSolution.mi(object, omit.imps = c("no.conv", "no.se"), ...)
+standardizedSolution.mi(
+  object,
+  return.vcov = FALSE,
+  omit.imps = c("no.conv", "no.se"),
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{lavaan.mi}}
+
+\item{return.vcov}{\code{logical} indicating whether to return only the pooled
+asymptotic covariance matrix, \code{vcov(object)}, but transformed for
+standardized parameters. This is a way to obtain a pooled analog of
+\code{lavInspect(object, "vcov.std.all")} with a \linkS4class{lavaan} object,
+and it is how the \emph{SE}s are derived for standardized solutions.}
 
 \item{omit.imps}{\code{character} indicating criteria for excluding imputations
 from pooled results. See \linkS4class{lavaan.mi} for argument details.}
