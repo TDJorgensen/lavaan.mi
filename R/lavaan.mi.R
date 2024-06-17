@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 29 May 2024
+### Last updated: 17 June 2024
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -138,7 +138,7 @@ lavaan.mi <- function(model, data, ...) {
 
     ## check whether it is a mids or amelia object (both inherit from list)
     if (inherits(data, "mids")) {
-      requireNamespace("mice")
+      loadNamespace("mice")
       m <- data$m
       imputedData <- vector("list", m)
       for (i in 1:m) {
