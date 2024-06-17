@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 31 May 2024
+### Last updated: 17 June 2024
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -434,71 +434,6 @@ function(object, ...) {
   #ans
   lavTestLRT.mi(object = object, ..., modnames = NAMES)
 })
-
-
-
-#FIXME: delete anova_lavaan_mi (not needed)
-##' @importFrom stats anova
-##' @importFrom lavaan lavListInspect lavTestLRT
-anova_lavaan_mi <- function(object, ...) {
-  ## save model names
-  objname <- deparse(substitute(object))
-  dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
-
-  ## check class
-  if (!inherits(object, "lavaan.mi")) stop("object is not class 'lavaan.mi'")
-  ## check for additional arguments
-  dots <- list(...)
-  if (length(dots)) {
-    ## separate lavaan.mi objects from other lavTestLRT.mi() arguments
-    idx.mi <- which(sapply(dots, inherits, what = "lavaan.mi"))
-    if (length(idx.mi)) {
-      mods <- dots[idx.mi]
-      dots <- dots[-idx.mi]
-      ## save names for mods, so compareFit() doesn't break
-      modnames <- dotnames[idx.mi]
-      nonames <- which(names(mods) == "")
-      names(mods)[nonames] <- modnames[nonames]
-    } else {
-      mods <- NULL
-      modnames <- NULL
-    }
-    LRT.names <- intersect(names(dots),
-                           union(names(formals(lavTestLRT)),
-                                 names(formals(lavTestLRT.mi))))
-    dots <- if (length(LRT.names)) dots[LRT.names] else NULL
-    if (!is.null(dots$h1)) {
-      #FIXME: this shouldn't be necessary: mods <- c(mods, list(h1 = dots$h1))
-      dots$h1 <- NULL
-    }
-  } else mods <- NULL
-
-  ## run semTools::compareFit if length(idx.mi) > 1L
-  if (length(mods) == 0L) {
-    argList <- c(list(object = object), dots)
-    results <- do.call(lavTestLRT.mi, argList)
-  } else if (length(mods) == 1L) {
-    argList <- c(list(object = object, h1 = mods[[1]]), dots)
-    results <- do.call(lavTestLRT.mi, argList)
-  } else if (length(mods) > 1L) {
-    ## is semTools::compareFit available?
-    if (!requireNamespace("semTools", quietly = TRUE)) {
-      stop('The semTools package is required to simultaneously compare ',
-           'multiple lavaan.mi models using a the anova() method. Without ',
-           'semTools, a single pair of models can be compared using ',
-           'lavTestLRT.mi()')
-    }
-    if (!"package:semTools" %in% search()) attachNamespace("semTools")
-    modList <- c(list(object), mods)
-    names(modList) <- c(objname, modnames)
-    argList <- c(modList, list(argsLRT = dots, indices = FALSE))
-    results <- do.call(semTools::compareFit, argList)@nested
-    class(results) <- c("lavaan.data.frame","data.frame")
-    attr(results, "header") <- "Nested Model Comparisons:"
-  }
-
-  results
-}
 
 
 
