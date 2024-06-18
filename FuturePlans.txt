@@ -1,0 +1,183 @@
+
+TODO list
+=========
+
+
+- lavTestScore.mi() and modindices.mi() "should" use mean-EPC even when test="D1"
+- Rubin's rules are applied to user-defined parameters (:=).  Should they be
+  re-defined from pooled estimates? (can delta method be applied to pooled SEs?)
+- when h1 fits worse than h0 (on average across imputations)
+  - set LRT to NA instead of 0?
+  - or is this just Monte Carlo error when h0 is true?
+
+
+blavaan
+- automate saving posterior samples of NAs to use as multiple imputations
+
+
+SAM
+- Could sam() operate on summary stats?  That makes it available for poolSat()
+  mitml::testEstimates() can pool estimates
+
+
+
+
+
+
+===============================================
+Notes to simplify methods for lavaan.mi objects
+    (implemented in March-April 2024)
+===============================================
+
+Create a faux-lavaan object to capitalize on lavaan's method
+
+- lavaan.mi::fitMeasures() arguments to pass to lavTestLRT.mi()
+  - internally pass remaining arguments to lavaan::fitMeasures()
+- pool test(s) and store in @test slot
+  - store default baseline.model as faux lavaan object in @external
+  - this takes care of all indices based on chi-squared
+
+
+
+RMR needs more finesse
+======================
+
+LIST of inclusions for (S/C)RMR
+- In @SampleStats slot:
+    - @nobs
+    - @ntotal
+    - @missing.flag
+        - if (TRUE) @missing.h1[[g]]$sigma & @missing.h1[[g]]$mu
+        - just set FALSE so lavaan finds it where complete-data would be
+    - @cov & @mean
+  OR
+    - @res.cov & @res.int
+
+- In @implied slot:
+    - $cov & $mean
+  OR
+    - $res.cov & $res.int   (probably not $res.th, but just in case)
+    - also $res.slopes, $cov.x, & $mean.x per level (only for MLSEM)
+    - $group.w for EffectLiteR package?
+
+- In @h1 slot:
+    - $implied$cov & $implied$mean
+  OR
+      (only for MLSEM, per level)
+    - $res.cov, $res.int, $res.slopes, $cov.x, & $mean.x
+
+
+
+Details about where/when these are necessary:
+
+- FILE: lav_fit_srmr.R
+  FUNCTIONS:
+  (1) lav_fit_srmr_mplus() needs:
+      - @SampleStats@cov & @SampleStats@mean  OR  @SampleStats@res.cov & @SampleStats@res.int
+      - @SampleStats@missing.flag (probably always == FALSE for lavaan.mi)
+        - if (missing.flag == TRUE) @SampleStats@missing.h1[[g]]$sigma & @SampleStats@missing.h1[[g]]$mu
+      - @implied$cov & @implied$mean  OR  @implied$res.cov & @implied$res.int
+
+  (2) lav_fit_srmr_twolevel()
+      - @h1$implied$cov & @h1$implied$mean (per level)
+      - @implied$cov & @implied$mean
+      - @SampleStats@nobs & @SampleStats@ntotal
+      - Might call lav_model_implied_cond2uncond() in FILE: lav_model_implied.R,
+        which would need @implied[c("res.cov","res.int","res.slopes","cov.x","mean.x")]
+        - also @implied$res.th, which is unavailable for 2-level SEMs in lavaan
+        - also @implied$group.w: Can effectLite interact with lavaan.mi?
+
+  (3) lav_fit_srmr_lavobject() can call (1) and (2), and needs:
+      - @SampleStats@nobs
+      - @SampleStats@ntotal
+      - calls lav_residuals_summary(se=FALSE) in FILE: lav_residuals.R (see below),
+        but that has no consequence for fitMeasures.mi(), only for lavResiduals()
+
+
+
+lavResiduals.mi()
+=================
+
+LIST of inclusions BEYOND already required for (S/C)RMR:
+- In @SampleStats slot:
+    - @NACOV
+    - @x.idx
+    - @icov (inverse of cov!)
+    - @WLS.V (only when using GLS, WLS, DLS)
+    - @WLS.VD (vector = diag(WLS.V) or identity)
+- In @Data slot:
+    - @weights (average group weights across imputations? or assume constant?)
+    - @eXo and @X (only for PML)
+      - these could vary, making average not categorical
+      - just don't allow lavResiduals.mi() for PML
+
+
+Details about where/when these are necessary:
+
+- FILE: lav_residuals.R
+  FUNCTIONS:
+  (1) lav_residuals_summary(se=TRUE) calls lav_residuals_acov() in the same file
+  (2) lav_residuals_acov() needs:
+      - @SampleStats@NACOV
+      - @SampleStats@nobs
+      - @SampleStats@ntotal
+      - calls lav_model_h1_information() in FILE lav_model_h1_information.R (see below)
+      - calls lavTech("sampstat"), which uses @SampleStats or @h1$implied (covered for RMR)
+
+- FILE: lav_model_h1_information.R
+  FUNCTIONS:
+  lav_model_h1_information() calls one of the following:
+    - lav_model_h1_information_expected/observed() needs:
+        - @SampleStats@ngroups
+        - @SampleStats@missing.flag
+        - @SampleStats@x.idx
+            if (conditional.x)
+            - @implied$res.int, @implied$cov, & @implied$res.slopes  OR
+              @SampleStats@res.int, @SampleStats@res.cov, & @SampleStats@res.slopes
+            - @SampleStats@mean.x, @SampleStats@cov.x, & @SampleStats@nobs
+            else (!conditional.x)
+            - @implied$cov & @implied$mean  OR  @SampleStats@mean & @SampleStats@icov (inverse of cov!)
+        - @Data@weights (average group weights across imputations?)
+        - @implied$group.w
+        - @SampleStats@WLS.V (only when using GLS, WLS, DLS)
+        - Only for DLS:
+            - @SampleStats@NACOV
+        - Only for DWLS or ULS:
+            - @SampleStats@WLS.VD (vector = diag(WLS.V) or identity)
+
+    - lav_model_h1_information_firstorder() ADDITIONALLY needs:
+        - @Data@X (copy of modeled variables when using PML)
+        - @Data@eXo (copy of exogenous variables when using PML with conditional.x).
+          These should be fixed across all imputations!  But might not be,
+          so average them?  Issue a warning?
+
+
+standardizedSolution.mi()
+=========================
+
+LIST of inclusions:
+- @Model@GLIST
+- @ParTable$est
+- @implied$cov.x
+- @vcov$vcov
+
+Details about where/when these are necessary:
+
+- FILE: lav_standardize.R
+  FUNCTIONS:
+  (1) lav_standardize_<lv,all,nox>_x() calls (2) with unstd coefs as the first
+      argument.  This is used to calculate delta-method ACOV / SEs in the
+      function lav_object_inspect_vcov() from FILE lav_object_inspect.R (see below)
+  (2) lav_standardize_<lv,all,nox>() does the work, needs:
+      - @Model@GLIST
+      - @ParTable$est
+      - @implied$cov.x
+
+
+- FILE: lav_object_inspect.R
+  FUNCTION: lav_object_inspect_vcov() needs:
+  - @vcov$vcov
+  - calls lav_model_get_parameters(), which needs @Model@GLIST
+
+
+
