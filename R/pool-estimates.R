@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 June 2024
+### Last updated: 25 June 2024
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -515,7 +515,7 @@ standardizedSolution.mi <- function(object,
            "development version >= 0.6-19.2148 from GitHub")
     }
 
-    dots <- list()
+    dots <- list(...)
     if (is.null(dots$type)) {
       type <- "std.all" # default
     } else type <- dots$type # user specified
