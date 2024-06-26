@@ -91,6 +91,13 @@
 ##' @importFrom methods as
 ##' @export
 lavaan.mi <- function(model, data, ...) {
+  if (!"package:lavaan.mi" %in% search()) {
+    warning("Have called the lavaan.mi() function (or a wrapper around it), ",
+            "but the 'package:lavaan.mi' was not found in the search() path.\n",
+            "In order for the package to be fully functional, attach it using ",
+            "library(lavaan.mi).\nDo NOT rely on 'lazy loading' (lavaan.mi::)")
+  }
+
   CALL <- match.call()
   dots <- list(...)
   if (is.null(dots$cmd)) dots$cmd <- "lavaan"
