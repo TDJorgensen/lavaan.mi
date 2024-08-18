@@ -167,7 +167,7 @@ parameterEstimates.mi <- function(object,
       if (ci)     crit <- qt(1 - (1 - level) / 2, df = df4t)
 
       ## Set obscenely large DF to infinity for prettier printing?
-      if (zstat && output == "text" && any(PE$df > 999.5)) {
+      if (zstat && output == "text" && any(PE$df[free] > 999.5)) {
         PE$df <- ifelse(PE$df > 999, Inf, PE$df)
         infDF <- TRUE # to warn users who would panic
       }
