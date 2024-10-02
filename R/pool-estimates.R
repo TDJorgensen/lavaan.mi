@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 25 June 2024
+### Last updated: 2 October 2024
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -168,13 +168,13 @@ parameterEstimates.mi <- function(object,
 
       ## Set obscenely large DF to infinity for prettier printing?
       if (zstat && output == "text" && any(PE$df[free] > 999.5)) {
-        PE$df <- ifelse(PE$df > 999, Inf, PE$df)
+        PE$df <- ifelse(PE$df > 999.5, Inf, PE$df)
         infDF <- TRUE # to warn users who would panic
       }
     }
     if (ci) {
-      PE$ci.lower[free] <- PE$est[free] - crit * PE$se[free]
-      PE$ci.upper[free] <- PE$est[free] + crit * PE$se[free]
+      PE$ci.lower[ free] <- PE$est[free] - crit * PE$se[free]
+      PE$ci.upper[ free] <- PE$est[free] + crit * PE$se[free]
       PE$ci.lower[!free] <- PE$ci.upper[!free] <- PE$est[!free]
     }
   }

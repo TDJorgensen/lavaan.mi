@@ -242,8 +242,8 @@ lavaan_mi_short_summary <- function(object, return.string = FALSE) {
   ## assemble a message to print
   MESSAGE <- paste0('lavaan.mi object fit to ', nData,
                     ' imputed data sets using:\n',
-                    ' - lavaan    (', object@version[1],
-                    ')\n - lavaan.mi (', object@version[2],')\n',
+                    ' - lavaan    (', object@version["lavaan"],
+                    ')\n - lavaan.mi (', object@version["lavaan.mi"], ')\n',
                     'See class?lavaan.mi help page for available methods. \n\n',
                     'Convergence information:\n', 'The model converged on ',
                     nConverged, ' imputed data sets.\n')
