@@ -224,7 +224,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
     if (!is.null(PT$est  )) PT$est   <- NULL
     if (!is.null(PT$se   )) PT$se    <- NULL
     ## get pooled estimates
-    FIT@ParTable$est <- coef_lavaan_mi(object, type = "user")
+    FIT@ParTable$est <- coef_lavaan_mi(object, type = "user", omit.imps = omit.imps)
     # PE <- parameterEstimates.mi(object, se = FALSE, omit.imps = omit.imps,
     #                             remove.system.eq = FALSE, remove.eq = FALSE)
     ## merge pooled estimates into parameter table
