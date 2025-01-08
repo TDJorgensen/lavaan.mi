@@ -5,17 +5,13 @@ vers <- paste("R package version", meta$Version)
 url <- "https://CRAN.R-project.org/package=semTools"
 
 citEntry(entry = "Manual",
-  title        = "\\texttt{semTools}: {U}seful tools for structural equation modeling",
-  author       = c(person(given = c("Terrence","D."), family = "Jorgensen"),
-                   person(given = "Sunthud", family = "Pornprasertmanit"),
-                   person(given = c("Alexander","M."), family = "Schoemann"),
-                   person(given = "Yves", family = "Rosseel")),
+  title        = "\\texttt{lavaan.mi}: {F}it structural equation models to multiply imputed data",
+  author       = c(person(given = c("Terrence","D."), family = "Jorgensen")),
   year         = year,
   note         = vers,
   url          = url,
 
   textVersion  =
-  paste("Jorgensen, T. D., Pornprasertmanit, S., Schoemann, A. M., & Rosseel, Y. (",
-        year, "). semTools: Useful tools for structural equation modeling. ",
+  paste("Jorgensen, T. D. (", year, "). lavaan.mi: Fit structural equation models to multiply imputed data.",
         vers, ". Retrieved from ", url, sep = "")
 )
