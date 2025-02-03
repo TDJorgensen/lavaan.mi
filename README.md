@@ -57,6 +57,6 @@ Many remaining methods written for `lavaan`-class objects are also available for
 
 ## Connecting `lavaan.mi` to `semTools`
 
-Many of the functions in the `semTools` package continue to be available for `lavaan.mi`-class objects (e.g., `semTools::reliability()`), and functions such as `semTools::parcelAllocation()` and `semTools::plausibleValues()` are enhanced by allowing their output to be analyzed using `lavaan.mi()`.
+Many of the functions in the `semTools` package continue to be available for `lavaan.mi`-class objects (e.g., `semTools::compRelSEM()` for model-based reliability), and functions such as `semTools::parcelAllocation()` and `semTools::plausibleValues()` are enhanced by allowing their output to be analyzed using `lavaan.mi()`.
 
 
