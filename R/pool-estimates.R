@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 2 October 2024
+### Last updated: 5 February 2025
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -528,7 +528,8 @@ standardizedSolution.mi <- function(object,
   MC <- match.call()
   MC[[1]] <- quote(lavaan::standardizedSolution)
   MC$object <- FIT
-  MC$omit.imps <- NULL
+  MC$return.vcov <- NULL
+  MC$omit.imps   <- NULL
   eval(MC)
 }
 
