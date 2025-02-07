@@ -9,6 +9,8 @@ TODO list
 - when h1 fits worse than h0 (on average across imputations)
   - set LRT to NA instead of 0?
   - or is this just Monte Carlo error when h0 is true?
+- define inspect() methods
+  - copy several components of lavInspect() source code, updated for lavaan.mi
 
 
 blavaan
