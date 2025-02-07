@@ -119,7 +119,6 @@
 # fit.mi  <- sem.mi(model, data = imputedData, cluster = "id")
 # fit2.mi <- sem.mi(model2, data = imputedData, group = "g", cluster = "id")
 #
-# ## can't return (C/R)RMR for multigroup MLSEM
 # fitMeasures(fit.mi , output = "pretty")
 # fitMeasures(fit2.mi, output = "pretty")
 # fitMeasures(fit2.mi, output = "pretty", # no problem for other indices

@@ -1,3 +1,10 @@
+# Version History for lavaan.mi Package
+
+Track our progress or report issues on GitHub:
+
+https://github.com/TDJorgensen/lavaan.mi
+
+
 # lavaan.mi 0.1-0 (in development)
 
 The `semTools` package has a **Missing Data** suite, which for years included utilities for fitting structural equation models to multiply imputed data sets with the `lavaan` package and automatically pooling the results. These multiple-imputation features continue to grow, justifying their own separate package (and current deprecation in `semTools`).
@@ -23,11 +30,4 @@ The `semTools` package has a **Missing Data** suite, which for years included ut
 
 - When the `VGAM` package was loaded, it created a [conflict](https://github.com/simsem/semTools/issues/89) with finding the `anova() ` method for `lavaan.mi` objects in `semTools`. This was resolved in February 2022 when `VGAM` version 1.1-6 was sent to CRAN.
 
-## Known Bugs:
 
-- `fitMeasures()` returns an error for multigroup MLSEMs, unless no (S/C)RMR index is requested in the `fit.measures=` argument.
-
-
-Track our progress or report issues on GitHub:
-
-https://github.com/TDJorgensen/lavaan.mi
