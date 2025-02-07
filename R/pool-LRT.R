@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 17 June 2024
+### Last updated: 7 February 2025
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -396,6 +396,7 @@ lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
 
 ##' @name lavTestLRT.mi
 ##' @aliases anova,lavaan.mi-method
+##' @importFrom stats anova
 ##' @export
 setMethod("anova", "lavaan.mi",
           ## TDJ borrowed from lavaan's anova method:
