@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 5 February 2025
+### Last updated: 7 February 2025
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -508,9 +508,9 @@ standardizedSolution.mi <- function(object,
   ## only the ACOV? e.g., for semTools::monteCarloCI()
   if (return.vcov) {
     ## as long as lavaan.mi package only requires lavaan >= 0.6-18
-    if ( packageDescription("lavaan", fields = "Version") < "0.6-19" ||
-        (packageDescription("lavaan", fields = "Version") > "0.6-19" &&
-         packageDescription("lavaan", fields = "Version") < "0.6-19.2148") ) {
+    if ( utils::packageDescription("lavaan", fields = "Version") < "0.6-19" ||
+        (utils::packageDescription("lavaan", fields = "Version") > "0.6-19" &&
+         utils::packageDescription("lavaan", fields = "Version") < "0.6-19.2148") ) {
       stop("return.vcov=TRUE requires lavaan version >= 0.6-19 from CRAN, or ",
            "development version >= 0.6-19.2148 from GitHub")
     }
