@@ -1,35 +1,25 @@
 ### Terrence D. Jorgensen
-### Last updated: 6 May 2022
+### Last updated: 10 February 2025
 ### remaining problems for lavaan.mi methods
+### (both issues below are resolved, using the mi2lavaan() trick)
 
 
-## -------------------------
+## -------------------------------
 ## fixed.x and conditional.x
-## -------------------------
+## Using discretized example data
+## -------------------------------
 
-## Using help-page example
-# data(datCat)
-# datCat$u2 <- as.integer(datCat$u2) # mixture of ordered/continuous indicators
-# datCat$u3 <- as.integer(datCat$u3)
-# datCat$u5 <- as.integer(datCat$u5) # exogenous predictors must be numeric
-# datCat$u6 <- as.integer(datCat$u6)
+# data(binHS5imps)
 #
-# ## impose missing values
-# set.seed(456)
-# for (i in 1:8) datCat[sample(1:nrow(datCat), size = .1*nrow(datCat)), i] <- NA
-# library(Amelia)
-# catimps <- amelia(datCat, m = 20, ords = paste0("u", 1:8), noms = "g")$imputations
-#
-# catmod <- '
-# f =~ 1*u1 + 1*u2 + 1*u3 + 1*u4
-# u1 + u2 ~ u5 + u6
-# '
-# fitx <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = FALSE)
-# fitxg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = FALSE,
-#                 group = "g")
-# fit.x <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE)
-# fit.xg <- cfa.mi(catmod, data = catimps, fixed.x = TRUE, conditional.x = TRUE,
-#                  group = "g")
+# ## x9 (indicator) is incomplete, as well as x5 (predictor)
+# catmod <- ' speed =~ x7 + x8 + x9
+#             speed  ~ x4 + x5      '
+# fitx <- cfa.mi(catmod, data = binHS5imps, fixed.x = TRUE, conditional.x = FALSE)
+# fitxg <- cfa.mi(catmod, data = binHS5imps, fixed.x = TRUE, conditional.x = FALSE,
+#                 group = "school")
+# fit.x <- cfa.mi(catmod, data = binHS5imps, fixed.x = TRUE, conditional.x = TRUE)
+# fit.xg <- cfa.mi(catmod, data = binHS5imps, fixed.x = TRUE, conditional.x = TRUE,
+#                  group = "school")
 #
 # fitted(fitx)
 # resid(fitx)
@@ -55,10 +45,11 @@
 # resid(fit.xg, type = "srmr")
 # fitMeasures(fit.xg, fit.measures = "rmr")
 #
-# summary(fitx, stand=TRUE) # only problem left: standardizing requires cov.x
-# summary(fitxg, stand=TRUE) # only problem left: standardizing requires cov.x
-# summary(fit.x, stand=TRUE) # only problem left: standardizing requires cov.x
-# summary(fit.xg, stand=TRUE) # only problem left: standardizing requires cov.x
+# summary(fitx  , std="std.nox")
+# summary(fitxg , std="std.nox")
+# summary(fit.x , std="std.nox") # more efficient than cond.x=FALSE
+# summary(fit.xg, std="std.nox")
+
 
 
 ## ------------------------------------
