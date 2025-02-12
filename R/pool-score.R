@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 30 May 2024
+### Last updated: 12 February 2025
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -83,12 +83,12 @@
 ##'   `release`.
 ##' @param standardized If `TRUE`, two extra columns (`sepc.lv` and
 ##'   `sepc.all`) in the `$epc` table will contain standardized values
-##'   for the EPCs. See [lavTestScore()].
-##' @param cov.std `logical`. See [standardizedSolution()].
+##'   for the EPCs. See [lavaan::lavTestScore()].
+##' @param cov.std `logical`. See [lavaan::standardizedSolution()].
 ##' @param verbose `logical`. Not used for now.
 ##' @param warn `logical`. If `TRUE`, print warnings if they occur.
 ##' @param information `character` indicating the type of information
-##'   matrix to use (check [lavInspect()] for available options).
+##'   matrix to use (check [lavaan::lavInspect()] for available options).
 ##'   `"expected"` information is the default, which provides better
 ##'   control of Type I errors.
 ##'

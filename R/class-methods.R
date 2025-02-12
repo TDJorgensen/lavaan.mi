@@ -1,11 +1,11 @@
 ### Terrence D. Jorgensen
-### Last updated: 31 May 2024
+### Last updated: 12 February 2025
 ### Class and Methods for lavaan.mi object
 
 
 ##' Class for a lavaan Model Fitted to Multiple Imputations
 ##'
-##' This class extends the [lavaanList-class] class, created by
+##' This class extends the [lavaan::lavaanList-class] class, created by
 ##' fitting a lavaan model to a list of data sets. In this case, the list of
 ##' data sets are multiple imputations of missing data.
 ##'
@@ -39,19 +39,19 @@
 ##' @slot DataList The `list` of imputed data sets
 ##' @slot SampleStatsList List of output from
 ##'   `lavInspect(fit, "sampstat")` applied to each fitted model.
-##' @slot ParTableList,vcovList,testList,baselineList See [lavaanList-class]
-##' @slot h1List See [lavaanList-class]. An additional element is
+##' @slot ParTableList,vcovList,testList,baselineList See [lavaan::lavaanList-class]
+##' @slot h1List See [lavaan::lavaanList-class]. An additional element is
 ##'   added to the `list`: `$PT` is the "saturated" model's parameter
 ##'   table, returned by [lavaan::lav_partable_unrestricted()].
 ##' @slot call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external
 ##'   By default, [lavaan.mi()] does not populate the remaining `@*List` slots
-##'   from the [lavaanList-class] class. But they can be added to the call using
+##'   from the [lavaan::lavaanList-class] class. But they can be added to the call using
 ##'   the `store.slots=` argument (passed to [lavaan::lavaanList()] via \dots).
 ##'
 ##' @param object An object of class [lavaan.mi-class]
 ##' @param header,fit.measures,fm.args,estimates,ci,standardized,std,cov.std,rsquare,remove.unused,modindices,nd,output
 ##'        See descriptions of `summary()` arguments in the help page for
-##'        [lavaan-class] class. Also see [lavaan::fitMeasures()] for arguments
+##'        [lavaan::lavaan-class] class. Also see [lavaan::fitMeasures()] for arguments
 ##'        `fit.measures` and `fm.args`.
 ##' @param baseline.model,h1.model See [lavaan::fitMeasures()].
 ##' @param ... Additional arguments passed to [lavTestLRT.mi()], or
@@ -111,7 +111,7 @@
 ##'
 ##' \item{coef}{`signature(object = "lavaan.mi", type = "free",
 ##'   labels = TRUE, omit.imps = c("no.conv","no.se"))`:
-##'   See argument description on the help page for [lavaan-class] class.
+##'   See argument description on the help page for [lavaan::lavaan-class] class.
 ##'   Returns the pooled point estimates (i.e., averaged across imputed data
 ##'   sets; see Rubin, 1987).}
 ##'
@@ -125,7 +125,7 @@
 ##'   missing data.}
 ##'
 ##' \item{fitted.values}{`signature(object = "lavaan.mi",
-##'   omit.imps = c("no.conv","no.se"))`: See corresponding [lavaan-class] method.
+##'   omit.imps = c("no.conv","no.se"))`: See corresponding [lavaan::lavaan-class] method.
 ##'   Returns model-implied moments, evaluated at the pooled point estimates.}
 ##' \item{fitted}{alias for `fitted.values`}
 ##'

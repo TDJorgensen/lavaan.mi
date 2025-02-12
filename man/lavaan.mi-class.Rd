@@ -84,7 +84,7 @@
 \item{object}{An object of class \linkS4class{lavaan.mi}}
 
 \item{header, fit.measures, fm.args, estimates, ci, standardized, std, cov.std, rsquare, remove.unused, modindices, nd, output}{See descriptions of \code{summary()} arguments in the help page for
-\linkS4class{lavaan} class. Also see \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for arguments
+\link[lavaan:lavaan-class]{lavaan::lavaan} class. Also see \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for arguments
 \code{fit.measures} and \code{fm.args}.}
 
 \item{fmi}{\code{logical} indicating whether to add the Fraction Missing
@@ -151,7 +151,7 @@ should include parameter labels. Default is \code{TRUE}.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
-See argument description on the help page for \linkS4class{lavaan} class.
+See argument description on the help page for \link[lavaan:lavaan-class]{lavaan::lavaan} class.
 Returns the pooled point estimates (i.e., averaged across imputed data
 sets; see Rubin, 1987).}
 
@@ -162,7 +162,7 @@ between-imputations covariance matrix (\code{type = "between"}), or the
 average relative increase in variance (\code{type = "ariv"}) due to
 missing data.}
 
-\item{fitted.values}{\code{signature(object = "lavaan.mi", omit.imps = c("no.conv","no.se"))}: See corresponding \linkS4class{lavaan} method.
+\item{fitted.values}{\code{signature(object = "lavaan.mi", omit.imps = c("no.conv","no.se"))}: See corresponding \link[lavaan:lavaan-class]{lavaan::lavaan} method.
 Returns model-implied moments, evaluated at the pooled point estimates.}
 \item{fitted}{alias for \code{fitted.values}}
 
@@ -187,7 +187,7 @@ Setting \code{fit.measures=TRUE} will additionally run \code{fitMeasures()}, and
 setting \code{modindices=TRUE} will additionally run \code{\link[=modindices.mi]{modindices.mi()}}.}
 }
 \description{
-This class extends the \linkS4class{lavaanList} class, created by
+This class extends the \link[lavaan:lavaanList-class]{lavaan::lavaanList} class, created by
 fitting a lavaan model to a list of data sets. In this case, the list of
 data sets are multiple imputations of missing data.
 }
@@ -223,14 +223,14 @@ non-positive-definite.}
 \item{\code{SampleStatsList}}{List of output from
 \code{lavInspect(fit, "sampstat")} applied to each fitted model.}
 
-\item{\code{ParTableList,vcovList,testList,baselineList}}{See \linkS4class{lavaanList}}
+\item{\code{ParTableList,vcovList,testList,baselineList}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}}
 
-\item{\code{h1List}}{See \linkS4class{lavaanList}. An additional element is
+\item{\code{h1List}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}. An additional element is
 added to the \code{list}: \verb{$PT} is the "saturated" model's parameter
 table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestricted()}}.}
 
 \item{\code{call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external}}{By default, \code{\link[=lavaan.mi]{lavaan.mi()}} does not populate the remaining \verb{@*List} slots
-from the \linkS4class{lavaanList} class. But they can be added to the call using
+from the \link[lavaan:lavaanList-class]{lavaan::lavaanList} class. But they can be added to the call using
 the \verb{store.slots=} argument (passed to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} via \dots).}
 }}
 

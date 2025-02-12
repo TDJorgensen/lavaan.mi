@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 February 2025
+### Last updated: 12 February 2025
 ### pool (un)standardized parameters
 ### analogs of parameterEstimates() and standardizedSolution()
 
@@ -460,7 +460,7 @@ parameterEstimates.mi <- function(object,
 ##' @param return.vcov `logical` indicating whether to return only the pooled
 ##'        asymptotic covariance matrix, `vcov(object)`, but transformed for
 ##'        standardized parameters. This is a way to obtain a pooled analog of
-##'        `lavInspect(object, "vcov.std.all")` with a [lavaan-class] object,
+##'        `lavInspect(object, "vcov.std.all")` with a [lavaan::lavaan-class] object,
 ##'        and it is how the *SE*s are derived for standardized solutions.
 ##' @param omit.imps `character` indicating criteria for excluding imputations
 ##'        from pooled results. See [lavaan.mi-class] for argument details.
