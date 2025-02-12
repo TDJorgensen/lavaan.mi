@@ -1,17 +1,18 @@
-citHeader("This package contains (but greatly extends) functionality originally part of (but now deprecated from) the semTools package.")
 
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
 vers <- paste("R package version", meta$Version)
 url <- "https://CRAN.R-project.org/package=semTools"
 
-citEntry(entry = "Manual",
-  title        = "\\texttt{lavaan.mi}: {F}it structural equation models to multiply imputed data",
-  author       = c(person(given = c("Terrence","D."), family = "Jorgensen")),
-  year         = year,
-  note         = vers,
-  url          = url,
+bibentry(bibtype = "Manual",
+  title          = "\\texttt{lavaan.mi}: {F}it structural equation models to multiply imputed data",
+  author         = c(person(given = c("Terrence","D."), family = "Jorgensen")),
+  year           = year,
+  note           = vers,
+  url            = url,
 
   textVersion  =
   paste("Jorgensen, T. D. (", year, "). lavaan.mi: Fit structural equation models to multiply imputed data.",
-        vers, ". Retrieved from ", url, sep = "")
+        vers, ". Retrieved from ", url, sep = ""),
+
+  header = "This package contains (but greatly extends) functionality originally part of (but now deprecated from) the semTools package."
 )
