@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 17 June 2024
+### Last updated: 3 March 2025
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -79,7 +79,6 @@
 ##' ## fit the model
 ##' catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
 ##'                  FUN = myCustomFunc)
-##' summary(catout) # the usual output
 ##'
 ##' ## extract custom output
 ##' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation

@@ -138,6 +138,7 @@ fit.vis <- cfa(mod.vis, data = visData) # no problem
 
 ## OTHER lavaan OPTIONS
 
+\dontrun{
 ## fit saturated MULIPLE-GROUP model to imputations
 impSubset2 <- lapply(HS20imps, "[", i = c(paste0("x", 1:9), "school"))
 (prePooledData2 <- poolSat(impSubset2, group = "school",
@@ -174,6 +175,7 @@ prePooledData4$WLS.V <- NULL
 fitcu <- cfa(HS.model, data = prePooledData4, std.lv = TRUE, estimator = "ULS")
 ## Note that the SEs and test were still appropriately corrected:
 summary(fitcu)
+}
 
 }
 \references{

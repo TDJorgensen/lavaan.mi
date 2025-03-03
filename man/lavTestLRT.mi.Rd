@@ -147,6 +147,7 @@ fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
 lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
 ## or   anova(fit1, fit0, fitp, asymptotic = TRUE)
 
+\dontrun{
 ## Pass any argument to lavTestLRT()
 lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE,
               method = "satorra.bentler.2010")
@@ -170,7 +171,6 @@ fit0c <- cfa.mi(HS.parallel, data = binHS5imps, ordered = TRUE,
 ## Using D2, you can either robustify the pooled naive statistic ...
 lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2")
 ## ... or pool the robust chi-squared statistic (NOT recommended)
-\dontrun{
 lavTestLRT.mi(fit1c, fit0c, asymptotic = TRUE, pool.method = "D2",
               pool.robust = TRUE)
 

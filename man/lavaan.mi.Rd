@@ -79,7 +79,6 @@ myCustomFunc <- function(object) {
 ## fit the model
 catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
                  FUN = myCustomFunc)
-summary(catout) # the usual output
 
 ## extract custom output
 sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
