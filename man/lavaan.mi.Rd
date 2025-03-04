@@ -59,6 +59,7 @@ HS.model <- '
 ## fit model to imputed data sets
 fit <- cfa.mi(HS.model, data = HS20imps)
 
+\dontrun{
 summary(fit, fit.measures = TRUE, fmi = TRUE)
 summary(fit, standardized = "std.all", rsquare = TRUE)
 
@@ -66,7 +67,6 @@ summary(fit, standardized = "std.all", rsquare = TRUE)
 ## You can pass other lavaanList() arguments, such as FUN=, which allows
 ## you to save any custom output from each imputation's fitted model.
 
-\dontrun{
 ## An example with ordered-categorical data:
 data(binHS5imps) # import a list of 5 imputed data sets
 
