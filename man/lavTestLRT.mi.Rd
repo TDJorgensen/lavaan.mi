@@ -128,7 +128,14 @@ HS.model <- '
 
 fit1 <- cfa.mi(HS.model, data = HS20imps, estimator = "mlm")
 
-## more constrained model: parallel indicators
+## By default, pool.method = "D4".
+## Must request an asymptotic chi-squared statistic
+## in order to accommodate a robust correction.
+lavTestLRT.mi(fit1, asymptotic = TRUE)
+## or   anova(fit1, asymptotic = TRUE)
+
+## Comparison with more constrained (nested) models: parallel indicators
+\dontrun{
 HS.parallel <- '
   visual  =~ x1 + 1*x2 + 1*x3
   textual =~ x4 + 1*x5 + 1*x6
@@ -137,13 +144,6 @@ HS.parallel <- '
 
 fitp <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm")
 
-## By default, pool.method = "D4".
-## Must request an asymptotic chi-squared statistic
-## in order to accommodate a robust correction.
-lavTestLRT.mi(fit1, fitp, asymptotic = TRUE)
-## or   anova(fit1, fitp, asymptotic = TRUE)
-
-\dontrun{
 ## Even more constrained model: orthogonal factors
 fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
                orthogonal = TRUE)
