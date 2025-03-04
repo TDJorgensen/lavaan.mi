@@ -137,18 +137,18 @@ HS.parallel <- '
 
 fitp <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm")
 
+## By default, pool.method = "D4".
+## Must request an asymptotic chi-squared statistic
+## in order to accommodate a robust correction.
+lavTestLRT.mi(fit1, fitp, asymptotic = TRUE)
+## or   anova(fit1, fitp, asymptotic = TRUE)
+
+\dontrun{
 ## Even more constrained model: orthogonal factors
 fit0 <- cfa.mi(HS.parallel, data = HS20imps, estimator = "mlm",
                orthogonal = TRUE)
 
-## By default, pool.method = "D4".
-## Must request an asymptotic chi-squared statistic
-## in order to accommodate a robust correction.
-lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE)
-## or   anova(fit1, fit0, fitp, asymptotic = TRUE)
-
-\dontrun{
-## Pass any argument to lavTestLRT()
+## Compare 3 models, and pass the lavTestLRT(method=) argument
 lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE,
               method = "satorra.bentler.2010")
 
