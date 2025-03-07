@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 4 March 2025
+### Last updated: 7 March 2025
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -163,7 +163,6 @@
 ##' ## or   anova(fit1, asymptotic = TRUE)
 ##'
 ##' ## Comparison with more constrained (nested) models: parallel indicators
-##' \dontrun{
 ##' HS.parallel <- '
 ##'   visual  =~ x1 + 1*x2 + 1*x3
 ##'   textual =~ x4 + 1*x5 + 1*x6
@@ -177,6 +176,7 @@
 ##'                orthogonal = TRUE)
 ##'
 ##' ## Compare 3 models, and pass the lavTestLRT(method=) argument
+##' \donttest{
 ##' lavTestLRT.mi(fit1, fit0, fitp, asymptotic = TRUE,
 ##'               method = "satorra.bentler.2010")
 ##'

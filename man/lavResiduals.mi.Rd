@@ -73,7 +73,7 @@ lavResiduals.mi(fit, type = "raw") # zstat=TRUE by default
 
 ## The standard resid() and residuals() method simply call lavResiduals.mi()
 ## with arguments to display only the residuals ("raw" by default).
-\dontrun{
+\donttest{
 resid(fit)
 residuals(fit, type = "cor.bollen") # same as type = "cor"
 }

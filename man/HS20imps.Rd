@@ -24,7 +24,7 @@ The data include only age and school variables, along with 9 tests
 (\code{x1} through \code{x9}).
 }
 \examples{
- \dontrun{
+ \donttest{
 data(HolzingerSwineford1939, package = "lavaan")
 
 ## impose missing data for example

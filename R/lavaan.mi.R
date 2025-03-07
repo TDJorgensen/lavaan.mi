@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 4 March 2025
+### Last updated: 7 March 2025
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -59,10 +59,10 @@
 ##' ## fit model to imputed data sets
 ##' fit <- cfa.mi(HS.model, data = HS20imps)
 ##'
-##' \dontrun{
+##' \donttest{
 ##' summary(fit, fit.measures = TRUE, fmi = TRUE)
 ##' summary(fit, standardized = "std.all", rsquare = TRUE)
-##'
+##' }
 ##'
 ##' ## You can pass other lavaanList() arguments, such as FUN=, which allows
 ##' ## you to save any custom output from each imputation's fitted model.
@@ -81,13 +81,14 @@
 ##' catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
 ##'                  FUN = myCustomFunc)
 ##' ## pooled results
+##' \donttest{
 ##' summary(catout)
+##' }
 ##'
 ##' ## extract custom output (per imputation)
 ##' sapply(catout@funList, function(x) x$wrmr) # WRMR for each imputation
 ##' catout@funList[[1]]$zeroCells # zero-cell tables for first imputation
 ##' catout@funList[[2]]$zeroCells # zero-cell tables for second imputation ...
-##' }
 ##'
 ##'
 ##' @importFrom lavaan lavInspect parTable lavParseModelString

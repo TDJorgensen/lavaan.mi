@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 March 2025
+### Last updated: 7 March 2025
 ### pool covariance/correlation residuals
 ### define resid() method and lavResiduals.mi()
 
@@ -247,7 +247,7 @@ setMethod("resid", "lavaan.mi", resid_lavaan_mi)
 ##'
 ##' ## The standard resid() and residuals() method simply call lavResiduals.mi()
 ##' ## with arguments to display only the residuals ("raw" by default).
-##' \dontrun{
+##' \donttest{
 ##' resid(fit)
 ##' residuals(fit, type = "cor.bollen") # same as type = "cor"
 ##' }

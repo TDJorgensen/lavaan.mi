@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 3 March 2025
+### Last updated: 7 March 2025
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -136,9 +136,9 @@
 ##' ## If you only want to analyze a subset of these variables,
 ##' mod.vis <- 'visual  =~ x1 + x2 + x3'
 ##' ## you will get an error:
-##' \dontrun{
-##' fit.vis <- cfa(mod.vis, data = prePooledData) # error
-##' }
+##' try(
+##'   fit.vis <- cfa(mod.vis, data = prePooledData) # error
+##' )
 ##'
 ##' ## As explained in the "Note" section, you must use poolSat() again for
 ##' ## this subset of variables
@@ -149,7 +149,7 @@
 ##'
 ##' ## OTHER lavaan OPTIONS
 ##'
-##' \dontrun{
+##' \donttest{
 ##' ## fit saturated MULIPLE-GROUP model to imputations
 ##' impSubset2 <- lapply(HS20imps, "[", i = c(paste0("x", 1:9), "school"))
 ##' (prePooledData2 <- poolSat(impSubset2, group = "school",

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 3 March 2025
+### Last updated: 7 March 2025
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -160,7 +160,7 @@
 ##'
 ##' ## Li et al.'s (1991) "D1" method,
 ##' ## adapted for score tests by Mansolf et al. (2020)
-##' \dontrun{
+##' \donttest{
 ##' lavTestScore.mi(fit, pool.method = "D1")
 ##' }
 ##'

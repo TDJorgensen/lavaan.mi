@@ -15,7 +15,7 @@ missing data imposed on variables \code{x5} and \code{x9}:
 \itemize{
 \item \code{x5} is missing not at random (MNAR) by deleting the lowest 30\% of
 \code{x5} values.
-\item \code{x9} is missing at random (MAR) conditional on age, by deleting \code{x5}
+\item \code{x9} is missing at random (MAR) conditional on age, by deleting \code{x9}
 values for the youngest 30\% of subjects in the data.
 }
 
@@ -24,7 +24,7 @@ using the syntax shown in the example. The data include only the 9 tests
 (\code{x1} through \code{x9}) and school.
 }
 \examples{
- \dontrun{
+ \donttest{
 data(HolzingerSwineford1939, package = "lavaan")
 
 ## impose missing data for example

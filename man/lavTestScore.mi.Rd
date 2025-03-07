@@ -151,7 +151,7 @@ lavTestScore.mi(fit, cumulative = TRUE)
 
 ## Li et al.'s (1991) "D1" method,
 ## adapted for score tests by Mansolf et al. (2020)
-\dontrun{
+\donttest{
 lavTestScore.mi(fit, pool.method = "D1")
 }
 

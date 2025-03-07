@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 24 April 2024
+### Last updated: 7 March 2025
 ### generate imputed data set for documentation examples
 
 # data(HolzingerSwineford1939, package = "lavaan")
@@ -49,7 +49,7 @@
 ##' @source The {lavaan} package.
 ##'
 ##' @examples
-##'  \dontrun{
+##'  \donttest{
 ##' data(HolzingerSwineford1939, package = "lavaan")
 ##'
 ##' ## impose missing data for example
@@ -90,7 +90,7 @@ NULL
 ##'
 ##'   - `x5` is missing not at random (MNAR) by deleting the lowest 30% of
 ##'     `x5` values.
-##'   - `x9` is missing at random (MAR) conditional on age, by deleting `x5`
+##'   - `x9` is missing at random (MAR) conditional on age, by deleting `x9`
 ##'     values for the youngest 30% of subjects in the data.
 ##'
 ##' The data are then dichotomized using a median split, and imputed 5 times
@@ -100,7 +100,7 @@ NULL
 ##' @source The {lavaan} package.
 ##'
 ##' @examples
-##'  \dontrun{
+##'  \donttest{
 ##' data(HolzingerSwineford1939, package = "lavaan")
 ##'
 ##' ## impose missing data for example
