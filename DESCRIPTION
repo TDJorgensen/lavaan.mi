@@ -2,7 +2,15 @@ Encoding: UTF-8
 Package: lavaan.mi
 Version: 0.1-0
 Title: Fit Structural Equation Models to Multiply Imputed Data
-Description: Extends the 'lavaan' package for multiply imputed data.
+Description: The primary purpose of 'lavaan.mi' is to extend the functionality 
+     of the R package 'lavaan', which implements structural equation modeling
+     (SEM).  When incomplete data have been multiply imputed, the imputed data
+     sets can be analyzed by 'lavaan' using complete-data estimation methods,
+     but results must be pooled across imputations (Rubin, 1987, <doi:10.1002/9780470316696>).
+     The 'lavaan.mi' package automates the pooling of point and standard-error
+     estimates, as well as a variety of test statistics, using a familiar interface
+     that allows users to fit an SEM to multiple imputations as they would to a
+     single data set using the 'lavaan' package.
 Authors@R: c(person(given = c("Terrence","D."), family = "Jorgensen", role = c("aut","cre"), email="TJorgensen314@gmail.com", comment = c(ORCID = "0000-0001-5111-6773")),
 		person(given = "Yves", family = "Rosseel", role = "ctb", email="Yves.Rosseel@UGent.be", comment = c(ORCID = "0000-0002-4129-4477"))
 		)
@@ -14,6 +22,6 @@ LazyData: yes
 LazyLoad: yes
 URL: https://github.com/TDJorgensen/lavaan.mi
 BugReports: https://github.com/TDJorgensen/lavaan.mi/issues
-Date: 2025-03-03
+Date: 2025-03-07
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
