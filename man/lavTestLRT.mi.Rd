@@ -100,7 +100,8 @@ data sets.
 \details{
 The \code{"D2"} method is available using any estimator and test statistic.
 When using a likelihood-based estimator, 2 additional methods are available
-to pool the LRT.
+to pool the LRT, both of which perform better in small samples
+(Grund et al., 2023; Jia, 2024).
 \itemize{
 \item The Meng & Rubin (1992) method, commonly referred to as \code{"D3"}.
 This method has many problems, discussed in Chan & Meng (2022).
@@ -110,6 +111,16 @@ Grund et al. (2023), resolves problems with \code{"D3"}.
 When \code{"D2"} is not explicitly requested in situations it is the only
 applicable method, (e.g., DWLS for categorical outcomes), users are notified
 that \code{pool.method} was set to \code{"D2"}.
+
+When a robust adjustment was requested during estimation (e.g., \code{estimator="=MLMV"}),
+the recommended method is to apply the \verb{pool.method=} to the standard \verb{test=}
+statistic.  A robust adjustment to that pooled statistic is then made, using
+the harmonic-mean scaling factor (and average shift parameter, when relevant)
+across imputations.  This method is the default (\code{pool.robust=FALSE}),
+justified by simulation research showing near-nominal Type I error rates for
+continuous non-normal data (Jia, 2024). Further simulation research is needed
+to compare these methods for ordinal data, as only the \code{pool.robust=TRUE}
+method has been investigated (Liu & Sriutaisuk, 2020; Liu et al., 2021).
 
 \code{pool.method = "Mplus"} implies \code{"D3"} and \code{asymptotic = TRUE}
 (see Asparouhov & Muthen, 2010).
@@ -198,10 +209,24 @@ likelihood ratio tests in multiply imputed data sets.
 \emph{Psychological Methods, 28}(5), 1207--1221.
 \doi{10.1037/met0000556}
 
+Jia, F. (2024). Pooling test statistics across multiply imputed datasets
+for nonnormal items. \emph{Behavior Research Methods, 56}(3), 1229--1243.
+\doi{10.3758/s13428-023-02088-3}
+
 Li, K.-H., Meng, X.-L., Raghunathan, T. E., & Rubin, D. B. (1991).
 Significance levels from repeated \emph{p}-values with multiply-imputed
 data. \emph{Statistica Sinica, 1}(1), 65--92. Retrieved from
 \url{https://www.jstor.org/stable/24303994}
+
+Liu, Y., & Sriutaisuk, S. (2020). Evaluation of model fit in structural
+equation models with ordinal missing data: An examination of the \eqn{D_2}
+method. \emph{Structural Equation Modeling, 27}(4), 561--583.
+\doi{10.1080/10705511.2019.1662307}
+
+Liu, Y., Sriutaisuk, S., & Chung, S. (2021). Evaluation of model fit in
+structural equation models with ordinal missing data: a comparison of the
+\eqn{D_2} and MI2S methods. \emph{Structural Equation Modeling, 28}(5), 740--762.
+\doi{10.1080/10705511.2021.1919118}
 
 Meng, X.-L., & Rubin, D. B. (1992). Performing likelihood ratio tests with
 multiply-imputed data sets. \emph{Biometrika, 79}(1), 103--111.

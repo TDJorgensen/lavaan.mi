@@ -5,7 +5,15 @@ Track our progress or report issues on GitHub:
 https://github.com/TDJorgensen/lavaan.mi
 
 
-# lavaan.mi 0.1-0 (in development)
+# lavaan.mi 0.1-1 (in development)
+
+## New Features:
+
+## Bug Fixes:
+
+
+
+# lavaan.mi 0.1-0 (on CRAN 10 March 2025)
 
 The `semTools` package has a **Missing Data** suite, which for years included utilities for fitting structural equation models to multiply imputed data sets with the `lavaan` package and automatically pooling the results. These multiple-imputation features continue to grow, justifying their own separate package (and current deprecation in `semTools`).
 
