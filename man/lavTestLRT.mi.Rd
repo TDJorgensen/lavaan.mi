@@ -10,10 +10,10 @@ lavTestLRT.mi(
   ...,
   modnames = NULL,
   asANOVA = TRUE,
-  pool.method = c("D4", "D3", "D2"),
-  omit.imps = c("no.conv", "no.se"),
   asymptotic = FALSE,
-  pool.robust = FALSE
+  pool.robust = FALSE,
+  pool.method = ifelse(pool.robust, "D2", "D4"),
+  omit.imps = c("no.conv", "no.se")
 )
 
 \S4method{anova}{lavaan.mi}(object, ...)
@@ -33,11 +33,26 @@ class \code{"anova"}.  If \code{FALSE}, a numeric vector is returned for
 one (pair of) model(s), or a \code{data.frame} is returned for multiple
 pairs of models.}
 
+\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
+will be returned as an \emph{F}-distributed statistic with numerator
+(\code{df1}) and denominator (\code{df2}) degrees of freedom.
+If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
+\code{df1} on the assumption that its \code{df2} is sufficiently large
+enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+with \code{df1}.}
+
+\item{pool.robust}{\code{logical}. Ignored unless a robust test was requested.
+If \code{pool.robust = TRUE}, the robust test statistic is pooled, which also
+sets \code{pool.method = "D2"} (the only way to pool robust statistics).
+Setting \code{pool.robust = FALSE} will pool the naive test, then apply the
+average scale/shift parameter. The harmonic mean is applied to the scaling
+factor, whereas the arithmetic mean is applied to the shift parameter.}
+
 \item{pool.method}{\code{character} indicating which pooling method to use.
 \itemize{
 \item \code{"D4"}, \code{"new.LRT"}, \code{"cm"}, or \code{"chan.meng"}
 requests the method described by Chan & Meng (2022).
-This is currently the default.
+This is currently the default, unless \code{pool.robust=TRUE}.
 \item \code{"D3"}, \code{"old.LRT"}, \code{"mr"}, or \code{"meng.rubin"}
 requests the method described by Meng & Rubin (1992).
 \item \code{"D2"}, \code{"LMRR"}, or \code{"Li.et.al"} requests the
@@ -59,21 +74,6 @@ as Heywood cases. Specific imputation numbers can also be included in this
 argument, in case users want to  apply their own custom omission criteria
 (or simulations can use different numbers of imputations without
 redundantly refitting the model).}
-
-\item{asymptotic}{\code{logical}. If \code{FALSE} (default), the pooled test
-will be returned as an \emph{F}-distributed statistic with numerator
-(\code{df1}) and denominator (\code{df2}) degrees of freedom.
-If \code{TRUE}, the pooled \emph{F} statistic will be multiplied by its
-\code{df1} on the assumption that its \code{df2} is sufficiently large
-enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-with \code{df1}.}
-
-\item{pool.robust}{\code{logical}. Ignored unless \code{pool.method = "D2"} and a
-robust test was requested. If \code{pool.robust = TRUE}, the robust test
-statistic is pooled, whereas \code{pool.robust = FALSE} will pool
-the naive test statistic (or difference statistic) and apply the average
-scale/shift parameter to it. The harmonic mean is applied to the scaling
-factor, whereas the arithmetic mean is applied to the shift parameter.}
 }
 \value{
 \itemize{

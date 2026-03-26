@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 12 February 2025
+### Last updated: 26 March 2026
 ### Class and Methods for lavaan.mi object
 
 
@@ -444,8 +444,8 @@ lavaan_mi_object_summary <- function(object, omit.imps = c("no.conv", "no.se"),
                               pool.robust = pool.robust)
   }
   attr(res$fit, "add.h0")      <- TRUE
-  attr(res$fit, "pool.method") <- poolChiSq
-  attr(res$fit, "pool.robust") <- pool.robust
+  attr(res$fit, "pool.method") <- attr(attr(res$fit, "header"), "pool.method")
+  attr(res$fit, "pool.robust") <- attr(attr(res$fit, "header"), "pool.robust")
 
   if (estimates) {
     PE <- parameterEstimates.mi(object, omit.imps = omit.imps,

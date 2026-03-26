@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 12 March 2025
+### Last updated: 26 March 2026
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -55,11 +55,24 @@
 ##'   class `"anova"`.  If `FALSE`, a numeric vector is returned for
 ##'   one (pair of) model(s), or a `data.frame` is returned for multiple
 ##'   pairs of models.
+##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
+##'   will be returned as an *F*-distributed statistic with numerator
+##'   (`df1`) and denominator (`df2`) degrees of freedom.
+##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
+##'   `df1` on the assumption that its `df2` is sufficiently large
+##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
+##'   with `df1`.
+##' @param pool.robust `logical`. Ignored unless a robust test was requested.
+##'   If `pool.robust = TRUE`, the robust test statistic is pooled, which also
+##'   sets `pool.method = "D2"` (the only way to pool robust statistics).
+##'   Setting `pool.robust = FALSE` will pool the naive test, then apply the
+##'   average scale/shift parameter. The harmonic mean is applied to the scaling
+##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##' @param pool.method `character` indicating which pooling method to use.
 ##'   \itemize{
 ##'     \item `"D4"`, `"new.LRT"`, `"cm"`, or `"chan.meng"`
 ##'           requests the method described by Chan & Meng (2022).
-##'           This is currently the default.
+##'           This is currently the default, unless `pool.robust=TRUE`.
 ##'     \item `"D3"`, `"old.LRT"`, `"mr"`, or `"meng.rubin"`
 ##'           requests the method described by Meng & Rubin (1992).
 ##'     \item `"D2"`, `"LMRR"`, or `"Li.et.al"` requests the
@@ -80,19 +93,6 @@
 ##'   argument, in case users want to  apply their own custom omission criteria
 ##'   (or simulations can use different numbers of imputations without
 ##'   redundantly refitting the model).
-##' @param asymptotic `logical`. If `FALSE` (default), the pooled test
-##'   will be returned as an *F*-distributed statistic with numerator
-##'   (`df1`) and denominator (`df2`) degrees of freedom.
-##'   If `TRUE`, the pooled *F* statistic will be multiplied by its
-##'   `df1` on the assumption that its `df2` is sufficiently large
-##'   enough that the statistic will be asymptotically \eqn{\chi^2} distributed
-##'   with `df1`.
-##' @param pool.robust `logical`. Ignored unless `pool.method = "D2"` and a
-##'   robust test was requested. If `pool.robust = TRUE`, the robust test
-##'   statistic is pooled, whereas `pool.robust = FALSE` will pool
-##'   the naive test statistic (or difference statistic) and apply the average
-##'   scale/shift parameter to it. The harmonic mean is applied to the scaling
-##'   factor, whereas the arithmetic mean is applied to the shift parameter.
 ##'
 ##' @return
 ##'
@@ -230,9 +230,9 @@
 ##'
 ##' @export
 lavTestLRT.mi <- function(object, ..., modnames = NULL, asANOVA = TRUE,
-                          pool.method = c("D4","D3","D2"),
-                          omit.imps = c("no.conv","no.se"),
-                          asymptotic = FALSE, pool.robust = FALSE) {
+                          asymptotic = FALSE, pool.robust = FALSE,
+                          pool.method = ifelse(pool.robust, "D2", "D4"),
+                          omit.imps = c("no.conv","no.se")) {
   ## save model names
   objname <- deparse(substitute(object))
   dotnames <- as.character(sapply(substitute(list(...))[-1], deparse))
@@ -936,10 +936,12 @@ robustify <- function(ChiSq, object, h1 = NULL, baseline = FALSE, useImps,
 ## Pools the LRT for 1 model or when comparing a single pair of models.
 ## (formerly lavTestLRT.mi)
 ##' @importFrom lavaan lavListInspect lavTestLRT
-pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
-                        omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
+pairwiseLRT <- function(object, h1 = NULL,
+                        asymptotic = FALSE, pool.robust = FALSE,
+                        pool.method = ifelse(pool.robust, "D2", "D4"),
+                        omit.imps = c("no.conv","no.se"),
                         standard.test = "standard", scaled.test = "default",
-                        pool.robust = FALSE, ...) {
+                        ...) {
   ## this also checks the class
   useImps <- imps2use(object = object, omit.imps = omit.imps)
   m <- length(useImps)
@@ -1171,10 +1173,11 @@ pairwiseLRT <- function(object, h1 = NULL, pool.method = c("D4","D3","D2"),
 
 ## Iterates over > 2 models to apply pairwiseLRT() sequentially
 ## (borrowed from semTools::compareFit, code for @nested)
-multipleLRT <- function(..., argsLRT = list(), pool.method = c("D4","D3","D2"),
-                        omit.imps = c("no.conv","no.se"), asymptotic = FALSE,
-                        standard.test = "standard", scaled.test = "default",
-                        pool.robust = FALSE) {
+multipleLRT <- function(..., argsLRT = list(),
+                        asymptotic = FALSE, pool.robust = FALSE,
+                        pool.method = ifelse(pool.robust, "D2", "D4"),
+                        omit.imps = c("no.conv","no.se"),
+                        standard.test = "standard", scaled.test = "default") {
   ## separate models from lists of models
   mods <- list(...)
 

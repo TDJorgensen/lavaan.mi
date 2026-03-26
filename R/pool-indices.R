@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 28 May 2024
+### Last updated: 26 May 2026
 ### pool fit indices
 ### define fitMeasures() method for lavaan.mi
 
@@ -213,6 +213,8 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   ## but caught by lavaan:::print.lavaan.fitMeasures() for summary()
   attr(attr(OUT, "header"), "standard.test") <- standard.test
   attr(attr(OUT, "header"),   "scaled.test") <-   scaled.test
+  attr(attr(OUT, "header"),   "pool.method") <-   pool.method
+  attr(attr(OUT, "header"),   "pool.robust") <-   pool.robust
   if (isTRUE(scaled.test == "scaled.shifted")) {
     ## not in the vector, save it as an attribute
     attr(attr(OUT, "header"), "shift") <- FIT@external$mi2lavaan$shift
