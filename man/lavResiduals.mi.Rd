@@ -23,14 +23,14 @@ imputations, and the model-implied statistics are calculated from
 pooled parameter estimates (as returned by \code{fitted.values()}).
 If \code{type = "cor"} or \code{"cor.bollen"}, the observed and
 model-implied covariance matrices are first transformed to
-correlation matrices (using \code{\link[stats:cor]{stats::cov2cor()}}); then correlation
+correlation matrices (using \code{\link[stats:cov2cor]{stats::cov2cor()}}); then correlation
 residuals are computed. If \code{type = "cor.bentler"}, both the observed
 and model-implied covariance matrices are rescaled by dividing the
 elements by the square roots of the corresponding variances of the
 observed covariance matrix.}
 
 \item{omit.imps}{\code{character} indicating criteria for excluding imputations
-from pooled results. See \linkS4class{lavaan.mi} for argument details.}
+from pooled results. See \link[=lavaan.mi-class]{lavaan.mi} for argument details.}
 
 \item{\dots}{Arguments passed to \code{\link[lavaan:lavResiduals]{lavaan::lavResiduals()}}.}
 }

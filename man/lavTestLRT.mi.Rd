@@ -19,9 +19,9 @@ lavTestLRT.mi(
 \S4method{anova}{lavaan.mi}(object, ...)
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan.mi}}
+\item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}}
 
-\item{...}{Additional objects of class \linkS4class{lavaan.mi}, as
+\item{...}{Additional objects of class \link[=lavaan.mi-class]{lavaan.mi}, as
 well as arguments passed to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}} when
 \code{pool.method = "D2"} and \code{pool.robust = TRUE}.}
 

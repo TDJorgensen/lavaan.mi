@@ -16,7 +16,7 @@ lavTestWald.mi(
 )
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan.mi}.}
+\item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}.}
 
 \item{constraints}{A \code{character} string (typically between single
 quotes) containing one or more equality constraints.

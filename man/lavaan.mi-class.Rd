@@ -81,7 +81,7 @@
 )
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan.mi}}
+\item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}}
 
 \item{header, fit.measures, fm.args, estimates, ci, standardized, std, cov.std, rsquare, remove.unused, modindices, nd, output}{See descriptions of \code{summary()} arguments in the help page for
 \link[lavaan:lavaan-class]{lavaan::lavaan} class. Also see \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for arguments
@@ -202,7 +202,7 @@ matrices (one per imputation) as output by
 \code{lavInspect(fit, "cov.lv")}}
 
 \item{\code{miList}}{\code{list} of modification indices output by
-\code{\link[lavaan:modificationIndices]{lavaan::modindices()}}}
+\code{\link[lavaan:modindices]{lavaan::modindices()}}}
 
 \item{\code{lavListCall}}{call to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} used to fit the
 model to the list of imputed data sets in \verb{@DataList}, stored as a
@@ -227,7 +227,7 @@ non-positive-definite.}
 
 \item{\code{h1List}}{See \link[lavaan:lavaanList-class]{lavaan::lavaanList}. An additional element is
 added to the \code{list}: \verb{$PT} is the "saturated" model's parameter
-table, returned by \code{\link[lavaan:lav_partable]{lavaan::lav_partable_unrestricted()}}.}
+table, returned by \code{\link[lavaan:lav_partable_unrestricted]{lavaan::lav_partable_unrestricted()}}.}
 
 \item{\code{call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external}}{By default, \code{\link[=lavaan.mi]{lavaan.mi()}} does not populate the remaining \verb{@*List} slots
 from the \link[lavaan:lavaanList-class]{lavaan::lavaanList} class. But they can be added to the call using

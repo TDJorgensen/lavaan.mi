@@ -13,9 +13,9 @@
 ##' @name lavaan.mi-class
 ##' @importClassesFrom lavaan lavaanList
 ##' @aliases lavaan.mi-class  show,lavaan.mi-method  summary,lavaan.mi-method
-##'   fitMeasures,lavaan.mi-method  fitmeasures,lavaan.mi-method
-##'   nobs,lavaan.mi-method  coef,lavaan.mi-method  vcov,lavaan.mi-method
-##'   fitted,lavaan.mi-method  fitted.values,lavaan.mi-method
+##' @aliases fitMeasures,lavaan.mi-method  fitmeasures,lavaan.mi-method
+##' @aliases nobs,lavaan.mi-method  coef,lavaan.mi-method  vcov,lavaan.mi-method
+##' @aliases fitted,lavaan.mi-method  fitted.values,lavaan.mi-method
 ##' @docType class
 ##'
 ##' @slot coefList `list` of estimated coefficients in matrix format (one

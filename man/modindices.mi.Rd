@@ -61,7 +61,7 @@ modificationindices.mi(
 )
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan.mi}}
+\item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}}
 
 \item{pool.method}{\code{character} indicating which pooling method to use.
 \code{"D1"} requests Mansolf, Jorgensen, & Enders' (2020) proposed
@@ -198,7 +198,7 @@ models. \emph{Psychological Methods, 25}(4), 393--411.
 \author{
 Terrence D. Jorgensen (University of Amsterdam; \email{TJorgensen314@gmail.com})
 
-Based on source code for \code{\link[lavaan:modificationIndices]{lavaan::modindices()}} by Yves Rosseel
+Based on source code for \code{\link[lavaan:modindices]{lavaan::modindices()}} by Yves Rosseel
 
 \code{pool.method = "D1"} method proposed by
 Maxwell Mansolf (University of California, Los Angeles;

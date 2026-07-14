@@ -59,7 +59,7 @@ calculated as the weighted sum of the within-imputation and
 between-imputation components (see Enders, 2010, ch. 8, for details).}
 
 \item{omit.imps}{\code{character} indicating criteria for excluding imputations
-from pooled results. See \linkS4class{lavaan.mi} for argument details.}
+from pooled results. See \link[=lavaan.mi-class]{lavaan.mi} for argument details.}
 }
 \value{
 A \code{data.frame}, analogous to \code{\link[lavaan:parameterEstimates]{lavaan::parameterEstimates()}}, but estimates,

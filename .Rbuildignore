@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 .github
 FuturePlans.txt
+^\.positai$
+^\.claude$

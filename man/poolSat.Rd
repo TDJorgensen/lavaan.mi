@@ -22,7 +22,7 @@ which imputed data can be extracted. Recognized classes are
 \item{\dots}{Additional arguments passed to \code{\link[lavaan:lavCor]{lavaan::lavCor()}} or to
 \code{\link[=lavaan.mi]{lavaan.mi()}}.}
 
-\item{return.fit}{\code{logical} indicating whether to return a \linkS4class{lavaan.mi}
+\item{return.fit}{\code{logical} indicating whether to return a \link[=lavaan.mi-class]{lavaan.mi}
 object containing the results of fitting the saturated model to multiple
 imputed \code{data}.  Could be useful for diagnostic purposes.}
 
@@ -52,7 +52,7 @@ apply their own custom omission criteria (or simulation studies can use
 different numbers of imputations without redundantly refitting the model).}
 }
 \value{
-If \code{return.fit=TRUE}, a \linkS4class{lavaan.mi} object.
+If \code{return.fit=TRUE}, a \link[=lavaan.mi-class]{lavaan.mi} object.
 Otherwise, an object of class \code{lavMoments}, which is a \code{list}
 that contains at least \verb{$sample.cov} and \verb{$sample.nobs},
 potentially also \verb{$sample.mean}, \verb{$sample.th}, \verb{$NACOV},

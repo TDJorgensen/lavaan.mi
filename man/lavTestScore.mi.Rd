@@ -23,7 +23,7 @@ lavTestScore.mi(
 )
 }
 \arguments{
-\item{object}{An object of class \linkS4class{lavaan.mi}.}
+\item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}.}
 
 \item{add}{Either a \code{character} string (typically between single
 quotes) or a parameter table containing additional (currently

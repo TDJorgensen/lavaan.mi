@@ -22,7 +22,7 @@ standardized parameters. This is a way to obtain a pooled analog of
 and it is how the \emph{SE}s are derived for standardized solutions.}
 
 \item{omit.imps}{\code{character} indicating criteria for excluding imputations
-from pooled results. See \linkS4class{lavaan.mi} for argument details.}
+from pooled results. See \link[=lavaan.mi-class]{lavaan.mi} for argument details.}
 
 \item{\dots}{Arguments passed to \code{\link[lavaan:standardizedSolution]{lavaan::standardizedSolution()}}.}
 }
