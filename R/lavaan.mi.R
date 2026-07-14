@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 March 2025
+### Last updated: 14 July 2026
 ### function that creates lavaan.mi object, inherits from lavaanList class
 
 
@@ -16,14 +16,14 @@
 ##' @param data A a `list` of imputed data sets, or an object class from
 ##'   which imputed data can be extracted. Recognized classes are
 ##'   `lavaan.mi` (stored in the `@@DataList` slot),
-##'   `amelia` (created by the Amelia package), or
-##'   `mids` (created by the mice package).
+##'   `amelia` (created by the `Amelia` package), or
+##'   `mids` (created by the `mice` package).
 ##' @param \dots additional arguments to pass to [lavaan::lavaan()] or
 ##'   [lavaan::lavaanList()]. See also [lavaan::lavOptions()].
 ##'   Note that `lavaanList` provides parallel computing options, as well as
-##'   a `FUN=` argument so the user can extract custom output after the model
+##'   a `fun=` argument so the user can extract custom output after the model
 ##'   is fitted to each imputed data set (see **Examples**).  TIP: If a
-##'   custom `FUN` is used *and* `parallel = "snow"` is requested,
+##'   custom `fun` is used *and* `parallel = "snow"` is requested,
 ##'   the user-supplied function should explicitly call `library` or use
 ##'   \code{\link[base]{::}} for any functions not part of the base distribution.
 ##'
@@ -79,7 +79,7 @@
 ##' }
 ##' ## fit the model
 ##' catout <- cfa.mi(HS.model, data = binHS5imps, ordered = TRUE,
-##'                  FUN = myCustomFunc)
+##'                  fun = myCustomFunc)
 ##' ## pooled results
 ##' \donttest{
 ##' summary(catout)
@@ -130,7 +130,7 @@ lavaan.mi <- function(model, data, ...) {
          'multiple imputations. For robust confidence intervals of indirect',
          ' effects, see the ?semTools::monteCarloCI help page. To bootstrap ',
          'within each imputation, users can pass a custom function to the ',
-         'FUN= argument (see ?lavaanList) to save bootstrap distributions in ',
+         'fun= argument (see ?lavaanList) to save bootstrap distributions in ',
          'the @funList slot, then manually combine afterward.')
   }
 
@@ -211,17 +211,28 @@ lavaan.mi <- function(model, data, ...) {
                         dataList = imputedData), dots)
   lavListCall$store.slots <- union(c("partable","vcov","test","h1","baseline"),
                                    lavListCall$store.slots)
-  lavListCall$FUN <- if (is.null(dots$FUN)) .getOutput. else function(obj) {
+  lavListCall$FUN <- if (is.null(dots$FUN) && is.null(dots$fun)) .getOutput. else function(obj) {
     temp1 <- .getOutput.(obj)
-    temp2 <- dots$FUN(obj)
+    ## test above failed, so one of these must be TRUE
+    if (!is.null(dots$FUN)) temp2 <- dots$FUN(obj)
+    if (!is.null(dots$fun)) temp2 <- dots$fun(obj)
+    ## if it isn't already a list, put it in one
     if (!is.list(temp2)) temp2 <- list(userFUN1 = temp2)
+    ## if the list of functions doesn't have names, give them names ...
     if (is.null(names(temp2))) names(temp2) <- paste0("userFUN", 1:length(temp2))
+    ## ... as long as they don't match mine
     duplicatedNames <- which(sapply(names(temp2), function(x) {
       x %in% c("sampstat","coefMats","satPT","modindices","converged",
                "SE","Heywood.lv","Heywood.ov","cov.lv")
     }))
     for (i in duplicatedNames) names(temp2)[i] <- paste0("userFUN", i)
     c(temp1, temp2)
+  }
+  ## convert arguments to snake_case (from >= lavaan 0.7-1)
+  if (utils::packageDescription("lavaan", fields = "Version") >= "0.7-1") {
+    names(lavListCall)[names(lavListCall) == "dataList"]    <- "data_list"
+    names(lavListCall)[names(lavListCall) == "store.slots"] <- "store_slots"
+    names(lavListCall)[names(lavListCall) == "FUN"]         <- "fun"
   }
   fit <- eval(as.call(lavListCall))
   ## Store custom @DataList and @SampleStatsList
@@ -238,7 +249,7 @@ lavaan.mi <- function(model, data, ...) {
   fit@miList <- lapply(fit@funList, "[[", i = "modindices")
   fit@phiList <- lapply(fit@funList, "[[", i = "cov.lv")
   fit@call <- CALL
-  fit@lavListCall <- lavListCall
+  fit@lavListCall <- as.call(lavListCall)
   convList <- lapply(fit@funList, "[", i = c("converged","SE",
                                              "Heywood.lv","Heywood.ov"))
   nonConv <- which(sapply(convList, is.null))

@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 26 March 2026
+### Last updated: 14 July 2026
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -795,7 +795,7 @@ D4.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
   stackImps <- do.call(rbind, object@DataList[useImps])
 
   ## isolate @lavListCall arguments passed to lavaan()
-  lavListCall <- object@lavListCall[-1]
+  lavListCall <- as.list(object@lavListCall[-1])
   lavListArgNames <- names(formals(lavaan::lavaanList))
   lavArgNames <- setdiff(names(lavListCall), lavListArgNames)
   noNames <- which(nchar(lavArgNames) == 0L)

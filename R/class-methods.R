@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 March 2026
+### Last updated: 14 July 2026
 ### Class and Methods for lavaan.mi object
 
 
@@ -219,7 +219,7 @@ setClass("lavaan.mi", contains = "lavaanList",
          slots = c(coefList = "list",     # coefficients in matrix format
                    phiList = "list",      # list of model-implied latent covariance matrices
                    miList = "list",       # modification indices
-                   lavListCall = "list",  # store actual call to lavaanList
+                   lavListCall = "call",  # store actual call to lavaanList
                    convergence = "list")) # also check SEs and Heywood cases
 
 

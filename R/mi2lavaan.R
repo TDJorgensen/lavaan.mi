@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 31 May 2024
+### Last updated: 14 July 2026
 ### Create faux lavaan-class object in order to pass to
 ### - lavaan::fitMeasures() within fitMeasures_mi()
 ### - standardizedSolution() within standardizedSolution.mi()
@@ -30,7 +30,7 @@ mi2lavaan <- function(object, omit.imps = c("no.conv","no.se"),
   ## copy lavaan() arguments and lavOptions()
   lavArgs <- setdiff(names(object@lavListCall)[-1],
                      names(formals(lavaan::lavaanList)))
-  if (length(lavArgs)) CALL[lavArgs] <- object@lavListCall[lavArgs]
+  if (length(lavArgs)) CALL[lavArgs] <- as.list(object@lavListCall[lavArgs])
   # ## don't actually fit, but force it to be recognized as converged
   # CALL$do.fit <- FALSE
   # CALL$optim.force.converged <- TRUE
