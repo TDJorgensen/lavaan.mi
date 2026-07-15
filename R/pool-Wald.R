@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 30 May 2024
+### Last updated: 15 July 2026
 ### Pooled Wald test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_Wald.R
 
@@ -159,7 +159,8 @@ lavTestWald.mi <- function(object, constraints = NULL, pool.method = c("D1","D2"
     }
 
     ## call lavaanList() again to run lavTestWald() on each imputation
-    oldCall$FUN <- function(obj) {
+    lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+    oldCall[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
       out <- try(lavaan::lavTestWald(object = obj, constraints = constraints,
                                      verbose = FALSE), silent = TRUE)
       if (inherits(out, "try-error")) return(NULL)

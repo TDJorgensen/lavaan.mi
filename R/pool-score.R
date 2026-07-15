@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 7 March 2025
+### Last updated: 15 July 2026
 ### Pooled score test (= Lagrange Multiplier test) for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_score.R
 
@@ -219,7 +219,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     ## call lavaanList() again to run lavTestScore() on each imputation
-    oldCall$FUN <- function(obj) {
+    lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+    oldCall[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
       out <- try(lavaan::lavTestScore(obj, add = add, release = release,
                                       univariate = univariate, epc = epc,
                                       cumulative = cumulative, cov.std = cov.std,
@@ -364,7 +365,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
     }
 
     ## call lavaanList() to fit augmented model (do.fit = FALSE)
-    oldCall$FUN <- function(obj) {
+    lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+    oldCall[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
       ngroups <- lavaan::lavInspect(obj, "ngroups")
       nlevels <- lavaan::lavInspect(obj, "nlevels")
 
@@ -507,7 +509,8 @@ lavTestScore.mi <- function(object, add = NULL, release = NULL,
 
 
     ## use lavaanList() to get gradient/information from each imputation
-    oldCall$FUN <- function(obj) {
+    lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+    oldCall[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
       list(gradient = lavaan::lavInspect(obj, "gradient"),
            information = lavaan::lavInspect(obj, paste("information",
                                                        information, sep = ".")))

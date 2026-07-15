@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen
-### Last updated: 7 March 2025
+### Last updated: 15 July 2026
 ### pool saturated moments across imputations to fit SEM in "single" step:
 ###    Normal data: https://doi.org/10.3102/1076998612458320
 ###    Categorical: https://doi.org/10.1080/00273171.2018.1523000
@@ -238,8 +238,11 @@ poolSat <- function(data, ..., return.fit = FALSE, scale.W = TRUE,
   dots$h1       <- FALSE # redundant
   dots$baseline <- FALSE # unnecessary
   ## save NACOV per imputation
-  dots$FUN <- function(obj) list(gamma   = lavaan::lavInspect(obj, "gamma"),
-                                 wls.obs = lavaan::lavInspect(obj, "wls.obs") )
+  lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+  dots[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
+    list(gamma   = lavaan::lavInspect(obj, "gamma"),
+         wls.obs = lavaan::lavInspect(obj, "wls.obs") )
+  }
   ## get rid of estimates in parameter table
   dots$model$est   <- NULL
   dots$model$se    <- NULL

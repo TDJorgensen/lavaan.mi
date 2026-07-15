@@ -1,5 +1,5 @@
 ### Terrence D. Jorgensen & Yves Rosseel
-### Last updated: 14 July 2026
+### Last updated: 15 July 2026
 ### Pooled likelihood ratio test for multiple imputations
 ### Borrowed source code from lavaan/R/lav_test_LRT.R
 
@@ -489,7 +489,8 @@ D2.LRT <- function(object, h1 = NULL, useImps, asymptotic = FALSE,
     }
 
     ## call lavaanList() again to run lavTestLRT() on each imputation
-    oldCall$FUN <- function(obj) {
+    lav7 <- utils::packageDescription("lavaan", fields = "Version") >= "0.7-1"
+    oldCall[[ifelse(lav7, "fun", "FUN")]] <- function(obj) {
       fit1 <- try(lavaan::lavaan(PT1, slotOptions = op1, slotData = obj@Data),
                   silent = TRUE)
       if (inherits(fit1, "try-error")) {
