@@ -9,6 +9,11 @@ https://github.com/TDJorgensen/lavaan.mi
 
 ## New Features:
 
+- Argument names for the `fitMeasures()` method are now in `snake_case`, replacing the old convention of dotted names (i.e., `fit.measures=` becomes `fit_measures=`).
+  This is to adopt the latest coding-format conventions, in line with `lavaan` 0.7-1
+    - *Note*: Users passing a custom function (to be called per imputation) must 
+      call `fun=` if they have `lavaan` >= 0.7-1 installed (or `FUN=` if < 0.7).
+
 ## Bug Fixes:
 
 - Setting `pool.robust=TRUE` automatically sets `pool.method="D2"` (with message), yet `summary()` failed to report that.
