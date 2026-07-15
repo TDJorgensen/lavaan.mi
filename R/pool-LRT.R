@@ -120,7 +120,7 @@
 ##' @references
 ##'   Asparouhov, T., & Muthen, B. (2010). *Chi-square statistics
 ##'   with multiple imputation*. Technical Report. Retrieved from
-##'   <http://www.statmodel.com/>
+##'   <https://www.statmodel.com/>
 ##'
 ##'   Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
 ##'   imputation likelihood ratio tests. *Statistica Sinica, 32*,

@@ -195,7 +195,7 @@ fitMeasures(fit1c, output = "text",
 \references{
 Asparouhov, T., & Muthen, B. (2010). \emph{Chi-square statistics
 with multiple imputation}. Technical Report. Retrieved from
-\url{http://www.statmodel.com/}
+\url{https://www.statmodel.com/}
 
 Chan, K. W., & Meng, X. L. (2022). Multiple improvements of multiple
 imputation likelihood ratio tests. \emph{Statistica Sinica, 32},
