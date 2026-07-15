@@ -56,26 +56,28 @@
 
 \S4method{fitMeasures}{lavaan.mi}(
   object,
-  fit.measures = "all",
-  baseline.model = NULL,
-  h1.model = NULL,
-  fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
-    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08,
+  fit_measures = "all",
+  baseline_model = NULL,
+  h1_model = NULL,
+  fm_args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
+    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE,
     cat.check.pd = TRUE),
   output = "vector",
+  level = NULL,
   omit.imps = c("no.conv", "no.se"),
   ...
 )
 
 \S4method{fitmeasures}{lavaan.mi}(
   object,
-  fit.measures = "all",
-  baseline.model = NULL,
-  h1.model = NULL,
-  fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
-    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = 0.08,
+  fit_measures = "all",
+  baseline_model = NULL,
+  h1_model = NULL,
+  fm_args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level =
+    0.9, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE,
     cat.check.pd = TRUE),
   output = "vector",
+  level = NULL,
   omit.imps = c("no.conv", "no.se"),
   ...
 )
@@ -84,8 +86,7 @@
 \item{object}{An object of class \link[=lavaan.mi-class]{lavaan.mi}}
 
 \item{header, fit.measures, fm.args, estimates, ci, standardized, std, cov.std, rsquare, remove.unused, modindices, nd, output}{See descriptions of \code{summary()} arguments in the help page for
-\link[lavaan:lavaan-class]{lavaan::lavaan} class. Also see \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for arguments
-\code{fit.measures} and \code{fm.args}.}
+\link[lavaan:lavaan-class]{lavaan::lavaan} class.}
 
 \item{fmi}{\code{logical} indicating whether to add the Fraction Missing
 Information (FMI) and (average) relative increase in variance (ARIV)
@@ -133,7 +134,7 @@ model).}
 \item{...}{Additional arguments passed to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}}, or
 subsequently to \code{\link[lavaan:lavTestLRT]{lavaan::lavTestLRT()}}. This is how users can
 specify a \verb{pool.method=} for the model's \eqn{\chi^2} statistic
-(optionally used in any \verb{fit.measures=}), or set \code{pool.method="D1"}
+(optionally used in any \verb{fit_measures=}), or set \code{pool.method="D1"}
 when \code{summary(modindices=TRUE)}.}
 
 \item{total}{\code{logical} (default: \code{TRUE}) indicating whether the
@@ -147,7 +148,7 @@ under \code{coef()} and \code{vcov()}.}
 \item{labels}{\code{logical} indicating whether the \code{coef()} output
 should include parameter labels. Default is \code{TRUE}.}
 
-\item{baseline.model, h1.model}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}}.}
+\item{fit_measures, baseline_model, h1_model, fm_args, level}{See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for descriptions of arguments.}
 }
 \value{
 \item{coef}{\code{signature(object = "lavaan.mi", type = "free", labels = TRUE, omit.imps = c("no.conv","no.se"))}:
@@ -170,7 +171,7 @@ Returns model-implied moments, evaluated at the pooled point estimates.}
 the total (default) sample size or a vector of group sample sizes
 (\code{total = FALSE}).}
 
-\item{fitMeasures}{\code{signature(object = "lavaan.mi", fit.measures = "all", baseline.model = NULL, h1.model = NULL, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), output = "vector", omit.imps = c("no.conv","no.se"), ...)}:
+\item{fitMeasures}{\code{signature(object = "lavaan.mi", fit_measures = "all", baseline_model = NULL, h1_model = NULL, fm_args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), output = "vector", level = NULL, omit.imps = c("no.conv","no.se"), ...)}:
 See \code{\link[lavaan:fitMeasures]{lavaan::fitMeasures()}} for details.
 Pass additional arguments to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} via \code{...}.}
 \item{fitmeasures}{alias for \code{fitMeasures}.}
@@ -179,7 +180,7 @@ Pass additional arguments to \code{\link[=lavTestLRT.mi]{lavTestLRT.mi()}} via \
 convergence rates and estimation problems (if applicable) across imputed
 data sets.}
 
-\item{summary}{\code{signature(object = "lavaan.mi", header = TRUE, fit.measures = FALSE,fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), estimates = TRUE, ci = FALSE, standardized = FALSE, std = standardized, cov.std = TRUE, rsquare = FALSE, fmi = FALSE, asymptotic = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), remove.unused = TRUE, modindices = FALSE, nd = 3L, ...)}:
+\item{summary}{\code{signature(object = "lavaan.mi", header = TRUE, fit.measures = FALSE, fm.args = list(standard.test = "default", scaled.test = "default", rmsea.ci.level = 0.90, rmsea.h0.closefit = 0.05, rmsea.h0.notclosefit = 0.08, robust = TRUE, cat.check.pd = TRUE), estimates = TRUE, ci = FALSE, standardized = FALSE, std = standardized, cov.std = TRUE, rsquare = FALSE, fmi = FALSE, asymptotic = FALSE, scale.W = !asymptotic, omit.imps = c("no.conv","no.se"), remove.unused = TRUE, modindices = FALSE, nd = 3L, ...)}:
 Analogous to \code{summary()} for \code{lavaan-class} objects.
 By default, \code{summary} returns output from \code{\link[=parameterEstimates.mi]{parameterEstimates.mi()}},
 with some cursory information in the header.
@@ -231,7 +232,7 @@ table, returned by \code{\link[lavaan:lav_partable_unrestricted]{lavaan::lav_par
 
 \item{\code{call,Options,ParTable,pta,Data,Model,meta,timingList,CacheList,optimList,impliedList,loglikList,internalList,funList,external}}{By default, \code{\link[=lavaan.mi]{lavaan.mi()}} does not populate the remaining \verb{@*List} slots
 from the \link[lavaan:lavaanList-class]{lavaan::lavaanList} class. But they can be added to the call using
-the \verb{store.slots=} argument (passed to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} via \dots).}
+the \verb{store_slots=} argument (passed to \code{\link[lavaan:lavaanList]{lavaan::lavaanList()}} via \dots).}
 }}
 
 \section{Objects from the Class}{
@@ -273,7 +274,7 @@ HS.parallel <- '
   speed   =~ x7 + 1*x8 + 1*x9
 '
 fit0 <- cfa.mi(HS.parallel, data = HS20imps, orthogonal = TRUE)
-fitMeasures(fit, baseline.model = fit0, fit.measures = "default",
+fitMeasures(fit, baseline_model = fit0, fit_measures = "default",
             output = "text")
 
 ## See ?lavaan.mi help page for more examples

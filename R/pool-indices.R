@@ -1,20 +1,23 @@
 ### Terrence D. Jorgensen
-### Last updated: 26 May 2026
+### Last updated: 14 July 2026
 ### pool fit indices
 ### define fitMeasures() method for lavaan.mi
 
+#TODO: Update arguments to snake_case
+#      (after depending on lavaan > 0.7)
 
 ##' @importFrom lavaan lavTestLRT lavListInspect
-fitMeasures_mi <- function(object, fit.measures = "all",
-                           baseline.model = NULL, h1.model = NULL,
-                           fm.args = list(standard.test        = "default",
+fitMeasures_mi <- function(object, fit_measures = "all",
+                           baseline_model = NULL, h1_model = NULL,
+                           fm_args = list(standard.test        = "default",
                                           scaled.test          = "default",
                                           rmsea.ci.level       = 0.90,
                                           rmsea.h0.closefit    = 0.05,
                                           rmsea.h0.notclosefit = 0.08,
-                                          robust               = 0.08,
+                                          robust               = TRUE,
                                           cat.check.pd         = TRUE),
-                           output = "vector", omit.imps = c("no.conv","no.se"),
+                           output = "vector", level = NULL,
+                           omit.imps = c("no.conv","no.se"),
                            ...) {
   ## this also checks the class
   useImps <- imps2use(object = object, omit.imps = omit.imps)
@@ -37,6 +40,30 @@ fitMeasures_mi <- function(object, fit.measures = "all",
     if (length(LRT.names)) dots <- dots[LRT.names]
   }
   dots$asymptotic <- TRUE # ALWAYS for fit indices
+
+  ## Check for old dot-style argument names in ... (from lavaan < 0.7).
+  ## Note: Used claude-sonnet-4.6 to efficiently generate this tedious fix.
+  if (!is.null(dots$fit.measures)) {
+    if (!missing(fit_measures))
+      stop("Pass either 'fit_measures' or 'fit.measures', not both.")
+    fit_measures <- dots$fit.measures
+  }
+  if (!is.null(dots$baseline.model)) {
+    if (!missing(baseline_model))
+      stop("Pass either 'baseline_model' or 'baseline.model', not both.")
+    baseline_model <- dots$baseline.model
+  }
+  if (!is.null(dots$h1.model)) {
+    if (!missing(h1_model))
+      stop("Pass either 'h1_model' or 'h1.model', not both.")
+    h1_model <- dots$h1.model
+  }
+  if (!is.null(dots$fm.args)) {
+    if (!missing(fm_args))
+      stop("Pass either 'fm_args' or 'fm.args', not both.")
+    fm_args <- dots$fm.args
+  }
+
 
   ## check test options (adapted from lavTestLRT.mi, limits duplicate warnings)
   pool.method <- dots$pool.method
@@ -93,11 +120,11 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   argList <- list(object = object, omit.imps = omit.imps)
   argList <- c(argList, dots) # attach lavTestLRT.mi() arguments
   argList$asANOVA    <- FALSE
-  argList$standard.test <- fm.args$standard.test # passed to pairwiseLRT() via ...
-  argList$scaled.test   <- fm.args$scaled.test   # passed to pairwiseLRT() via ...
+  argList$standard.test <- fm_args$standard.test # passed to pairwiseLRT() via ...
+  argList$scaled.test   <- fm_args$scaled.test   # passed to pairwiseLRT() via ...
   argList$chi2    <- poolChiSq
-  argList$rmr <- ( fit.measures[1] %in% c("all","default")   ||
-                   any(grepl(pattern = "rmr", x = tolower(fit.measures))) )
+  argList$rmr <- ( fit_measures[1] %in% c("all","default")   ||
+                   any(grepl(pattern = "rmr", x = tolower(fit_measures))) )
 
   FIT <- do.call(mi2lavaan, argList)
 
@@ -105,12 +132,12 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   ## BASELINE model (if necessary)
   incremental <- c("cfi","tli","nnfi","rfi","nfi","pnfi","ifi","rni")
   checkEach <- sapply(incremental, function(i) {
-    any(grepl(pattern = i, x = tolower(fit.measures)))
+    any(grepl(pattern = i, x = tolower(fit_measures)))
   })
-  if (any(checkEach) || fit.measures[1] %in% c("all","default")) {
+  if (any(checkEach) || fit_measures[1] %in% c("all","default")) {
 
-    if (inherits(baseline.model, "lavaan.mi")) {
-      baseFit <- baseline.model
+    if (inherits(baseline_model, "lavaan.mi")) {
+      baseFit <- baseline_model
 
     } else if (inherits(object@external$baseline.model, "lavaan.mi")) {
       baseFit <- object@external$baseline.model
@@ -163,6 +190,7 @@ fitMeasures_mi <- function(object, fit.measures = "all",
 
   #FIXME: This will NOT yield a pooled chisq-difference test.
   #       It will calculate the difference between 2 pooled chisq stats.
+  ##  If this is revived, convert to snake_case
   ## custom h1.model (if necessary)
   # if (inherits(h1.model, "lavaan.mi")) {
   #   h1Fit <- h1.model
@@ -183,10 +211,19 @@ fitMeasures_mi <- function(object, fit.measures = "all",
   scaled.test   <- FIT@external$mi2lavaan$scaled.test
 
   ## calculate fit measures
-  OUT <- lavaan::fitMeasures(FIT, fit.measures = fit.measures,
-                             baseline.model = BASE,
-                             h1.model = NULL, #FIXME: Possible? Necessary?
-                             fm.args = fm.args, output = output)
+  if (utils::packageVersion("lavaan") >= "0.7-1") {
+    OUT <- lavaan::fitMeasures(FIT, fit_measures = fit_measures,
+                               baseline_model = BASE,
+                               h1_model = NULL, #FIXME: Possible? Necessary?
+                               fm_args = fm_args, output = output, level = level)
+  } else {
+    ## use original version
+    #TODO: eventually delete, after dependency on lavaan > 0.7 is explicit
+    OUT <- lavaan::fitMeasures(FIT, fit.measures = fit_measures,
+                               baseline.model = BASE,
+                               h1.model = NULL, #FIXME: Possible? Necessary?
+                               fm.args = fm_args, output = output, level = level)
+  }
 
   scaled.flag   <- any(grepl("scaled", names(OUT)))
 
